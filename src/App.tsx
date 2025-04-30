@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import GraficoIngresosGastos from './assets/components/ui/graphics'
-import GraficoGastosPorCategoria from './assets/components/ui/GraficoGastosPorCategoria'
-import GraficoTendenciasMensuales from './assets/components/ui/GraficoTendenciasMensuales'
+import GraficoIngresosGastos from './assets/dd/ss/graphics'
+import GraficoGastosPorCategoria from './assets/dd/ss/GraficoGastosPorCategoria'
+import GraficoTendenciasMensuales from './assets/dd/ss/GraficoTendenciasMensuales'
 import './App.css'
 
 function App() {
