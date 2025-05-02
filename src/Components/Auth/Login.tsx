@@ -5,7 +5,10 @@ import {
   LucidePieChart,
   LucideSmartphone,
   LucideShield,
-  LucideTrendingUp
+  LucideTrendingUp,
+  LucideDollarSign,
+  LucideRocket,
+  LucideChartColumnIncreasing
 } from "lucide-react";
 
 const slides = [
@@ -38,7 +41,7 @@ const slides = [
     description:
       "Protege tus finanzas con tecnología avanzada, cifrado de datos y acceso seguro en todo momento.",
     icon: <LucideShield className="w-6 h-6 text-red-500" />,
-  }
+  },
 ];
 
 export const Login = () => {
@@ -57,42 +60,72 @@ export const Login = () => {
 
       <div className="relative z-20 h-full flex">
         {/* LADO IZQUIERDO */}
-        <div className="w-1/2 flex flex-col justify-center px-16 text-white">
-          <span className="text-sm bg-white bg-opacity-10 rounded-full px-4 py-1 w-fit mb-4 font-medium">
+        <div className="w-1/2 flex flex-col justify-center px-16 ">
+          <span className="text-sm bg-opacity-10 rounded-full px-4 py-1 w-fit mb-4 font-medium backdrop-blur border border-indigo-400/80 text-indigo-400 bg-indigo-700/20">
             La plataforma financiera del futuro
           </span>
 
-          <h1 className="text-5xl font-bold mb-4">Finzen</h1>
-          <p className="text-lg mb-10 max-w-md">
+          <h1 className="text-5xl font-bold mb-4 text-white mt-5">Finzen</h1>
+          <p className="text-lg mb-10 max-w-md text-white">
             Tu asistente financiero personal impulsado por inteligencia
             artificial
           </p>
 
           {/* SLIDER */}
-          <div className="bg-white/10 backdrop-blur-xs bg-opacity-10 rounded-2xl p-6 max-w-md">
+          <div className="bg-gray-600/30 border border-amber-50/20 backdrop-blur-1 bg-opacity-10 rounded-2xl p-8 w-135 h-50 flex flex-col items-center">
             <div className="flex items-center gap-4 mb-2">
               <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
                 {slides[current].icon}
               </div>
-              <h2 className="text-white font-semibold">
+              <h2 className="text-white font-semibold text-center">
                 {slides[current].title}
               </h2>
             </div>
-            <p className="text-sm text-gray-200">
+            <p className="text-sm text-white/70 text-center mt-2.5">
               {slides[current].description}
             </p>
 
             {/* Indicadores */}
-            <div className="flex gap-2 mt-4 justify-center">
+            <div className="flex gap-2 mt-10 justify-center">
               {slides.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setCurrent(idx)}
-                  className={`w-2.5 h-2.5 rounded-full ${
+                  className={`w-2 h-2 rounded-full ${
                     current === idx ? "bg-white" : "bg-white/30"
                   }`}
                 ></button>
               ))}
+            </div>
+          </div>
+
+          <div className="flex gap-x-4 w-130 mt-10 text-center ">
+            <div className="bg-gray-600/30 border border-amber-50/20 backdrop-blur-xs bg-opacity-10 w-65 h-auto rounded-2xl p-6 max-w-md flex flex-col items-center">
+              <div className="w-11 h-11 rounded-full bg-green-700/25 flex items-center justify-center text-center mb-4">
+                <LucideDollarSign className="w-5 h-5 text-green-500" />
+              </div>
+              <h4 className="text-sm">
+                <span className="text-white font-semibold">
+                  Ahorra Hasta Un 30%
+                </span>
+              </h4>
+              <p className="text-sm text-white/50 mt-2 w-53">
+                Con nuestras recomendaciones personalizadas
+              </p>
+            </div>
+
+            <div className="bg-gray-600/30 border border-amber-50/20 backdrop-blur-xs bg-opacity-10 w-65 h-auto rounded-2xl p-6 max-w-md flex flex-col items-center">
+              <div className="w-11 h-11 rounded-full bg-yellow-700/25 flex items-center justify-center mb-4">
+                <LucideChartColumnIncreasing className="w-6 h-6 text-yellow-500" />
+              </div>
+              <h4 className="text-sm">
+                <span className="text-white font-semibold">
+                  +15M de usuarios activos
+                </span>
+              </h4>
+              <p className="text-sm text-white/50 mt-2 w-55">
+              Confían en Finzen para sus finanzas
+              </p>
             </div>
           </div>
 
