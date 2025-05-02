@@ -1,20 +1,19 @@
 import { useState } from 'react'
-import GraficoGastosPorCategoria from './Components/Ui/Graphics/GraficoGastosPorCategoria'
-import GraficoIngresosGastos from './Components/Ui/Graphics/graphics'
-import GraficoTendenciasMensuales from './Components/Ui/Graphics/GraficoTendenciasMensuales'
+import Header from './Components/Features/Reporting/Components/Header'
+import Dashboard from './Components/Features/Reporting/Components/Dashboard'
 
-import './App.css'
+
 
 function App() {
 
 
   return (
     <>
-     <GraficoIngresosGastos />
-     <GraficoGastosPorCategoria />
-     <GraficoTendenciasMensuales />
+   <Header />
+   <Dashboard />
      </>
   )
 }
 
 export default App
+
