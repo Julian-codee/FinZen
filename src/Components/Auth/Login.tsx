@@ -7,8 +7,8 @@ import {
   LucideShield,
   LucideTrendingUp,
   LucideDollarSign,
-  LucideRocket,
-  LucideChartColumnIncreasing
+  LucideCheck,
+  LucideChartColumnIncreasing,
 } from "lucide-react";
 
 const slides = [
@@ -55,7 +55,7 @@ export const Login = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-screen overflow-hidden">
+    <div className="relative w-full min-h-screen overflow-x-hidden overflow-y-auto">
       <AuthBackground mode="login" theme="dark" />
 
       <div className="relative z-20 h-full flex">
@@ -124,7 +124,7 @@ export const Login = () => {
                 </span>
               </h4>
               <p className="text-sm text-white/50 mt-2 w-55">
-              Confían en Finzen para sus finanzas
+                Confían en Finzen para sus finanzas
               </p>
             </div>
           </div>
@@ -132,23 +132,32 @@ export const Login = () => {
           {/* Estadísticas */}
           <div className="mt-8 text-sm text-white/90 space-y-2">
             <p>+15,000 personas se unieron esta semana</p>
-            <div className="flex flex-wrap gap-4 text-xs text-white/80">
-              <span>✅ Configuración en 2 minutos</span>
-              <span>✅ Prueba gratuita de 30 días</span>
-              <span>✅ Cancelación en cualquier momento</span>
+            <div className="flex flex-wrap gap-1.5 text-xs text-white/80 w-143 mt-1">
+              <div className="flex items-center gap-1">
+                <LucideCheck className="w-3 h-3 text-green-400 border border-green-600 rounded-full" />
+                <span>Configurado en 2 minutos</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <LucideCheck className="w-3 h-3 text-green-400 border border-green-600 rounded-full" />
+                <span>Prueba de 30 Días Gratis</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <LucideCheck className="w-3 h-3 text-green-400 border border-green-600 rounded-full" />
+                <span>Cancela en cualquier momento</span>
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* LADO DERECHO (Formulario) */}
-        <div className="w-1/2 flex items-center justify-center px-10">
-          <div className="w-full max-w-md bg-white bg-opacity-90 rounded-xl shadow-lg p-8">
-            {/* Aquí va tu formulario de login/registro */}
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Iniciar sesión
-            </h2>
-            {/* ...formulario aquí */}
-          </div>
+      {/* LADO DERECHO (Formulario) */}
+      <div className="w-1/2 flex items-center justify-center px-10">
+        <div className="w-full max-w-md bg-white bg-opacity-90 rounded-xl shadow-lg p-8">
+          {/* Aquí va tu formulario de login/registro */}
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            Iniciar sesión
+          </h2>
+          {/* ...formulario aquí */}
         </div>
       </div>
     </div>
