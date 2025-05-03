@@ -1,5 +1,5 @@
 import './App.css'
-import { Login } from './Components/Auth/Login'
+import {AuthPage} from './Components/Auth/AuthPage'
 
 
 
@@ -9,7 +9,7 @@ function App() {
     <>
 
       <div className="relative w-full h-screen overflow-hidden">
-        <Login />
+        <AuthPage />
       </div>  
   
 

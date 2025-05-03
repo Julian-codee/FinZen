@@ -1,165 +1,134 @@
-import { useState, useEffect } from "react";
-import { AuthBackground } from "../../assets/Backgrounds/Auht-background";
+import React, { useState } from "react";
 import {
-  LucideCreditCard,
-  LucidePieChart,
-  LucideSmartphone,
-  LucideShield,
-  LucideTrendingUp,
-  LucideDollarSign,
-  LucideCheck,
-  LucideChartColumnIncreasing,
+  LucideFingerprint,
+  LucideFacebook,
+  LucideTwitter,
+  LucideGithub,
 } from "lucide-react";
 
-const slides = [
-  {
-    title: "Gestión de cuentas unificada",
-    description:
-      "Conecta todas tus cuentas bancarias, tarjetas e inversiones en un solo lugar para una visión completa.",
-    icon: <LucideCreditCard className="w-6 h-6 text-purple-500" />,
-  },
-  {
-    title: "Presupuestos inteligentes",
-    description:
-      "Crea presupuestos automáticos, ajustados a tus hábitos, para tomar mejores decisiones financieras.",
-    icon: <LucidePieChart className="w-6 h-6 text-blue-500" />,
-  },
-  {
-    title: "Acceso Móvil Completo",
-    description:
-      "Consulta saldos, realiza transferencias y gestiona tu dinero desde cualquier lugar, sin interrupciones.",
-    icon: <LucideSmartphone className="w-6 h-6 text-yellow-500" />,
-  },
-  {
-    title: "Seguimiento Financiero En Tiempo Real",
-    description:
-      "Monitorea cada movimiento de tu dinero al instante, sin retrasos y con notificaciones en tiempo real.",
-    icon: <LucideTrendingUp className="w-6 h-6 text-green-500" />,
-  },
-  {
-    title: "Seguridad A Nivel Bancario",
-    description:
-      "Protege tus finanzas con tecnología avanzada, cifrado de datos y acceso seguro en todo momento.",
-    icon: <LucideShield className="w-6 h-6 text-red-500" />,
-  },
-];
-
 export const Login = () => {
-  const [current, setCurrent] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 8000);
-    return () => clearInterval(interval);
-  }, []);
+  //Nos permite cambiar entre el login y el register
+  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
 
   return (
-    <div className="relative w-full min-h-screen overflow-x-hidden overflow-y-auto">
-      <AuthBackground mode="login" theme="dark" />
+    <>
+      <div className="bg-gray-600/30 backdrop-blur-xs border border-white/10 rounded-2xl p-8 w-full max-w-md text-white shadow-xl">
+        <div className="flex w-full max-w-md items-center justify-center mb-6 border-1 border-white/10 backdrop-blur-xs rounded-xl h-11 overflow-hidden">
+          <button
+            onClick={() => setActiveTab("login")}
+            className={`w-1/2 mx-1 px-6 py-1 rounded-md font-semibold transition duration-100 ${
+              activeTab === "login"
+                ? "bg-white/20 text-white"
+                : "text-white/70"
+            }`}
+          >
+            Iniciar Sesión
+          </button>
 
-      <div className="relative z-20 h-full flex">
-        {/* LADO IZQUIERDO */}
-        <div className="w-1/2 flex flex-col justify-center px-16 ">
-          <span className="text-sm bg-opacity-10 rounded-full px-4 py-1 w-fit mb-4 font-medium backdrop-blur border border-indigo-400/80 text-indigo-400 bg-indigo-700/20">
-            La plataforma financiera del futuro
-          </span>
-
-          <h1 className="text-5xl font-bold mb-4 text-white mt-5">Finzen</h1>
-          <p className="text-lg mb-10 max-w-md text-white">
-            Tu asistente financiero personal impulsado por inteligencia
-            artificial
-          </p>
-
-          {/* SLIDER */}
-          <div className="bg-gray-600/30 border border-amber-50/20 backdrop-blur-1 bg-opacity-10 rounded-2xl p-8 w-135 h-50 flex flex-col items-center">
-            <div className="flex items-center gap-4 mb-2">
-              <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
-                {slides[current].icon}
-              </div>
-              <h2 className="text-white font-semibold text-center">
-                {slides[current].title}
-              </h2>
-            </div>
-            <p className="text-sm text-white/70 text-center mt-2.5">
-              {slides[current].description}
-            </p>
-
-            {/* Indicadores */}
-            <div className="flex gap-2 mt-10 justify-center">
-              {slides.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrent(idx)}
-                  className={`w-2 h-2 rounded-full ${
-                    current === idx ? "bg-white" : "bg-white/30"
-                  }`}
-                ></button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex gap-x-4 w-130 mt-10 text-center ">
-            <div className="bg-gray-600/30 border border-amber-50/20 backdrop-blur-xs bg-opacity-10 w-65 h-auto rounded-2xl p-6 max-w-md flex flex-col items-center">
-              <div className="w-11 h-11 rounded-full bg-green-700/25 flex items-center justify-center text-center mb-4">
-                <LucideDollarSign className="w-5 h-5 text-green-500" />
-              </div>
-              <h4 className="text-sm">
-                <span className="text-white font-semibold">
-                  Ahorra Hasta Un 30%
-                </span>
-              </h4>
-              <p className="text-sm text-white/50 mt-2 w-53">
-                Con nuestras recomendaciones personalizadas
-              </p>
-            </div>
-
-            <div className="bg-gray-600/30 border border-amber-50/20 backdrop-blur-xs bg-opacity-10 w-65 h-auto rounded-2xl p-6 max-w-md flex flex-col items-center">
-              <div className="w-11 h-11 rounded-full bg-yellow-700/25 flex items-center justify-center mb-4">
-                <LucideChartColumnIncreasing className="w-6 h-6 text-yellow-500" />
-              </div>
-              <h4 className="text-sm">
-                <span className="text-white font-semibold">
-                  +15M de usuarios activos
-                </span>
-              </h4>
-              <p className="text-sm text-white/50 mt-2 w-55">
-                Confían en Finzen para sus finanzas
-              </p>
-            </div>
-          </div>
-
-          {/* Estadísticas */}
-          <div className="mt-8 text-sm text-white/90 space-y-2">
-            <p>+15,000 personas se unieron esta semana</p>
-            <div className="flex flex-wrap gap-1.5 text-xs text-white/80 w-143 mt-1">
-              <div className="flex items-center gap-1">
-                <LucideCheck className="w-3 h-3 text-green-400 border border-green-600 rounded-full" />
-                <span>Configurado en 2 minutos</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <LucideCheck className="w-3 h-3 text-green-400 border border-green-600 rounded-full" />
-                <span>Prueba de 30 Días Gratis</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <LucideCheck className="w-3 h-3 text-green-400 border border-green-600 rounded-full" />
-                <span>Cancela en cualquier momento</span>
-              </div>
-            </div>
-          </div>
+          <button
+            onClick={() => setActiveTab("register")}
+            className={`w-1/2 px-6 py-1 mx-1 rounded-md font-semibold transition duration-100 ${
+              activeTab === "register"
+                ? "bg-white/20 text-white"
+                : "text-white/70"
+            }`}
+          >
+            Registrarse
+          </button>
         </div>
-      </div>
 
-      {/* LADO DERECHO (Formulario) */}
-      <div className="w-1/2 flex items-center justify-center px-10">
-        <div className="w-full max-w-md bg-white bg-opacity-90 rounded-xl shadow-lg p-8">
-          {/* Aquí va tu formulario de login/registro */}
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-            Iniciar sesión
-          </h2>
-          {/* ...formulario aquí */}
+        <h2 className="text-2xl font-bold mb-1">Bienvenido de nuevo</h2>
+        <p className="text-sm text-white/70 mb-6">
+          Ingresa tus credenciales para acceder a tu cuenta
+        </p>
+
+        <form className="space-y-5">
+          <div>
+            <label className="text-sm">Email</label>
+            <input
+              type="email"
+              placeholder="tu@email.com"
+              className="mt-1 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between text-sm">
+              <label>Contraseña</label>
+              <a href="#" className="text-blue-400 hover:underline">
+                ¿Olvidaste tu contraseña?
+              </a>
+            </div>
+            <input
+              type="password"
+              placeholder="••••••••"
+              className="mt-1 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+          </div>
+
+          <div className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              id="remember"
+              className="accent-indigo-500"
+            />
+            <label htmlFor="remember">Recordarme</label>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-2 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-md text-white font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition"
+          >
+            Iniciar sesión <span>→</span>
+          </button>
+
+          <button
+            type="button"
+            className="w-full py-2 bg-black/80 text-white rounded-md flex items-center justify-center gap-2 hover:bg-black transition"
+          >
+            <LucideFingerprint className="w-5 h-5" />
+            Iniciar sesión con biometría
+          </button>
+        </form>
+
+        {/* Divider */}
+        <div className="flex items-center my-6">
+          <hr className="flex-grow border-white/20" />
+          <span className="mx-4 text-xs text-white/60">O CONTINÚA CON</span>
+          <hr className="flex-grow border-white/20" />
         </div>
+
+        {/* Social buttons */}
+        <div className="flex justify-center gap-4">
+          <button className="bg-black/60 p-2 rounded-md hover:bg-black">
+            <LucideFacebook className="w-5 h-5 text-white" />
+          </button>
+          <button className="bg-black/60 p-2 rounded-md hover:bg-black">
+            <LucideTwitter className="w-5 h-5 text-white" />
+          </button>
+          <button className="bg-black/60 p-2 rounded-md hover:bg-black">
+            <LucideGithub className="w-5 h-5 text-white" />
+          </button>
+        </div>
+
+        <p className="text-sm text-white/70 text-center mt-6">
+          ¿No tienes una cuenta?{" "}
+          <a href="#" className="text-blue-400 hover:underline">
+            Regístrate
+          </a>
+        </p>
+
+        <p className="text-xs text-white/40 text-center mt-4">
+          Al continuar, aceptas nuestros{" "}
+          <a href="#" className="text-blue-400 hover:underline">
+            Términos de servicio
+          </a>{" "}
+          y{" "}
+          <a href="#" className="text-blue-400 hover:underline">
+            Política de privacidad
+          </a>
+        </p>
       </div>
-    </div>
+    </>
   );
 };
