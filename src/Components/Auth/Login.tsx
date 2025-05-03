@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { Register } from "./Register";
 import {
   LucideFingerprint,
   LucideFacebook,
@@ -11,7 +12,6 @@ export const Login = () => {
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
 
   return (
-    <>
       <div className="bg-gray-600/30 backdrop-blur-xs border border-white/10 rounded-2xl p-8 w-full max-w-md text-white shadow-xl">
         <div className="flex w-full max-w-md items-center justify-center mb-6 border-1 border-white/10 backdrop-blur-xs rounded-xl h-11 overflow-hidden">
           <button
@@ -27,7 +27,7 @@ export const Login = () => {
 
           <button
             onClick={() => setActiveTab("register")}
-            className={`w-1/2 px-6 py-1 mx-1 rounded-md font-semibold transition duration-100 ${
+            className={`w-1/2 mx-1 px-6 py-1 rounded-md font-semibold transition duration-100 ${
               activeTab === "register"
                 ? "bg-white/20 text-white"
                 : "text-white/70"
@@ -36,6 +36,12 @@ export const Login = () => {
             Registrarse
           </button>
         </div>
+
+        {/*Condicional que cambia de informacion*/}
+
+        { activeTab === "login" ? (
+         
+  <>
 
         <h2 className="text-2xl font-bold mb-1">Bienvenido de nuevo</h2>
         <p className="text-sm text-white/70 mb-6">
@@ -127,8 +133,12 @@ export const Login = () => {
           <a href="#" className="text-blue-400 hover:underline">
             Política de privacidad
           </a>
-        </p>
-      </div>
+        </p>        
+      
     </>
+  ) : (
+      <Register />
+    )}
+      </div>
   );
 };
