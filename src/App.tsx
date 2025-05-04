@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import Header from './Components/Features/Reporting/Components/Header'
+
 import Dashboard from './Components/Features/Reporting/Components/Dashboard'
+import './App.css'
 
 
 
@@ -9,7 +9,7 @@ function App() {
 
   return (
     <>
-   <Header />
+ 
    <Dashboard />
      </>
   )

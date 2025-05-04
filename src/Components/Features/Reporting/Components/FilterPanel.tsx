@@ -4,7 +4,7 @@ import DropdownFilter from './DropDownFilter';
 const FilterPanel: React.FC = () => {
   return (
     <div className="mb-6">
-      <div className="flex flex-col md:flex-row justify-between items-start mb-4">
+      <div className="flex flex-col md:flex-row justify-between items-start mb-4 bg-amber-200">
         <div className="flex flex-col lg:flex-row gap-4 w-full">
           <div className="w-full lg:w-1/3">
             <h3 className="text-sm mb-2">Cuenta</h3>

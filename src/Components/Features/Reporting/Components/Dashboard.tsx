@@ -22,7 +22,7 @@ export default function FinancialDashboard() {
   const [activeTab, setActiveTab] = useState('Resumen');
   
   return (
-    <div className="min-h-screen bg-[#0D1119] text-white p-6">
+    <div className="min-h-screen bg-[#020817] text-white p-6">
       <div>
         <h1 className="text-3xl font-bold">Informes</h1>
         <p className="mt-2 text-gray-400">
@@ -88,7 +88,7 @@ export default function FinancialDashboard() {
           <p className="text-gray-400 text-sm mb-4">Comparativa mensual de ingresos y gastos</p>
           
           <div className="h-64">
-            <BarChart width={400} height={250} data={financialData}>
+            <BarChart width={600} height={300} data={financialData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#333" vertical={false} />
               <XAxis dataKey="month" tick={{ fill: '#888' }} />
               <YAxis tick={{ fill: '#888' }} />
