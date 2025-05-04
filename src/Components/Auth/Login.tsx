@@ -128,7 +128,7 @@ export const Login = () => {
         )}
       </div>
 
-      {activeTab === "login" && (
+      {(activeTab === "login" || activeTab === "register") && (
         <p className="text-xs text-white/40 text-center mt-4 max-w-md mx-auto">
           Al continuar, aceptas nuestros{" "}
           <a href="#" className="text-blue-400 hover:underline">
