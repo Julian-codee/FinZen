@@ -12,21 +12,25 @@ export const Register = () => {
     <>
       {/* Header */}
       <h2 className="text-2xl font-bold mb-1">Crear una cuenta</h2>
-      <p className="text-sm text-white/70 mb-11">
+      <p className="text-sm text-white/50 mb-8">
         Ingresa tus datos para registrarte en la plataforma
       </p>
 
       {/* Progress bar */}
-      <div className="relative w-full h-1 bg-white/20 rounded-full mb-7.5">
-        <div className="absolute top-0 left-0 h-1 bg-indigo-500 w-1/2 rounded-full"></div>
-        <span className="absolute right-0 text-xs -top-6 text-white/70">Paso 1 de 2</span>
+      <div className="flex items-center gap-4 mb-6">
+        <div className="relative w-3/4 h-1 bg-white/20 rounded-full">
+          <div className="absolute top-0 left-0 h-1 bg-indigo-500 w-1/2 rounded-full"></div>
+        </div>
+        <span className="text-xs text-white/70">Paso 1 de 2</span>
       </div>
 
       {/* Form */}
       <form className="space-y-1">
         <div className="relative">
-          <label className="block text-sm text-white/80 mb-1">Nombre completo</label>
-          <User className="absolute left-3 top-10 w-4 h-4 text-white/60" />
+          <label className="block text-sm text-white/50 mb-1.5">
+            Nombre completo
+          </label>
+          <User className="absolute left-3 top-9 w-4 h-4 text-white/60" />
           <input
             type="text"
             placeholder="Tu nombre"
@@ -35,8 +39,10 @@ export const Register = () => {
         </div>
 
         <div className="relative">
-          <label className="block text-sm text-white/80 mb-1">Correo electrónico</label>
-          <AtSign className="absolute left-3 top-10 w-4 h-4 text-white/60" />
+          <label className="block text-sm text-white/50 mb-1.5">
+            Correo electrónico
+          </label>
+          <AtSign className="absolute left-3 top-9 w-4 h-4 text-white/60" />
           <input
             type="email"
             placeholder="nombre@ejemplo.com"
@@ -45,8 +51,10 @@ export const Register = () => {
         </div>
 
         <div className="relative">
-          <label className="block text-sm text-white/80 mb-1">Empresa (opcional)</label>
-          <Building2 className="absolute left-3 top-10 w-4 h-4 text-white/60" />
+          <label className="block text-sm text-white/50 mb-1.5">
+            Empresa (opcional)
+          </label>
+          <Building2 className="absolute left-3 top-9 w-4 h-4 text-white/60" />
           <input
             type="text"
             placeholder="Nombre de tu empresa"
@@ -85,7 +93,10 @@ export const Register = () => {
       {/* Switch to login */}
       <p className="text-sm text-white/70 text-center mt-6">
         ¿Ya tienes una cuenta?{" "}
-        <a href="#" className="text-blue-400 hover:underline">
+        <a
+          href="./login"
+          className="text-blue-400 hover:underline"
+        >
           Inicia sesión
         </a>
       </p>
