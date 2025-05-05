@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { Register } from "./Register";
+import { AiOutlineApple, AiOutlineGoogle,  } from 'react-icons/ai';
 import {
   LucideFingerprint,
-  LucideFacebook,
-  LucideTwitter,
-  LucideGithub,
+  Facebook
 } from "lucide-react";
 
 export const Login = () => {
@@ -50,7 +49,7 @@ export const Login = () => {
 
               <form className="space-y-5">
                 <div>
-                  <label className="text-sm">Email</label>
+                  <label className="text-sm text-white/50">Email</label>
                   <input
                     type="email"
                     required
@@ -61,7 +60,7 @@ export const Login = () => {
 
                 <div>
                   <div className="flex justify-between text-sm">
-                    <label>Contraseña</label>
+                    <label className="text-sm text-white/50">Contraseña</label>
                     <a href="#" className="text-blue-400 hover:underline">
                       ¿Olvidaste tu contraseña?
                     </a>
@@ -110,16 +109,16 @@ export const Login = () => {
 
               {/* Social buttons */}
               <div className="flex justify-center gap-4">
-                <button className="bg-black/60 p-2 rounded-md hover:bg-black">
-                  <LucideFacebook className="w-5 h-5 text-white" />
-                </button>
-                <button className="bg-black/60 p-2 rounded-md hover:bg-black">
-                  <LucideTwitter className="w-5 h-5 text-white" />
-                </button>
-                <button className="bg-black/60 p-2 rounded-md hover:bg-black">
-                  <LucideGithub className="w-5 h-5 text-white" />
-                </button>
-              </div>
+            <button className= "group bg-black p-3 rounded-md border border-white/30 hover:bg-blue-500/20 hover:border hover:border-blue-400/30 ">
+              <Facebook className="w-19 h-4 text-white group-hover:text-blue-400" />
+            </button>
+            <button className="group bg-black p-3 rounded-md border border-white/30 hover:bg-indigo-500/20 hover:border hover:border-indigo-400/30">
+              <AiOutlineApple className="w-19 h-4 text-white group-hover:text-indigo-400" />
+            </button>
+            <button className="group bg-black p-3 rounded-md border border-white/30 hover:bg-violet-500/20 hover:border hover:border-violet-400/30">
+              <AiOutlineGoogle className="w-19 h-4 text-white group-hover:text-violet-400" />
+            </button>
+          </div>
 
               <p className="text-sm text-white/70 text-center mt-6">
                 ¿No tienes una cuenta?{" "}
