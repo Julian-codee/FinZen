@@ -53,6 +53,7 @@ export const Login = () => {
                   <label className="text-sm">Email</label>
                   <input
                     type="email"
+                    required
                     placeholder="tu@email.com"
                     className="mt-1 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
@@ -67,6 +68,7 @@ export const Login = () => {
                   </div>
                   <input
                     type="password"
+                    required
                     placeholder="••••••••"
                     className="mt-1 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />

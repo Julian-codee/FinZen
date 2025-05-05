@@ -34,7 +34,7 @@ export const Register = () => {
           <input
             type="text"
             placeholder="Tu nombre"
-            className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:outline-none"
+            className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
           />
         </div>
 
@@ -45,8 +45,9 @@ export const Register = () => {
           <AtSign className="absolute left-3 top-9 w-4 h-4 text-white/60" />
           <input
             type="email"
+            required
             placeholder="nombre@ejemplo.com"
-            className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:outline-none"
+            className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
           />
         </div>
 
@@ -58,7 +59,7 @@ export const Register = () => {
           <input
             type="text"
             placeholder="Nombre de tu empresa"
-            className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:outline-none"
+            className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
           />
         </div>
 
