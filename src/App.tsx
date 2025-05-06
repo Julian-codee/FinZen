@@ -1,5 +1,6 @@
 import './App.css'
 import {AuthPage} from './Components/Auth/AuthPage'
+import CustomProfile from './Components/Auth/CustomProfile'
 
 
 
@@ -9,7 +10,8 @@ function App() {
     <>
 
       <div className="relative w-full h-screen overflow-hidden">
-        <AuthPage />
+      
+        <CustomProfile />
       </div>  
   
 
