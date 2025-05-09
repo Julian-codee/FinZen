@@ -11,7 +11,7 @@ function App() {
 
       <div className="relative w-full h-screen overflow-hidden">
       
-        <CustomProfile />
+        <AuthPage />
       </div>  
   
 
