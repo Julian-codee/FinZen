@@ -1,0 +1,287 @@
+"use client"
+
+import { useState } from "react"
+
+// Componente Hero optimizado con props internas
+export 
+const Hero = () => {
+  // Estado para controlar el paso actual
+  const [currentStep, setCurrentStep] = useState(1)
+
+  // Estado para almacenar las selecciones del usuario
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, boolean>>({})
+
+  // Estado para el campo de texto de "Otro objetivo"
+  const [otherObjective, setOtherObjective] = useState("")
+
+  // Definición de los objetivos financieros como datos internos
+  const financialGoals = [
+    {
+      id: "save_money",
+      title: "Ahorrar dinero",
+      description: "Crear un fondo de ahorro para objetivos a corto plazo",
+    },
+    {
+      id: "pay_debts",
+      title: "Pagar deudas",
+      description: "Reducir o eliminar préstamos, tarjetas de crédito u otras deudas",
+    },
+    {
+      id: "emergency_fund",
+      title: "Crear fondo de emergencia",
+      description: "Establecer un colchón financiero para imprevistos",
+    },
+    {
+      id: "invest_future",
+      title: "Invertir para el futuro",
+      description: "Crear una cartera de inversiones a largo plazo",
+    },
+    {
+      id: "buy_home",
+      title: "Comprar una vivienda",
+      description: "Ahorrar para la entrada o financiar una propiedad",
+    },
+    {
+      id: "plan_retirement",
+      title: "Planificar jubilación",
+      description: "Preparar finanzas para el retiro laboral",
+    },
+    {
+      id: "finance_education",
+      title: "Financiar educación",
+      description: "Ahorrar para estudios propios o de familiares",
+    },
+    {
+      id: "start_business",
+      title: "Iniciar un negocio",
+      description: "Financiar un emprendimiento o proyecto propio",
+    },
+    {
+      id: "improve_education",
+      title: "Mejorar educación financiera",
+      description: "Aprender más sobre finanzas personales",
+    },
+    {
+      id: "other",
+      title: "Otro objetivo",
+      description: "",
+    },
+  ]
+
+  // Función para manejar cambios en los checkboxes
+  const handleCheckboxChange = (id: string) => {
+    setSelectedOptions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
+
+  // Función para ir al siguiente paso
+  const handleNext = () => {
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1)
+    }
+  }
+
+  // Función para volver al paso anterior
+  const handleBack = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
+
+  // Función para renderizar el contenido según el paso actual
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <>
+            <div className="flex items-center mb-6">
+              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center mr-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2" />
+                  <circle cx="12" cy="12" r="5" fill="white" />
+                </svg>
+              </div>
+              <h2 className="text-3xl font-bold text-white">¿Cuáles son tus principales objetivos financieros?</h2>
+            </div>
+
+            <p className="text-gray-300 mb-8">
+              Selecciona todos los objetivos que sean relevantes para ti. Esto nos ayudará a personalizar tu
+              experiencia.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {financialGoals.map((goal, index) => (
+                <div
+                  key={goal.id}
+                  className={
+                    index === financialGoals.length - 1 && financialGoals.length % 2 !== 0 ? "md:col-span-2" : ""
+                  }
+                >
+                  <div className="flex items-start mb-2">
+                    <div
+                      className="w-6 h-6 border border-blue-500 rounded flex-shrink-0 mr-3 mt-1 flex items-center justify-center cursor-pointer"
+                      style={{ backgroundColor: selectedOptions[goal.id] ? "#3b82f6" : "transparent" }}
+                      onClick={() => handleCheckboxChange(goal.id)}
+                    >
+                      {selectedOptions[goal.id] && (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M5 12L10 17L19 8"
+                            stroke="white"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                    <div>
+                      <label
+                        className="text-white text-lg font-medium cursor-pointer"
+                        onClick={() => handleCheckboxChange(goal.id)}
+                      >
+                        {goal.title}
+                      </label>
+                      {goal.description && <p className="text-gray-400 mt-1">{goal.description}</p>}
+                    </div>
+                  </div>
+
+                  {goal.id === "other" && selectedOptions[goal.id] && (
+                    <div className="ml-9 mt-2">
+                      <input
+                        type="text"
+                        value={otherObjective}
+                        onChange={(e) => setOtherObjective(e.target.value)}
+                        placeholder="Especifica tu objetivo..."
+                        className="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </>
+        )
+      case 2:
+        return (
+          <div className="text-white">
+            <h2 className="text-3xl font-bold mb-6">Situación financiera actual</h2>
+            <p className="text-gray-300">Contenido del paso 2...</p>
+          </div>
+        )
+      case 3:
+        return (
+          <div className="text-white">
+            <h2 className="text-3xl font-bold mb-6">Experiencia financiera</h2>
+            <p className="text-gray-300">Contenido del paso 3...</p>
+          </div>
+        )
+      case 4:
+        return (
+          <div className="text-white">
+            <h2 className="text-3xl font-bold mb-6">Preferencias de inversión</h2>
+            <p className="text-gray-300">Contenido del paso 4...</p>
+          </div>
+        )
+      case 5:
+        return (
+          <div className="text-white">
+            <h2 className="text-3xl font-bold mb-6">Resumen de perfil</h2>
+            <p className="text-gray-300">Contenido del paso 5...</p>
+          </div>
+        )
+      default:
+        return null
+    }
+  }
+
+  // Cálculo del progreso
+  const progress = (currentStep / 5) * 100
+
+  return (
+    <div className="min-h-screen bg-[#0a0e17] flex items-center justify-center p-4">
+      <div className="w-full max-w-5xl">
+        {/* Encabezado y barra de progreso */}
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-white text-xl">Paso {currentStep} de 5</div>
+          <div className="text-white text-xl">
+            {currentStep === 1
+              ? "Objetivos financieros"
+              : currentStep === 2
+                ? "Situación actual"
+                : currentStep === 3
+                  ? "Experiencia"
+                  : currentStep === 4
+                    ? "Preferencias"
+                    : "Resumen"}
+          </div>
+        </div>
+
+        <div className="w-full h-2 bg-gray-800 rounded-full mb-8">
+          <div
+            className="h-full bg-blue-600 rounded-full transition-all duration-300 ease-in-out"
+            style={{ width: `${progress}%` }}
+          ></div>
+        </div>
+
+        {/* Contenedor principal */}
+        <div className="bg-[#111827] border border-gray-800 rounded-xl p-8 mb-8">{renderStepContent()}</div>
+
+        {/* Botones de navegación */}
+        <div className="flex justify-between">
+          <button
+            onClick={handleBack}
+            className="flex items-center px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            disabled={currentStep === 1}
+          >
+            <svg
+              className="mr-2"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M19 12H5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M12 19L5 12L12 5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            Volver
+          </button>
+
+          <button
+            onClick={handleNext}
+            className="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+          >
+            Siguiente
+            <svg
+              className="ml-2"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M12 5L19 12L12 19"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
