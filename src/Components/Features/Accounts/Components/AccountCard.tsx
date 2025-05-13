@@ -14,7 +14,7 @@ const AccountCard = ({ title, amount, description, icon, textColor = 'text-white
             <div>
                 <h3 className="text-sm text-white font-medium">{title}</h3>
                 <div className={`text-2xl font-bold ${textColor}`}>{amount}</div>
-                <p className="text-gray-400 text-sm">{description}</p>
+                <p className="text-gray-40 text-sm">{description}</p>
             </div>
             <div className="bg-[#1f2937] p-2 rounded-full">
                 {icon}

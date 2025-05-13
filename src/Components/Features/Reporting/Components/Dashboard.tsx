@@ -5,7 +5,7 @@ import DashboardTabs from "./DashboardTabs";
 
 
 export default function FinancialDashboard() {
-  const [activeTab, setActiveTab] = useState<string>("Resumen");
+  
 
   return (
     <div className="min-h-screen bg-[#020817] text-white p-6">
