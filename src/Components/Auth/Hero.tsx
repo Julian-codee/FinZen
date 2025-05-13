@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import { Shell, Wallet } from "lucide-react";
-import { desc } from "framer-motion/client";
 
 export const Hero = () => {
   const [currentStep, setCurrentStep] = useState(1);
