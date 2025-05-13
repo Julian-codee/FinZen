@@ -1,6 +1,7 @@
 "use client";
-
 import { useState } from "react";
+import { Shell, Wallet } from "lucide-react";
+import { desc } from "framer-motion/client";
 
 export const Hero = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -59,6 +60,31 @@ export const Hero = () => {
     { id: "other", title: "Otro objetivo", description: "" },
   ];
 
+  /**
+   * Creamos una segunda constante para que no se combine con la información anterior del paso 1 **/
+
+  /* Paso 2*/
+
+  const financialGoalsWithOther = [
+
+   
+    {
+      id:"Stability",
+      title: "Estable-",
+      description: "Tengo ingresos regulares y puedo cubrir mis gastos sin problemas",
+    },
+     {
+      id:"Moderate",
+      title: "Moderada-",
+      description: "Puedo cubrir mis gastos básicos pero tengo poco margen para ahorrar",
+    },
+     {
+      id:"Inestability",
+      title: "Inestable-",
+      description: "Tengo dificultades para cubrir todos mis gastos regularmente",
+    },
+  ]
+
   const handleCheckboxChange = (id: string) => {
     setSelectedOptions((prev) => ({
       ...prev,
@@ -80,23 +106,8 @@ export const Hero = () => {
         return (
           <>
             <div className="flex items-center mb-6">
-              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center mr-4">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="white"
-                    strokeWidth="2"
-                  />
-                  <circle cx="12" cy="12" r="5" fill="white" />
-                </svg>
+              <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
+                <Shell className="w-8 h-8" />
               </div>
               <h2 className="text-3xl font-bold text-white">
                 ¿Cuáles son tus principales objetivos financieros?
@@ -127,23 +138,7 @@ export const Hero = () => {
                       }}
                       onClick={() => handleCheckboxChange(goal.id)}
                     >
-                      {selectedOptions[goal.id] && (
-                        <svg
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M5 12L10 17L19 8"
-                            stroke="white"
-                            strokeWidth="3"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      )}
+                      {/* Check eliminado */}
                     </div>
                     <div>
                       <label
@@ -175,12 +170,21 @@ export const Hero = () => {
         );
       case 2:
         return (
-          <div className="text-white">
-            <h2 className="text-3xl font-bold mb-6">
-              Situación financiera actual
-            </h2>
-            <p className="text-gray-300">Contenido del paso 2...</p>
-          </div>
+          <>
+            <div className="text-white flex items-center mb-6">
+              <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
+                <Wallet className="w-8 h-8 -mt-6" />
+              </div>
+              <h2 className="text-3xl font-bold mb-6">
+                ¿Cuál es tu situación financiera actual?
+              </h2>
+            </div>
+            <p className="text-gray-300">Esta información nos ayudará a ofrecerte recomendaciones más precisas. Todos los datos son confidenciales.</p>
+
+            <div>
+
+            </div>
+          </>
         );
       case 3:
         return (
@@ -221,11 +225,11 @@ export const Hero = () => {
             {currentStep === 1
               ? "Objetivos financieros"
               : currentStep === 2
-              ? "Situación actual"
+              ? "Situación Financiera"
               : currentStep === 3
-              ? "Experiencia"
+              ? "Experiencia y Conocimientos"
               : currentStep === 4
-              ? "Preferencias"
+              ? "Áreas de Interes"
               : "Resumen"}
           </div>
         </div>
@@ -244,15 +248,14 @@ export const Hero = () => {
             className="flex items-center px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
             disabled={currentStep === 1}
           >
-            ← Volver
+            Volver
           </button>
 
           <button
             onClick={handleNext}
             className="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
-            Siguiente →
-      
+            Siguiente
           </button>
         </div>
       </div>
