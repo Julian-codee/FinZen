@@ -37,7 +37,7 @@ import {
               <Tooltip
                 contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                 labelStyle={{ color: '#fff' }}
-                cursor={{ fill: '#37415120' }}
+                cursor={{ fill: '#374615120' }}
               />
               <Legend
                 verticalAlign="top"
