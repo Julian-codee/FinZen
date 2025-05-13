@@ -10,7 +10,7 @@ import {
   X,
   ArrowLeft,
 } from "lucide-react";
-import { AiOutlineGoogle, AiOutlineApple } from 'react-icons/ai';
+import { AiOutlineGoogle, AiOutlineApple } from "react-icons/ai";
 import { useState } from "react";
 
 export const Register = () => {
@@ -375,7 +375,7 @@ export const Register = () => {
           {/* Social buttons */}
 
           <div className="flex justify-center gap-4">
-            <button className= "group bg-black p-3 rounded-md border border-white/30 hover:bg-blue-500/20 hover:border hover:border-blue-400/30 ">
+            <button className="group bg-black p-3 rounded-md border border-white/30 hover:bg-blue-500/20 hover:border hover:border-blue-400/30 ">
               <Facebook className="w-19 h-4 text-white group-hover:text-blue-400" />
             </button>
             <button className="group bg-black p-3 rounded-md border border-white/30 hover:bg-indigo-500/20 hover:border hover:border-indigo-400/30">
