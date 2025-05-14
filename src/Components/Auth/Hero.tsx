@@ -212,7 +212,7 @@ export const Hero = () => {
               ? "Experiencia y Conocimientos"
               : currentStep === 4
               ? "Áreas de Interes"
-              : "Resumen"}
+              : "Resumen de perfil"}
           </div>
         </div>
         <div className="w-full h-2 bg-gray-800 rounded-full mb-8">
