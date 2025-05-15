@@ -64,7 +64,6 @@ export const Hero = () => {
 
   /* Paso 2*/
 
-
   const handleCheckboxChange = (id: string) => {
     setSelectedOptions((prev) => ({
       ...prev,
@@ -93,7 +92,7 @@ export const Hero = () => {
                 ¿Cuáles son tus principales objetivos financieros?
               </h2>
             </div>
-            <p className="text-gray-300 mb-8">
+            <p className="text-gray-300 mb-10 text-xl">
               Selecciona todos los objetivos que sean relevantes para ti. Esto
               nos ayudará a personalizar tu experiencia.
             </p>
@@ -159,12 +158,59 @@ export const Hero = () => {
                 ¿Cuál es tu situación financiera actual?
               </h2>
             </div>
-            <p className="text-gray-300">Esta información nos ayudará a ofrecerte recomendaciones más precisas. Todos los datos son confidenciales.</p>
+            <p className="text-gray-300 mb-10 text-xl">
+              Esta información nos ayudará a ofrecerte recomendaciones más
+              precisas. Todos los datos son confidenciales.
+            </p>
 
-            <div>
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-8 mt-6">
+              <div className="mt-6 flex flex-col justify-center">
+                <label className="block text-lg font-medium text-white mb-1">
+                  Ingresos Mensuales Aproximados
+                </label>
 
-              
+                <input
+                  type="text"
+                  className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  placeholder="$  0.00"
+                />
+              </div>
 
+              <div className="mt-6 flex flex-col justify-center">
+                <label className="block text-lg font-medium text-white mb-1">
+                  Ingresos Mensuales Aproximados
+                </label>
+
+                <input
+                  type="text"
+                  className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  placeholder="$  0.00"
+                />
+              </div>
+
+              <div className="mt-6 flex flex-col justify-center">
+                <label className="block text-lg font-medium text-white mb-1">
+                  Ingresos Mensuales Aproximados
+                </label>
+
+                <input
+                  type="text"
+                  className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  placeholder="$  0.00"
+                />
+              </div>
+
+              <div className="mt-6 flex flex-col justify-center">
+                <label className="block text-lg font-medium text-white mb-1">
+                  Ingresos Mensuales Aproximados
+                </label>
+
+                <input
+                  type="text"
+                  className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  placeholder="$  0.00"
+                />
+              </div>
             </div>
           </>
         );
@@ -199,8 +245,8 @@ export const Hero = () => {
   const progress = (currentStep / 5) * 100;
 
   return (
-    <div className="w-full bg-[#020817] min-h-screen flex items-center justify-center p-4 -mt-14">
-      <div className="w-full max-w-5xl scale-[0.7]">
+    <div className="w-full bg-[#020817] min-h-screen flex items-center justify-center p-4 -mt-10">
+      <div className="w-full max-w-5xl scale-[0.75]">
         <div className="flex justify-between items-center mb-4">
           <div className="text-white text-xl">Paso {currentStep} de 5</div>
           <div className="text-white text-xl">
@@ -221,7 +267,7 @@ export const Hero = () => {
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-        <div className="bg-[#111827] border border-gray-800 rounded-xl p-8 mb-8">
+        <div className="bg-[#020817] border border-gray-700 rounded-xl p-8 mb-8">
           {renderStepContent()}
         </div>
         <div className="flex justify-between">

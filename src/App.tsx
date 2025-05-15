@@ -4,6 +4,7 @@ import Dashboard from './Components/Features/Reporting/Components/Dashboard'
 import Accounts from './Components/Features/Accounts/Accounts'
 import './App.css'
 import {AuthPage} from './Components/Auth/AuthPage'
+import {Hero} from './Components/Auth/Hero'
 
 
 
@@ -22,6 +23,7 @@ function App() {
   
      <Accounts />
    <Dashboard />
+   <Hero />
      </>
 
   )
