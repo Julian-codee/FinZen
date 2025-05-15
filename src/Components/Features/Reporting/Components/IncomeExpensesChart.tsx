@@ -44,7 +44,7 @@ import {
                 align="center"
                 wrapperStyle={{ color: '#9CA3AF', fontSize: 12 }}
               />
-              <Bar dataKey="income" name="Ingresos" fill="#000000" barSize={35} />
+              <Bar dataKey="income" name="Ingresos" fill="#2f45ff" barSize={35} />
               <Bar dataKey="expenses" name="Gastos" fill="#B91C1C" barSize={35} />
             </BarChart>
           </ResponsiveContainer>

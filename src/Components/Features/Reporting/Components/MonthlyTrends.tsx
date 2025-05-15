@@ -28,7 +28,7 @@ const MonthlyTrends = () => {
           <XAxis dataKey="mes" stroke="#cbd5e1" />
           <YAxis stroke="#cbd5e1" />
           <Tooltip />
-          <Line type="monotone" dataKey="ingresos" stroke="#ffffff" strokeWidth={2} dot />
+          <Line type="monotone" dataKey="ingresos" stroke="#00FF00" strokeWidth={2} dot />
           <Line type="monotone" dataKey="gastos" stroke="#b91c1c" strokeWidth={2} dot />
           <Line type="monotone" dataKey="balance" stroke="#3b82f6" strokeWidth={2} dot />
         </LineChart>
@@ -40,6 +40,5 @@ const MonthlyTrends = () => {
     </div>
     );
 };
-
 
 export default MonthlyTrends;
