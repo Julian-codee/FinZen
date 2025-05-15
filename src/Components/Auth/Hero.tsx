@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Shell, Wallet } from "lucide-react";
+import { Shell, Wallet, Check } from "lucide-react";
 import { Hero2 } from "../Ui/UiAuth/Hero2";
 
 export const Hero = () => {
@@ -9,6 +9,32 @@ export const Hero = () => {
     Record<string, boolean>
   >({});
   const [otherObjective, setOtherObjective] = useState("");
+
+  // Estado para Hero2
+  const [financialStatusOptions, setFinancialStatusOptions] = useState<
+    Record<string, boolean>
+  >({});
+
+  const [financialInputs, setFinancialInputs] = useState({
+    ingresos: "",
+    gastos: "",
+    ahorros: "",
+    deudas: "",
+  });
+
+  const handleHero2CheckboxChange = (id: string) => {
+    setFinancialStatusOptions((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
+  const handleHero2InputChange = (field: string, value: string) => {
+    setFinancialInputs((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   const financialGoals = [
     {
@@ -60,12 +86,6 @@ export const Hero = () => {
     { id: "other", title: "Otro objetivo", description: "" },
   ];
 
-  /**
-   * Creamos una segunda constante para que no se combine con la información anterior del paso 1 **/
-
-  /* Paso 2*/
-
-
   const handleCheckboxChange = (id: string) => {
     setSelectedOptions((prev) => ({
       ...prev,
@@ -111,7 +131,7 @@ export const Hero = () => {
                 >
                   <div className="flex items-start mb-2">
                     <div
-                      className="w-6 h-6 border border-blue-500 rounded flex-shrink-0 mr-3 mt-1 flex items-center justify-center cursor-pointer"
+                      className="w-6 h-6 border border-blue-500 rounded-full flex-shrink-0 mr-3 mt-1 flex items-center justify-center cursor-pointer"
                       style={{
                         backgroundColor: selectedOptions[goal.id]
                           ? "#3b82f6"
@@ -119,7 +139,9 @@ export const Hero = () => {
                       }}
                       onClick={() => handleCheckboxChange(goal.id)}
                     >
-                      {/* Check eliminado */}
+                      {selectedOptions[goal.id] && (
+                        <Check className="text-white w-5 h-5 font-extrabold" />
+                      )}
                     </div>
                     <div>
                       <label
@@ -165,16 +187,19 @@ export const Hero = () => {
               precisas. Todos los datos son confidenciales.
             </p>
 
-            {/*Llamamos el componente Creado para el Hero*/}
-
-            <Hero2 />
+            {/* Pasamos los props a Hero2 */}
+            <Hero2
+              financialStatusOptions={financialStatusOptions}
+              onCheckboxChange={handleHero2CheckboxChange}
+              financialInputs={financialInputs}
+              onInputChange={handleHero2InputChange}
+            />
           </>
         );
       case 3:
         return (
           <div className="text-white">
             <h2 className="text-3xl font-bold mb-6">Experiencia financiera</h2>
-            <p className="text-gray-300">Contenido del paso 3...</p>
           </div>
         );
       case 4:
@@ -183,14 +208,12 @@ export const Hero = () => {
             <h2 className="text-3xl font-bold mb-6">
               Preferencias de inversión
             </h2>
-            <p className="text-gray-300">Contenido del paso 4...</p>
           </div>
         );
       case 5:
         return (
           <div className="text-white">
             <h2 className="text-3xl font-bold mb-6">Resumen de perfil</h2>
-            <p className="text-gray-300">Contenido del paso 5...</p>
           </div>
         );
       default:
@@ -206,15 +229,15 @@ export const Hero = () => {
         <div className="flex justify-between items-center mb-4">
           <div className="text-white text-xl">Paso {currentStep} de 5</div>
           <div className="text-white text-xl">
-            {currentStep === 1
-              ? "Objetivos financieros"
-              : currentStep === 2
-              ? "Situación Financiera"
-              : currentStep === 3
-              ? "Experiencia y Conocimientos"
-              : currentStep === 4
-              ? "Áreas de Interes"
-              : "Resumen de perfil"}
+            {
+              [
+                "Objetivos financieros",
+                "Situación Financiera",
+                "Experiencia y Conocimientos",
+                "Áreas de Interés",
+                "Resumen de perfil",
+              ][currentStep - 1]
+            }
           </div>
         </div>
         <div className="w-full h-2 bg-gray-800 rounded-full mb-8">

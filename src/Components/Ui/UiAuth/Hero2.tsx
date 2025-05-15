@@ -1,10 +1,23 @@
-import { useState } from "react";
+import { Check } from "lucide-react";
 
-export const Hero2 = () => {
-  const [selectedOptions, setSelectedOptions] = useState<
-    Record<string, boolean>
-  >({});
+interface Hero2Props {
+  financialStatusOptions: Record<string, boolean>;
+  onCheckboxChange: (id: string) => void;
+  financialInputs: {
+    ingresos: string;
+    gastos: string;
+    ahorros: string;
+    deudas: string;
+  };
+  onInputChange: (field: string, value: string) => void;
+}
 
+export const Hero2 = ({
+  financialStatusOptions,
+  onCheckboxChange,
+  financialInputs,
+  onInputChange,
+}: Hero2Props) => {
   const financialGoalsWithOther = [
     {
       id: "Stability",
@@ -26,100 +39,56 @@ export const Hero2 = () => {
     },
   ];
 
-  const handleCheckboxChange = (id: string) => {
-    setSelectedOptions((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
   return (
-    <>
-      <div className="grid grid-cols-2 md:grid-cols-2 gap-8 mt-6">
-        <div className="mt-6 flex flex-col justify-center">
+    <div className="grid grid-cols-2 md:grid-cols-2 gap-8 mt-6">
+      {["ingresos", "gastos", "ahorros", "deudas"].map((field) => (
+        <div className="mt-6 flex flex-col justify-center" key={field}>
           <label className="block text-lg font-medium text-white mb-1">
-            Ingresos Mensuales Aproximados
+            {field.charAt(0).toUpperCase() + field.slice(1)} Mensuales
+            Aproximados
           </label>
-
           <input
             type="text"
+            value={financialInputs[field as keyof typeof financialInputs]}
+            onChange={(e) => onInputChange(field, e.target.value)}
             className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder="$  0.00"
+            placeholder="$ 0.00"
           />
         </div>
+      ))}
 
-        <div className="mt-6 flex flex-col justify-center">
-          <label className="block text-lg font-medium text-white mb-1">
-            Gastos Mensuales Aproximados
-          </label>
-
-          <input
-            type="text"
-            className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder="$  0.00"
-          />
-        </div>
-
-        <div className="mt-6 flex flex-col justify-center">
-          <label className="block text-lg font-medium text-white mb-1">
-            Ahorros Totales Actuales
-          </label>
-
-          <input
-            type="text"
-            className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder="$  0.00"
-          />
-        </div>
-
-        <div className="mt-6 flex flex-col justify-center">
-          <label className="block text-lg font-medium text-white mb-1">
-            Deuda Total Actual
-          </label>
-
-          <input
-            type="text"
-            className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder="$  0.00"
-          />
-        </div>
-
-        {/*Selecion de otras Finanzas*/}
-
-        <div className="grid grid-cols-1 gap-4 w-240">
-          {financialGoalsWithOther.map((goal) => (
-            <div key={goal.id}>
-              <div className="flex items-start space-x-4">
-                {/* Checkbox */}
-                <div
-                  className="w-6 h-6 border border-blue-500 rounded flex-shrink-0 flex items-center justify-center cursor-pointer mt-1"
-                  style={{
-                    backgroundColor: selectedOptions[goal.id]
-                      ? "#3b82f6"
-                      : "transparent",
-                  }}
-                  onClick={() => handleCheckboxChange(goal.id)}
-                >
-                  {/* Aquí podría ir un ícono de check si deseas */}
-                </div>
-
-                {/* Título y descripción en columna, pero alineados al lado del checkbox */}
-                <div
-                  onClick={() => handleCheckboxChange(goal.id)}
-                  className="cursor-pointer flex w-full"
-                >
-                  <span className="text-white text-lg font-medium">
-                    {goal.title}
-                  </span>
-                  {goal.description && (
-                    <p className="text-white">{goal.description}</p>
-                  )}
-                </div>
+      <div className="grid grid-cols-1 gap-4 w-240 mt-6 col-span-2">
+        {financialGoalsWithOther.map((goal) => (
+          <div key={goal.id}>
+            <div className="flex items-start space-x-4">
+              <div
+                className="w-6 h-6 border border-blue-500 rounded-full flex-shrink-0 mr-3 mt-1 flex items-center justify-center cursor-pointer"
+                style={{
+                  backgroundColor: financialStatusOptions[goal.id]
+                    ? "#3b82f6"
+                    : "transparent",
+                }}
+                onClick={() => onCheckboxChange(goal.id)}
+              >
+                {financialStatusOptions[goal.id] && (
+                  <Check className="text-white w-5 h-5 font-extrabold" />
+                )}
+              </div>
+              <div
+                onClick={() => onCheckboxChange(goal.id)}
+                className="cursor-pointer flex w-full"
+              >
+                <span className="text-white text-lg font-medium">
+                  {goal.title}
+                </span>
+                {goal.description && (
+                  <p className="text-white">{goal.description}</p>
+                )}
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
-    </>
+    </div>
   );
 };
