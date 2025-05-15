@@ -65,26 +65,6 @@ export const Hero = () => {
 
   /* Paso 2*/
 
-  const financialGoalsWithOther = [
-    {
-      id: "Stability",
-      title: "Estable - ",
-      description:
-        " Tengo ingresos regulares y puedo cubrir mis gastos sin problemas",
-    },
-    {
-      id: "Moderate",
-      title: "Moderada - ",
-      description:
-        " Puedo cubrir mis gastos básicos pero tengo poco margen para ahorrar",
-    },
-    {
-      id: "Inestability",
-      title: "Inestable - ",
-      description:
-        " Tengo dificultades para cubrir todos mis gastos regularmente",
-    },
-  ];
 
   const handleCheckboxChange = (id: string) => {
     setSelectedOptions((prev) => ({
