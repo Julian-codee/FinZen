@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Shell, Wallet } from "lucide-react";
+import { Hero2 } from "../Ui/UiAuth/Hero2";
 
 export const Hero = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -63,6 +64,27 @@ export const Hero = () => {
    * Creamos una segunda constante para que no se combine con la información anterior del paso 1 **/
 
   /* Paso 2*/
+
+  const financialGoalsWithOther = [
+    {
+      id: "Stability",
+      title: "Estable - ",
+      description:
+        " Tengo ingresos regulares y puedo cubrir mis gastos sin problemas",
+    },
+    {
+      id: "Moderate",
+      title: "Moderada - ",
+      description:
+        " Puedo cubrir mis gastos básicos pero tengo poco margen para ahorrar",
+    },
+    {
+      id: "Inestability",
+      title: "Inestable - ",
+      description:
+        " Tengo dificultades para cubrir todos mis gastos regularmente",
+    },
+  ];
 
   const handleCheckboxChange = (id: string) => {
     setSelectedOptions((prev) => ({
@@ -163,55 +185,9 @@ export const Hero = () => {
               precisas. Todos los datos son confidenciales.
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-2 gap-8 mt-6">
-              <div className="mt-6 flex flex-col justify-center">
-                <label className="block text-lg font-medium text-white mb-1">
-                  Ingresos Mensuales Aproximados
-                </label>
+            {/*Llamamos el componente Creado para el Hero*/}
 
-                <input
-                  type="text"
-                  className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  placeholder="$  0.00"
-                />
-              </div>
-
-              <div className="mt-6 flex flex-col justify-center">
-                <label className="block text-lg font-medium text-white mb-1">
-                  Ingresos Mensuales Aproximados
-                </label>
-
-                <input
-                  type="text"
-                  className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  placeholder="$  0.00"
-                />
-              </div>
-
-              <div className="mt-6 flex flex-col justify-center">
-                <label className="block text-lg font-medium text-white mb-1">
-                  Ingresos Mensuales Aproximados
-                </label>
-
-                <input
-                  type="text"
-                  className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  placeholder="$  0.00"
-                />
-              </div>
-
-              <div className="mt-6 flex flex-col justify-center">
-                <label className="block text-lg font-medium text-white mb-1">
-                  Ingresos Mensuales Aproximados
-                </label>
-
-                <input
-                  type="text"
-                  className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                  placeholder="$  0.00"
-                />
-              </div>
-            </div>
+            <Hero2 />
           </>
         );
       case 3:
