@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
-import { Shell, Wallet, Check } from "lucide-react";
+import { Shell, Wallet, Check, Signal } from "lucide-react";
 import { Hero2 } from "../Ui/UiAuth/Hero2";
+import { Hero3 } from "../Ui/UiAuth/Hero3";
 
 export const Hero = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -14,6 +15,10 @@ export const Hero = () => {
   const [financialStatusOptions, setFinancialStatusOptions] = useState<
     Record<string, boolean>
   >({});
+
+  // Estado para los inputs de Hero3
+
+  const [knowledgeLevel, setKnowledgeLevel] = useState("");
 
   const [financialInputs, setFinancialInputs] = useState({
     ingresos: "",
@@ -198,9 +203,26 @@ export const Hero = () => {
         );
       case 3:
         return (
-          <div className="text-white">
-            <h2 className="text-3xl font-bold mb-6">Experiencia financiera</h2>
-          </div>
+          <>
+            <div className="text-white flex items-center mb-6">
+              <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
+                <Signal className="w-8 h-8 -mt-6" />
+              </div>
+              <h2 className="text-3xl font-bold mb-6">
+                ¿Cuál es tu nivel de experiencia financiera?
+              </h2>
+            </div>
+            <p className="text-gray-300 mb-10 text-xl">
+              Estas preguntas nos ayudarán a adaptar el contenido y las
+              herramientas a tu nivel de conocimiento.
+            </p>
+
+            <Hero3
+            
+              knowledgeLevel={knowledgeLevel}
+              onKnowledgeChange={setKnowledgeLevel}
+            />
+          </>
         );
       case 4:
         return (
