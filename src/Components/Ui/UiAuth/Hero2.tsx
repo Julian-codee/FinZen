@@ -62,7 +62,7 @@ export const Hero2 = ({
           <div key={goal.id}>
             <div className="flex items-start space-x-4">
               <div
-                className="w-6 h-6 border border-blue-500 rounded-full flex-shrink-0 mr-3 mt-1 flex items-center justify-center cursor-pointer"
+                className="w-7 h-7 border border-blue-500 rounded-full flex-shrink-0 mr-3 mt-1 flex items-center justify-center cursor-pointer"
                 style={{
                   backgroundColor: financialStatusOptions[goal.id]
                     ? "#3b82f6"

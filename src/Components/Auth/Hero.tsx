@@ -139,7 +139,7 @@ export const Hero = () => {
                 >
                   <div className="flex items-start mb-2">
                     <div
-                      className="w-6 h-6 border border-blue-500 rounded-full flex-shrink-0 mr-3 mt-1 flex items-center justify-center cursor-pointer"
+                      className="w-7 h-7 border border-blue-500 rounded-full flex-shrink-0 mr-3 mt-1 flex items-center justify-center cursor-pointer"
                       style={{
                         backgroundColor: selectedOptions[goal.id]
                           ? "#3b82f6"
