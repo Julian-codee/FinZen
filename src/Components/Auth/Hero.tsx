@@ -19,6 +19,9 @@ export const Hero = () => {
   // Estado para los inputs de Hero3
 
   const [knowledgeLevel, setKnowledgeLevel] = useState("");
+  const [knowledgeLevel2, setKnowledgeLevel2] = useState("");
+  const [knowledgeLevel3, setKnowledgeLevel3] = useState("");
+  const [knowledgeLevel4, setKnowledgeLevel4] = useState("");
 
   const [financialInputs, setFinancialInputs] = useState({
     ingresos: "",
@@ -218,9 +221,14 @@ export const Hero = () => {
             </p>
 
             <Hero3
-            
               knowledgeLevel={knowledgeLevel}
               onKnowledgeChange={setKnowledgeLevel}
+              knowledgeLevel2={knowledgeLevel2}
+              onKnowledgeChange2={setKnowledgeLevel2}
+               knowledgeLevel3={knowledgeLevel3}
+              onKnowledgeChange3={setKnowledgeLevel3}
+               knowledgeLevel4={knowledgeLevel4}
+              onKnowledgeChange4={setKnowledgeLevel4}
             />
           </>
         );
