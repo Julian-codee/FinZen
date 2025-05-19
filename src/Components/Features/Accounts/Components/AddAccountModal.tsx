@@ -1,41 +1,106 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Landmark, PiggyBank, Wallet } from "lucide-react";
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  onAdd: (account: {
+    id: number;
+    name: string;
+    type: string;
+    bank: string;
+    number: string;
+    balance: number;
+  }) => void;
 }
 
-export default function AddAccountModal({ open, onClose }: Props) {
+export default function AddAccountModal({ open, onClose, onAdd }: Props) {
+  const [name, setName] = useState("");
   const [accountType, setAccountType] = useState<"corriente" | "ahorros" | "efectivo" | null>(null);
+  const [bank, setBank] = useState("");
+  const [number, setNumber] = useState("");
+  const [balance, setBalance] = useState("");
+  const [errors, setErrors] = useState({
+    name: false,
+    type: false,
+    bank: false,
+    number: false,
+    balance: false,
+  });
+
+  useEffect(() => {
+    if (!open) {
+      setName("");
+      setAccountType(null);
+      setBank("");
+      setNumber("");
+      setBalance("");
+      setErrors({
+        name: false,
+        type: false,
+        bank: false,
+        number: false,
+        balance: false,
+      });
+    }
+  }, [open]);
+
+  const validate = () => {
+    const newErrors = {
+      name: name.trim() === "",
+      type: accountType === null,
+      bank: bank.trim() === "",
+      number: number.trim() === "" || number.length !== 4,
+      balance: balance.trim() === "" || isNaN(Number(balance)),
+    };
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(Boolean);
+  };
+
+  const handleAdd = () => {
+    if (!validate()) return;
+
+    onAdd({
+      id: Date.now(),
+      name,
+      type: accountType!,
+      bank,
+      number,
+      balance: parseFloat(balance),
+    });
+
+    onClose();
+  };
 
   if (!open) return null;
 
   return (
-   <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-[#020817] border border-white/20 text-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
 
-      <div className="bg-[#020817] text-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
-
-        {/* Close button */}
+        {/* Botón cerrar */}
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white">
           <X className="w-5 h-5" />
         </button>
 
-        {/* Header */}
         <h2 className="text-xl font-semibold">Añadir Nueva Cuenta</h2>
         <p className="text-sm text-gray-400 mt-1">Añade una nueva cuenta bancaria o de efectivo a tu perfil financiero.</p>
 
-        {/* Form */}
         <div className="space-y-4 mt-6">
 
-          {/* Nombre */}
+          {/* Nombre de cuenta */}
           <div>
             <label className="block text-sm mb-1">Nombre de la cuenta</label>
             <input
               type="text"
               placeholder="Ej: Cuenta Corriente Principal"
-              className="w-full px-4 py-2 rounded-lg bg-[#020817] text-white placeholder-gray-500 border-white/700  focus:outline-none focus:ring-2 focus:ring-blue-600"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                errors.name ? "border-red-500" : "border-white/40"
+              }`}
             />
+            {errors.name && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
           </div>
 
           {/* Tipo de cuenta */}
@@ -45,25 +110,38 @@ export default function AddAccountModal({ open, onClose }: Props) {
               <button
                 onClick={() => setAccountType("corriente")}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition 
-                  ${accountType === "corriente" ? "bg-[#1e293b] border-blue-600 text-white" : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"}`}
+                  ${
+                    accountType === "corriente"
+                      ? "bg-[#020817] border-white/40 text-white"
+                      : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"
+                  }`}
               >
                 <Landmark className="w-4 h-4" /> Corriente
               </button>
               <button
                 onClick={() => setAccountType("ahorros")}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition 
-                  ${accountType === "ahorros" ? "bg-[#1e293b] border-blue-600 text-white" : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"}`}
+                  ${
+                    accountType === "ahorros"
+                      ? "bg-[#1e293b] border-blue-600 text-white"
+                      : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"
+                  }`}
               >
                 <PiggyBank className="w-4 h-4" /> Ahorros
               </button>
               <button
                 onClick={() => setAccountType("efectivo")}
                 className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition 
-                  ${accountType === "efectivo" ? "bg-[#1e293b] border-yellow-500 text-white" : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-yellow-500"}`}
+                  ${
+                    accountType === "efectivo"
+                      ? "bg-[#1e293b] border-yellow-500 text-white"
+                      : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-yellow-500"
+                  }`}
               >
                 <Wallet className="w-4 h-4" /> Efectivo
               </button>
             </div>
+            {errors.type && <p className="text-red-500 text-sm mt-1">Selecciona un tipo de cuenta.</p>}
           </div>
 
           {/* Banco */}
@@ -72,8 +150,13 @@ export default function AddAccountModal({ open, onClose }: Props) {
             <input
               type="text"
               placeholder="Ej: Banco Santander"
-              className="w-full px-4 py-2 rounded-lg bg-[#1e293b] text-white placeholder-gray-500 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
+              value={bank}
+              onChange={(e) => setBank(e.target.value)}
+              className={`w-full px-4 py-2 rounded-lg bg-[#020817] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                errors.bank ? "border-red-500" : "border-white/40"
+              }`}
             />
+            {errors.bank && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
           </div>
 
           {/* Número de cuenta */}
@@ -82,24 +165,37 @@ export default function AddAccountModal({ open, onClose }: Props) {
             <input
               type="text"
               placeholder="Ej: 1234"
-              className="w-full px-4 py-2 rounded-lg bg-[#1e293b] text-white placeholder-gray-500 border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-600"
+              value={number}
+              maxLength={4}
+              onChange={(e) => setNumber(e.target.value)}
+              className={`w-full px-4 py-2 rounded-lg bg-[#020817] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                errors.number ? "border-red-500" : "border-white/40"
+              }`}
             />
+            {errors.number && <p className="text-red-500 text-sm mt-1">Ingresa los 4 dígitos.</p>}
           </div>
 
           {/* Saldo inicial */}
           <div>
             <label className="block text-sm mb-1">Saldo inicial</label>
-            <div className="flex items-center bg-[#1e293b] rounded-lg px-3 py-2 border border-transparent focus-within:ring-2 focus-within:ring-blue-600">
+            <div
+              className={`flex items-center bg-[#020817] rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-600 ${
+                errors.balance ? "border-red-500" : "border-white/40 border"
+              }`}
+            >
               <span className="text-gray-400 mr-2">$</span>
               <input
                 type="text"
                 placeholder="0.00"
+                value={balance}
+                onChange={(e) => setBalance(e.target.value)}
                 className="bg-transparent outline-none w-full text-white placeholder-gray-500"
               />
             </div>
+            {errors.balance && <p className="text-red-500 text-sm mt-1">Ingresa un monto válido.</p>}
           </div>
 
-          {/* Acciones */}
+          {/* Botones */}
           <div className="flex justify-end gap-2 pt-4">
             <button
               onClick={onClose}
@@ -108,12 +204,12 @@ export default function AddAccountModal({ open, onClose }: Props) {
               Cancelar
             </button>
             <button
+              onClick={handleAdd}
               className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white transition"
             >
               Crear cuenta
             </button>
           </div>
-
         </div>
       </div>
     </div>
