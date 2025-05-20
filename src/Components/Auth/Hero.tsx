@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Shell, Wallet, Check, Signal, ChartLine } from "lucide-react";
+import { Shell, Wallet, Check, Signal, ChartLine, Heart } from "lucide-react";
 import { Hero2 } from "../Ui/UiAuth/Hero2";
 import { Hero3 } from "../Ui/UiAuth/Hero3";
 import { Hero4 } from "../Ui/UiAuth/Hero4";
+import { Hero5 } from "../Ui/UiAuth/Hero5";
 
 export const Hero = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -27,6 +28,13 @@ export const Hero = () => {
   // Estado para los inputs de Hero4
 
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+
+  // Estado para los inputs de Hero5
+
+  const [props, setProps] = useState("");
+  const [props2, setProps2] = useState("");
+  const [props3, setProps3] = useState("");
+  const [props4, setProps4] = useState("");
 
   const [financialInputs, setFinancialInputs] = useState({
     ingresos: "",
@@ -261,9 +269,31 @@ export const Hero = () => {
         );
       case 5:
         return (
-          <div className="text-white">
-            <h2 className="text-3xl font-bold mb-6">Resumen de perfil</h2>
-          </div>
+          <>
+            <div className="text-white flex items-center mb-6">
+              <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
+                <Heart className="w-8 h-8 -mt-6" />
+              </div>
+              <h2 className="text-3xl font-bold mb-6">
+                ¿Cómo prefieres usar Finzen?
+              </h2>
+            </div>
+            <p className="text-gray-300 mb-10 text-xl">
+              Estas preferencias nos ayudarán a personalizar tu experiencia en
+              la aplicación.
+            </p>
+
+            <Hero5
+              props={props}
+              propsChange={setProps}
+              props2={props2}
+              propsChange2={setProps2}
+              props3={props3}
+              propsChange3={setProps3}
+              props4={props4}
+              propsChange4={setProps4}
+            />
+          </>
         );
       default:
         return null;
