@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
-import { Shell, Wallet, Check, Signal } from "lucide-react";
+import { Shell, Wallet, Check, Signal, ChartLine } from "lucide-react";
 import { Hero2 } from "../Ui/UiAuth/Hero2";
 import { Hero3 } from "../Ui/UiAuth/Hero3";
+import { Hero4 } from "../Ui/UiAuth/Hero4";
 
 export const Hero = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -22,6 +23,10 @@ export const Hero = () => {
   const [knowledgeLevel2, setKnowledgeLevel2] = useState("");
   const [knowledgeLevel3, setKnowledgeLevel3] = useState("");
   const [knowledgeLevel4, setKnowledgeLevel4] = useState("");
+
+  // Estado para los inputs de Hero4
+
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
   const [financialInputs, setFinancialInputs] = useState({
     ingresos: "",
@@ -225,20 +230,34 @@ export const Hero = () => {
               onKnowledgeChange={setKnowledgeLevel}
               knowledgeLevel2={knowledgeLevel2}
               onKnowledgeChange2={setKnowledgeLevel2}
-               knowledgeLevel3={knowledgeLevel3}
+              knowledgeLevel3={knowledgeLevel3}
               onKnowledgeChange3={setKnowledgeLevel3}
-               knowledgeLevel4={knowledgeLevel4}
+              knowledgeLevel4={knowledgeLevel4}
               onKnowledgeChange4={setKnowledgeLevel4}
             />
           </>
         );
       case 4:
         return (
-          <div className="text-white">
-            <h2 className="text-3xl font-bold mb-6">
-              Preferencias de inversión
-            </h2>
-          </div>
+          <>
+            <div className="text-white flex items-center mb-6">
+              <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
+                <ChartLine className="w-8 h-8 -mt-6" />
+              </div>
+              <h2 className="text-3xl font-bold mb-6">
+                ¿Qué áreas financieras te interesan más?
+              </h2>
+            </div>
+            <p className="text-gray-300 mb-10 text-xl">
+              Selecciona las áreas que más te interesen para personalizar el
+              contenido y las herramientas que verás.
+            </p>
+
+            <Hero4
+              selectedItems={selectedInterests}
+              setSelectedItems={setSelectedInterests}
+            />
+          </>
         );
       case 5:
         return (
