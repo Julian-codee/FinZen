@@ -6,26 +6,26 @@ interface Props {
   onClose: () => void;
   onAdd: (account: {
     id: number;
-    name: string;
+    title: string;
     type: string;
     bank: string;
     number: string;
-    balance: number;
+    amount: number;
   }) => void;
 }
 
 export default function AddAccountModal({ open, onClose, onAdd }: Props) {
-  const [name, setName] = useState("");
+  const [title, setName] = useState("");
   const [accountType, setAccountType] = useState<"corriente" | "ahorros" | "efectivo" | null>(null);
   const [bank, setBank] = useState("");
   const [number, setNumber] = useState("");
-  const [balance, setBalance] = useState("");
+  const [amount, setBalance] = useState("");
   const [errors, setErrors] = useState({
-    name: false,
+    title: false,
     type: false,
     bank: false,
     number: false,
-    balance: false,
+    amount: false,
   });
 
   const nameInputId = useId();
@@ -38,22 +38,22 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
       setNumber("");
       setBalance("");
       setErrors({
-        name: false,
+        title: false,
         type: false,
         bank: false,
         number: false,
-        balance: false,
+        amount: false,
       });
     }
   }, [open]);
 
   const validate = () => {
     const newErrors = {
-      name: name.trim() === "",
+      title: title.trim() === "",
       type: accountType === null,
       bank: bank.trim() === "",
       number: number.trim() === "" || number.length !== 4,
-      balance: balance.trim() === "" || isNaN(Number(balance)),
+      amount: amount.trim() === "" || isNaN(Number(amount)),
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some(Boolean);
@@ -64,11 +64,11 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
 
     onAdd({
       id: Date.now(),
-      name,
+      title,
       type: accountType!,
       bank,
       number,
-      balance: parseFloat(balance),
+      amount: parseFloat(amount),
     });
 
     onClose();
@@ -93,13 +93,13 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
               id={nameInputId}
               type="text"
               placeholder="Ej: Cuenta Corriente Principal"
-              value={name}
+              value={title}
               onChange={(e) => setName(e.target.value)}
               className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
-                errors.name ? "border-red-500" : "border-white/40"
+                errors.title ? "border-red-500" : "border-white/40"
               }`}
             />
-            {errors.name && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
+            {errors.title && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
           </div>
 
           <div>
@@ -175,19 +175,19 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
             <label className="block text-sm mb-1">Saldo inicial</label>
             <div
               className={`flex items-center bg-[#020817] rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-600 ${
-                errors.balance ? "border-red-500" : "border-white/40 border"
+                errors.amount ? "border-red-500" : "border-white/40 border"
               }`}
             >
               <span className="text-gray-400 mr-2">$</span>
               <input
                 type="text"
                 placeholder="0.00"
-                value={balance}
+                value={amount}
                 onChange={(e) => setBalance(e.target.value)}
                 className="bg-transparent outline-none w-full text-white placeholder-gray-500"
               />
             </div>
-            {errors.balance && <p className="text-red-500 text-sm mt-1">Ingresa un monto válido.</p>}
+            {errors.amount && <p className="text-red-500 text-sm mt-1">Ingresa un monto válido.</p>}
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
