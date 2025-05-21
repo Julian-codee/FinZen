@@ -1,33 +1,24 @@
 
 
-import Dashboard from './Components/Features/Reporting/Components/Dashboard'
-import Accounts from './Components/Features/Accounts/Accounts'
+import DashboardReporting from './Components/Features/Reporting/Components/Dashboard'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css'
-import {AuthPage} from './Components/Auth/AuthPage'
 import {Hero} from './Components/Auth/Hero'
+import { AuthPage } from './Components/Auth/AuthPage';
 
 
 
 
 
-function App() {
-
-
+export default function App() {
   return (
-    <>
-
-      <div className="relative w-full h-screen overflow-hidden">
-      
-        <AuthPage />
-      </div>  
-  
-     <Accounts />
-   <Dashboard />
-   <Hero />
-     </>
-
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<AuthPage/>} />
+        <Route path="/Reporting" element={<DashboardReporting />} />
+        <Route path="/dashboard" element={<Hero />} />
+        {/* otras rutas */}
+      </Routes>
+    </Router>
+  );
 }
-
-export default App
-

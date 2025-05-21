@@ -2,8 +2,51 @@ import { useState } from "react";
 import { Register } from "./Register";
 import { AiOutlineApple, AiOutlineGoogle } from "react-icons/ai";
 import { LucideFingerprint, Facebook } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
+  //uso de Navegacion
+
+  const navigate = useNavigate();
+
+  /**
+   * En este punto del codigo añadiremos la funcionalidad del consumo de la API para el login
+   * y el registro de usuarios. con el fin de que el usuario pueda iniciar sesion y su informacion llegue al backend y a la base de datos.
+  */
+
+  const [correo, setCorreo] = useState("");
+  const [contrasena, setContrasena] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    try{
+      const response = await fetch("http://localhost:8080/finzen/auth/signin", {
+        method: "POST",
+        headers:{
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({correo, contrasena}),
+      });
+
+      const data = await response.json();
+
+      if(response.ok){
+        localStorage.setItem("token", data.token);
+        console.log("Authenticado", data);
+        // Redirigir al usuario a la página de inicio o dashboard
+      }else{
+        setError(data.message || "Credenciales Invalidas");
+      }
+      navigate("/Reporting");
+    }catch(error){
+      setError("Error en el servidor");
+    }
+  };
+
+
   //Nos permite cambiar entre el login y el register
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
 
@@ -44,11 +87,13 @@ export const Login = () => {
                 Ingresa tus credenciales para acceder a tu cuenta
               </p>
 
-              <form className="space-y-5">
+              <form onSubmit={handleLogin} className="space-y-5">
                 <div>
                   <label className="text-sm text-white/50">Email</label>
                   <input
                     type="email"
+                    value={correo}
+                    onChange={(e) => setCorreo(e.target.value)}
                     required
                     placeholder="tu@email.com"
                     className="mt-1 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -64,11 +109,15 @@ export const Login = () => {
                   </div>
                   <input
                     type="password"
+                    value={contrasena}
+                    onChange={(e) => setContrasena(e.target.value)}
                     required
                     placeholder="••••••••"
                     className="mt-1 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
+
+                {error && <p className="text-red-400 text-sm">{error}</p>}
 
                 <div className="flex items-center gap-2 text-sm">
                   <input
