@@ -1,6 +1,6 @@
 const goals = [
     {
-      nombre: 'Fondo de Emergencia',
+       nombre: 'Fondo de Emergencia',
       actual: 4500,
       meta: 6000,
     },

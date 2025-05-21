@@ -29,7 +29,6 @@ const FinancialDashboard = () => {
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, sheet1, "IngresosGastos");
     XLSX.utils.book_append_sheet(workbook, sheet2, "Categorías");
-
     XLSX.writeFile(workbook, "informe_financiero.xlsx");
   };
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import { X, Landmark, PiggyBank, Wallet } from "lucide-react";
 
 interface Props {
@@ -27,6 +27,8 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
     number: false,
     balance: false,
   });
+
+  const nameInputId = useId();
 
   useEffect(() => {
     if (!open) {
@@ -77,8 +79,6 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
   return (
     <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-[#020817] border border-white/20 text-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
-
-        {/* Botón cerrar */}
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-white">
           <X className="w-5 h-5" />
         </button>
@@ -87,11 +87,10 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
         <p className="text-sm text-gray-400 mt-1">Añade una nueva cuenta bancaria o de efectivo a tu perfil financiero.</p>
 
         <div className="space-y-4 mt-6">
-
-          {/* Nombre de cuenta */}
           <div>
-            <label className="block text-sm mb-1">Nombre de la cuenta</label>
+            <label htmlFor={nameInputId} className="block text-sm mb-1">Nombre de la cuenta</label>
             <input
+              id={nameInputId}
               type="text"
               placeholder="Ej: Cuenta Corriente Principal"
               value={name}
@@ -103,7 +102,6 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
             {errors.name && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
           </div>
 
-          {/* Tipo de cuenta */}
           <div>
             <label className="block text-sm mb-2">Tipo de cuenta</label>
             <div className="flex gap-2">
@@ -144,7 +142,6 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
             {errors.type && <p className="text-red-500 text-sm mt-1">Selecciona un tipo de cuenta.</p>}
           </div>
 
-          {/* Banco */}
           <div>
             <label className="block text-sm mb-1">Banco</label>
             <input
@@ -152,14 +149,13 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
               placeholder="Ej: Banco Santander"
               value={bank}
               onChange={(e) => setBank(e.target.value)}
-              className={`w-full px-4 py-2 rounded-lg bg-[#020817] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+              className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
                 errors.bank ? "border-red-500" : "border-white/40"
               }`}
             />
             {errors.bank && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
           </div>
 
-          {/* Número de cuenta */}
           <div>
             <label className="block text-sm mb-1">Número de cuenta (últimos 4 dígitos)</label>
             <input
@@ -168,14 +164,13 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
               value={number}
               maxLength={4}
               onChange={(e) => setNumber(e.target.value)}
-              className={`w-full px-4 py-2 rounded-lg bg-[#020817] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+              className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
                 errors.number ? "border-red-500" : "border-white/40"
               }`}
             />
             {errors.number && <p className="text-red-500 text-sm mt-1">Ingresa los 4 dígitos.</p>}
           </div>
 
-          {/* Saldo inicial */}
           <div>
             <label className="block text-sm mb-1">Saldo inicial</label>
             <div
@@ -195,7 +190,6 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
             {errors.balance && <p className="text-red-500 text-sm mt-1">Ingresa un monto válido.</p>}
           </div>
 
-          {/* Botones */}
           <div className="flex justify-end gap-2 pt-4">
             <button
               onClick={onClose}
