@@ -1,4 +1,9 @@
-import { Banknote, CreditCard, LineChart, PiggyBank } from 'lucide-react';
+import {
+  Banknote,
+  CreditCard,
+  LineChart,
+  PiggyBank,
+} from 'lucide-react';
 import { useState } from 'react';
 
 import AccountCard from './Components/AccountCard';
@@ -18,6 +23,33 @@ const Accounts = () => {
       amount: 8250.45,
     },
   ]);
+
+  // Función para asignar íconos y colores según el tipo de cuenta
+  const getIconAndColor = (title: string) => {
+    const t = title.toLowerCase();
+    if (t.includes('crédito')) {
+      return {
+        icon: <CreditCard className="text-red-400" />,
+        color: 'text-red-400',
+      };
+    }
+    if (t.includes('inversión')) {
+      return {
+        icon: <LineChart className="text-blue-300" />,
+        color: 'text-blue-300',
+      };
+    }
+    if (t.includes('efectivo')) {
+      return {
+        icon: <PiggyBank className="text-yellow-300" />,
+        color: 'text-yellow-300',
+      };
+    }
+    return {
+      icon: <Banknote className="text-green-400" />,
+      color: 'text-green-400',
+    };
+  };
 
   return (
     <div className="bg-[#020817] min-h-screen text-white p-8">
@@ -40,6 +72,7 @@ const Accounts = () => {
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
+        {/* Tarjetas fijas */}
         <AccountCard
           account={{
             id: 101,
@@ -81,6 +114,20 @@ const Accounts = () => {
           icon={<PiggyBank className="text-yellow-300" />}
           visible={visible}
         />
+
+        {/* Tarjetas nuevas agregadas desde el modal */}
+        {accounts.map((acc) => {
+          const { icon, color } = getIconAndColor(acc.title);
+          return (
+            <AccountCard
+              key={acc.id}
+              account={acc}
+              icon={icon}
+              textColor={color}
+              visible={visible}
+            />
+          );
+        })}
       </div>
 
       <h2 className="text-xl font-semibold mb-4">Tus Cuentas</h2>
