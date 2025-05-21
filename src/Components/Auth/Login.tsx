@@ -3,6 +3,7 @@ import { Register } from "./Register";
 import { AiOutlineApple, AiOutlineGoogle } from "react-icons/ai";
 import { LucideFingerprint, Facebook } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { showSuccessAlert, showErrorAlert } from "../Ui/Alerts/Alerts";
 
 export const Login = () => {
   //uso de Navegacion
@@ -12,7 +13,7 @@ export const Login = () => {
   /**
    * En este punto del codigo añadiremos la funcionalidad del consumo de la API para el login
    * y el registro de usuarios. con el fin de que el usuario pueda iniciar sesion y su informacion llegue al backend y a la base de datos.
-  */
+   */
 
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
@@ -22,30 +23,34 @@ export const Login = () => {
     e.preventDefault();
     setError("");
 
-    try{
+    try {
       const response = await fetch("http://localhost:8080/finzen/auth/signin", {
         method: "POST",
-        headers:{
+        headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({correo, contrasena}),
+        body: JSON.stringify({ correo, contrasena }),
       });
 
       const data = await response.json();
 
-      if(response.ok){
-        localStorage.setItem("token", data.token);
-        console.log("Authenticado", data);
-        // Redirigir al usuario a la página de inicio o dashboard
-      }else{
-        setError(data.message || "Credenciales Invalidas");
-      }
-      navigate("/Reporting");
-    }catch(error){
-      setError("Error en el servidor");
-    }
-  };
+      if (response.ok) {
+      localStorage.setItem("token", data.token);
+      showSuccessAlert("Has iniciado sesión exitosamente", "Bienvenido");
 
+      // Redirigir al dashboard después de un pequeño delay para mostrar el mensaje
+      setTimeout(() => {
+        navigate("/Reporting");
+      }, 2000);
+    } else {
+      setError(data.message || "Credenciales inválidas");
+      showErrorAlert(data.message || "Credenciales inválidas");
+    }
+  } catch (error) {
+    setError("Error al Iniciar sesión");
+    showErrorAlert("No se pudo conectar con el servidor");
+  }
+};
 
   //Nos permite cambiar entre el login y el register
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");
@@ -161,8 +166,7 @@ export const Login = () => {
                 <button className="group bg-black p-3 rounded-md border border-white/30 hover:bg-indigo-500/20 hover:border hover:border-indigo-400/30">
                   <AiOutlineApple className="w-19 h-4 text-white group-hover:text-indigo-400" />
                 </button>
-                <button className="group bg-black p-3 rounded-md border border-white/30 hover:bg-violet-500/20 hover:border hover:border-violet-400/30"
-                >
+                <button className="group bg-black p-3 rounded-md border border-white/30 hover:bg-violet-500/20 hover:border hover:border-violet-400/30">
                   <AiOutlineGoogle className="w-19 h-4 text-white group-hover:text-violet-400" />
                 </button>
               </div>
