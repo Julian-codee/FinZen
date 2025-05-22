@@ -19,7 +19,7 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
   const [accountType, setAccountType] = useState<"corriente" | "ahorros" | "efectivo" | null>(null);
   const [bank, setBank] = useState("");
   const [number, setNumber] = useState("");
-  const [amount, setBalance] = useState("");
+  const [amount, setBalance] = useState<number | "">("");
   const [errors, setErrors] = useState({
     title: false,
     type: false,
@@ -52,8 +52,8 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
       title: title.trim() === "",
       type: accountType === null,
       bank: bank.trim() === "",
-      number: number.trim() === "" || number.length !== 4,
-      amount: amount.trim() === "" || isNaN(Number(amount)),
+      number: number.trim().length !== 4 || !/^\d{4}$/.test(number),
+      amount: amount === "" || typeof amount !== "number" || amount < 0,
     };
     setErrors(newErrors);
     return !Object.values(newErrors).some(Boolean);
@@ -68,7 +68,7 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
       type: accountType!,
       bank,
       number,
-      amount: parseFloat(amount),
+      amount: typeof amount === "number" ? amount : 0,
     });
 
     onClose();
@@ -87,6 +87,7 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
         <p className="text-sm text-gray-400 mt-1">Añade una nueva cuenta bancaria o de efectivo a tu perfil financiero.</p>
 
         <div className="space-y-4 mt-6">
+          {/* Nombre de la cuenta */}
           <div>
             <label htmlFor={nameInputId} className="block text-sm mb-1">Nombre de la cuenta</label>
             <input
@@ -102,46 +103,45 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
             {errors.title && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
           </div>
 
+          {/* Tipo de cuenta */}
           <div>
             <label className="block text-sm mb-2">Tipo de cuenta</label>
             <div className="flex gap-2">
               <button
                 onClick={() => setAccountType("corriente")}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition 
-                  ${
-                    accountType === "corriente"
-                      ? "bg-[#020817] border-white/40 text-white"
-                      : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"
-                  }`}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition ${
+                  accountType === "corriente"
+                    ? "bg-[#020817] border-white/40 text-white"
+                    : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"
+                }`}
               >
                 <Landmark className="w-4 h-4" /> Corriente
               </button>
               <button
                 onClick={() => setAccountType("ahorros")}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition 
-                  ${
-                    accountType === "ahorros"
-                      ? "bg-[#1e293b] border-blue-600 text-white"
-                      : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"
-                  }`}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition ${
+                  accountType === "ahorros"
+                    ? "bg-[#1e293b] border-blue-600 text-white"
+                    : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"
+                }`}
               >
                 <PiggyBank className="w-4 h-4" /> Ahorros
               </button>
               <button
                 onClick={() => setAccountType("efectivo")}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition 
-                  ${
-                    accountType === "efectivo"
-                      ? "bg-[#1e293b] border-yellow-500 text-white"
-                      : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-yellow-500"
-                  }`}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition ${
+                  accountType === "efectivo"
+                    ? "bg-[#1e293b] border-yellow-500 text-white"
+                    : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-yellow-500"
+                }`}
               >
-                <Wallet className="w-4 h-4" /> Efectivo
+                <Wallet className="w-4 h-4" /> Efectivo 
               </button>
             </div>
             {errors.type && <p className="text-red-500 text-sm mt-1">Selecciona un tipo de cuenta.</p>}
           </div>
 
+          {/* Banco */}
           <div>
             <label className="block text-sm mb-1">Banco</label>
             <input
@@ -156,6 +156,7 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
             {errors.bank && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
           </div>
 
+          {/* Número de cuenta */}
           <div>
             <label className="block text-sm mb-1">Número de cuenta (últimos 4 dígitos)</label>
             <input
@@ -163,7 +164,7 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
               placeholder="Ej: 1234"
               value={number}
               maxLength={4}
-              onChange={(e) => setNumber(e.target.value)}
+              onChange={(e) => setNumber(e.target.value.replace(/\D/g, ""))}
               className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
                 errors.number ? "border-red-500" : "border-white/40"
               }`}
@@ -171,6 +172,7 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
             {errors.number && <p className="text-red-500 text-sm mt-1">Ingresa los 4 dígitos.</p>}
           </div>
 
+          {/* Saldo inicial */}
           <div>
             <label className="block text-sm mb-1">Saldo inicial</label>
             <div
@@ -180,16 +182,22 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
             >
               <span className="text-gray-400 mr-2">$</span>
               <input
-                type="text"
+                type="number"
+                step="0.01"
+                min="0"
                 placeholder="0.00"
                 value={amount}
-                onChange={(e) => setBalance(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setBalance(value === "" ? "" : parseFloat(value));
+                }}
                 className="bg-transparent outline-none w-full text-white placeholder-gray-500"
               />
             </div>
             {errors.amount && <p className="text-red-500 text-sm mt-1">Ingresa un monto válido.</p>}
           </div>
 
+          {/* Botones */}
           <div className="flex justify-end gap-2 pt-4">
             <button
               onClick={onClose}

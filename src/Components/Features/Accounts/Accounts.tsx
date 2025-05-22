@@ -12,6 +12,22 @@ import AccountTabs from './Components/AccountTabs';
 import TotalBalance from './Components/TotalBalance';
 import AccountList from './Components/AccountList';
 
+// Mapeo dinámico de tipos de cuenta → ícono y color
+const accountTypeMap = [
+  { keyword: 'crédito', icon: <CreditCard className="text-red-400" />, color: 'text-red-400' },
+  { keyword: 'inversión', icon: <LineChart className="text-blue-300" />, color: 'text-blue-300' },
+  { keyword: 'efectivo', icon: <PiggyBank className="text-yellow-300" />, color: 'text-yellow-300' },
+  { keyword: 'banco', icon: <Banknote className="text-blue-400" />, color: 'text-blue-400' },
+  { keyword: '', icon: <Banknote className="text-green-400" />, color: 'text-green-400' }, // default
+];
+
+// Función dinámica para determinar ícono y color basado en el título
+const getAccountCardProps = (title: string) => {
+  const t = title.toLowerCase();
+  const match = accountTypeMap.find((entry) => t.includes(entry.keyword));
+  return match || accountTypeMap[accountTypeMap.length - 1]; // fallback
+};
+
 const Accounts = () => {
   const [visible, setVisible] = useState(true);
   const [tab, setTab] = useState('Cuentas');
@@ -22,34 +38,13 @@ const Accounts = () => {
       bank: 'Banco Santander',
       amount: 8250.45,
     },
+    {
+      id: 2,
+      title: 'Inversión Fondo Mutuo',
+      bank: 'Bancolombia',
+      amount: 5200.0,
+    },
   ]);
-
-  // Función para asignar íconos y colores según el tipo de cuenta
-  const getIconAndColor = (title: string) => {
-    const t = title.toLowerCase();
-    if (t.includes('crédito')) {
-      return {
-        icon: <CreditCard className="text-red-400" />,
-        color: 'text-red-400',
-      };
-    }
-    if (t.includes('inversión')) {
-      return {
-        icon: <LineChart className="text-blue-300" />,
-        color: 'text-blue-300',
-      };
-    }
-    if (t.includes('efectivo')) {
-      return {
-        icon: <PiggyBank className="text-yellow-300" />,
-        color: 'text-yellow-300',
-      };
-    }
-    return {
-      icon: <Banknote className="text-green-400" />,
-      color: 'text-green-400',
-    };
-  };
 
   return (
     <div className="bg-[#020817] min-h-screen text-white p-8">
@@ -72,52 +67,8 @@ const Accounts = () => {
       </div>
 
       <div className="flex flex-wrap gap-4 mb-6">
-        {/* Tarjetas fijas */}
-        <AccountCard
-          account={{
-            id: 101,
-            title: 'Cuentas Bancarias',
-            bank: '3 cuentas activas',
-            amount: 20200.45,
-          }}
-          icon={<Banknote className="text-blue-400" />}
-          visible={visible}
-        />
-        <AccountCard
-          account={{
-            id: 102,
-            title: 'Tarjetas de Crédito',
-            bank: '3 tarjetas',
-            amount: 2450.3,
-          }}
-          textColor="text-red-400"
-          icon={<CreditCard className="text-red-400" />}
-          visible={visible}
-        />
-        <AccountCard
-          account={{
-            id: 103,
-            title: 'Inversiones',
-            bank: '2 inversiones',
-            amount: 20200.0,
-          }}
-          icon={<LineChart className="text-blue-300" />}
-          visible={visible}
-        />
-        <AccountCard
-          account={{
-            id: 104,
-            title: 'Efectivo',
-            bank: 'Dinero en efectivo',
-            amount: 3550.5,
-          }}
-          icon={<PiggyBank className="text-yellow-300" />}
-          visible={visible}
-        />
-
-        {/* Tarjetas nuevas agregadas desde el modal */}
         {accounts.map((acc) => {
-          const { icon, color } = getIconAndColor(acc.title);
+          const { icon, color } = getAccountCardProps(acc.title);
           return (
             <AccountCard
               key={acc.id}
