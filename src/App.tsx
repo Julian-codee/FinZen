@@ -4,6 +4,7 @@ import DashboardReporting from './Components/Features/Reporting/Components/Dashb
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css'
 import {Hero} from './Components/Auth/Hero'
+import CustomProfile from './Components/Auth/CustomProfile';
 import { AuthPage } from './Components/Auth/AuthPage';
 
 
@@ -17,6 +18,7 @@ export default function App() {
         <Route path="/" element={<AuthPage/>} />
         <Route path="/Reporting" element={<DashboardReporting />} />
         <Route path="/dashboard" element={<Hero />} />
+        <Route path="/Profile" element={<CustomProfile />} />
         {/* otras rutas */}
       </Routes>
     </Router>

@@ -47,7 +47,7 @@ export const Login = () => {
       showErrorAlert(data.message || "Credenciales inválidas");
     }
   } catch (error) {
-    setError("Error al Iniciar sesión");
+    setError("Error al iniciar sesion");
     showErrorAlert("No se pudo conectar con el servidor");
   }
 };
