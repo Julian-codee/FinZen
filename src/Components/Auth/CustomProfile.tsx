@@ -1,9 +1,12 @@
 // src/components/CustomProfile.tsx
 import { useState } from "react";
 import { CheckCircle, Rocket, Users, Briefcase, HeartHandshakeIcon, Settings } from "lucide-react";
+import { useNavigate } from "react-router-dom"; // Importa useNavigate para la navegación
 
-type ProfileType = "padre" | "joven" | "emprendedor" | "jubilado" | "personalizado";
+// Define los tipos de perfil
+type ProfileType = "padre" | "joven" | "emprendedor" | "jubilado" | "personalizado" | "";
 
+// Opciones de perfil con sus detalles
 const profileOptions = [
   {
     id: "padre",
@@ -38,7 +41,24 @@ const profileOptions = [
 ];
 
 export default function CustomProfile() {
-  const [selected, setSelected] = useState<ProfileType>("joven");
+  // Estado para manejar el perfil seleccionado, con "joven" como valor inicial
+  const [selected, setSelected] = useState<ProfileType>("");
+  // Hook para la navegación programática
+  const navigate = useNavigate();
+
+  // Función que maneja el clic en el botón "Continuar"
+  const handleContinue = () => {
+    if (selected === "personalizado") {
+      // Si el perfil seleccionado es "personalizado", redirige a la ruta específica
+      navigate("/Hero");
+    } else {
+      // Para otros perfiles, puedes añadir aquí la lógica que necesites.
+      // Por ahora, solo se registrará en la consola.
+      console.log("Perfil seleccionado:", selected);
+      // Opcional: Redirige a una página común si no es personalizado, por ejemplo, el dashboard.
+      // navigate("/dashboard");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#020817] text-white flex flex-col items-center justify-center px-4 py-12">
@@ -70,7 +90,7 @@ export default function CustomProfile() {
 
       <button
         className="bg-blue-500 hover:bg-blue-600/100 transition px-20 py-2 rounded-md text-white font-semibold"
-        onClick={() => console.log("Perfil seleccionado:", selected)}
+        onClick={handleContinue} // Asigna la función de manejo de clic
       >
         Continuar →
       </button>

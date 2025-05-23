@@ -35,22 +35,22 @@ export const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-      localStorage.setItem("token", data.token);
-      showSuccessAlert("Has iniciado sesión exitosamente", "Bienvenido");
+        localStorage.setItem("token", data.token);
+        showSuccessAlert("Has iniciado sesión exitosamente", "Bienvenido");
 
-      // Redirigir al dashboard después de un pequeño delay para mostrar el mensaje
-      setTimeout(() => {
-        navigate("/Reporting");
-      }, 2000);
-    } else {
-      setError(data.message || "Credenciales inválidas");
-      showErrorAlert(data.message || "Credenciales inválidas");
+        // Redirigir al dashboard después de un pequeño delay para mostrar el mensaje
+        setTimeout(() => {
+          navigate("/Reporting");
+        }, 2000);
+      } else {
+        setError(data.message || "Credenciales inválidas");
+        showErrorAlert(data.message || "Credenciales inválidas");
+      }
+    } catch (error) {
+      setError("Error al iniciar sesion");
+      showErrorAlert("No se pudo conectar con el servidor");
     }
-  } catch (error) {
-    setError("Error al iniciar sesion");
-    showErrorAlert("No se pudo conectar con el servidor");
-  }
-};
+  };
 
   //Nos permite cambiar entre el login y el register
   const [activeTab, setActiveTab] = useState<"login" | "register">("login");

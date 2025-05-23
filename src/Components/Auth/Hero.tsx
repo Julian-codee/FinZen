@@ -1,3 +1,4 @@
+// src/components/Hero.tsx
 "use client";
 import { useState } from "react";
 import { Shell, Wallet, Check, Signal, ChartLine, Heart } from "lucide-react";
@@ -5,6 +6,7 @@ import { Hero2 } from "../Ui/UiAuth/Hero2";
 import { Hero3 } from "../Ui/UiAuth/Hero3";
 import { Hero4 } from "../Ui/UiAuth/Hero4";
 import { Hero5 } from "../Ui/UiAuth/Hero5";
+import { useNavigate } from "react-router-dom"; // Importa useNavigate
 
 export const Hero = () => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -19,18 +21,15 @@ export const Hero = () => {
   >({});
 
   // Estado para los inputs de Hero3
-
   const [knowledgeLevel, setKnowledgeLevel] = useState("");
   const [knowledgeLevel2, setKnowledgeLevel2] = useState("");
   const [knowledgeLevel3, setKnowledgeLevel3] = useState("");
   const [knowledgeLevel4, setKnowledgeLevel4] = useState("");
 
   // Estado para los inputs de Hero4
-
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
   // Estado para los inputs de Hero5
-
   const [props, setProps] = useState("");
   const [props2, setProps2] = useState("");
   const [props3, setProps3] = useState("");
@@ -42,6 +41,9 @@ export const Hero = () => {
     ahorros: "",
     deudas: "",
   });
+
+  // Inicializa el hook de navegación
+  const navigate = useNavigate();
 
   const handleHero2CheckboxChange = (id: string) => {
     setFinancialStatusOptions((prev) => ({
@@ -99,11 +101,6 @@ export const Hero = () => {
       title: "Iniciar un negocio",
       description: "Financiar un emprendimiento o proyecto propio",
     },
-    {
-      id: "improve_education",
-      title: "Mejorar educación financiera",
-      description: "Aprender más sobre finanzas personales",
-    },
     { id: "other", title: "Otro objetivo", description: "" },
   ];
 
@@ -115,11 +112,25 @@ export const Hero = () => {
   };
 
   const handleNext = () => {
-    if (currentStep < 5) setCurrentStep(currentStep + 1);
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      // Si estamos en el último paso y pulsamos "Siguiente", podrías redirigir
+      // Por ejemplo, a un dashboard o a una página de resumen final.
+      // navigate("/dashboard");
+      console.log("¡Cuestionario completado!");
+    }
   };
 
   const handleBack = () => {
-    if (currentStep > 1) setCurrentStep(currentStep - 1);
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1); // Retrocede un paso dentro del cuestionario
+    } else {
+      // Si estamos en el primer paso (currentStep === 1), navegamos a la ruta anterior
+      navigate(-1); // Esto hace lo mismo que el botón "atrás" del navegador
+      // O puedes especificar una ruta concreta si sabes a dónde quieres volver
+      // navigate("/seleccionar-perfil");
+    }
   };
 
   const renderStepContent = () => {
@@ -332,7 +343,9 @@ export const Hero = () => {
           <button
             onClick={handleBack}
             className="flex items-center px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
-            disabled={currentStep === 1}
+            // La lógica para deshabilitar el botón se maneja dentro de handleBack
+            // Si quieres deshabilitarlo solo si no hay historial de navegación,
+            // necesitarías una lógica más avanzada o un estado global.
           >
             Volver
           </button>
@@ -341,7 +354,7 @@ export const Hero = () => {
             onClick={handleNext}
             className="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
-            Siguiente
+            {currentStep < 5 ? "Siguiente" : "Finalizar"}
           </button>
         </div>
       </div>

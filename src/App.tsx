@@ -19,6 +19,7 @@ export default function App() {
         <Route path="/Reporting" element={<DashboardReporting />} />
         <Route path="/dashboard" element={<Hero />} />
         <Route path="/Profile" element={<CustomProfile />} />
+        <Route path="/Hero" element={<Hero />} />
         {/* otras rutas */}
       </Routes>
     </Router>
