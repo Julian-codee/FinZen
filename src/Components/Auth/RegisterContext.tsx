@@ -42,7 +42,7 @@ export const RegisterProvider: React.FC<{ children: React.ReactNode }> = ({
           tipoDocumento: "cedula",
           numeroDocumento: "",
           contrasena: "",
-          tipoPersona: "",
+          tipoPersona: "emprendedor",
           role: "USUARIO",
           ingresoMensual: 0,
           metaActual: true,

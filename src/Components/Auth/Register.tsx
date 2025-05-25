@@ -104,7 +104,7 @@ export const Register = () => {
 
       setIsLoading(true);
       try {
-        navigate("/Reporting");
+        navigate("/custom-profile");
       } catch (error) {
         setError("Error al continuar al siguiente paso");
         showErrorAlert("Error al continuar al siguiente paso");

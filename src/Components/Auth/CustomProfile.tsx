@@ -87,9 +87,9 @@ export default function CustomProfile() {
       updateRegisterData({ tipoPersona: selected });
       await submitRegister();
       if (selected === "personalizado") {
-        navigate("/Reporting");
+        navigate("/Hero");
       } else {
-        navigate("/dashboard");
+        navigate("/Hero");
       }
     } catch (error: any) {
       showErrorAlert(error.message || "Error al registrar el usuario");
