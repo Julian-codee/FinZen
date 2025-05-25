@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React, { useState } from "react";
 import {
   User,
   AtSign,
@@ -16,38 +16,27 @@ import {
   FileText,
 } from "lucide-react";
 import { AiOutlineGoogle, AiOutlineApple } from "react-icons/ai";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { showSuccessAlert, showErrorAlert } from "../Ui/Alerts/Alerts"; // Assuming these are correctly imported
+import {  showErrorAlert } from "../Ui/Alerts/Alerts";
+import { useRegister } from "./RegisterContext";
 
 export const Register = () => {
   const navigate = useNavigate();
+  const { registerData, updateRegisterData } = useRegister();
 
   const [step, setStep] = useState(1);
-
-  const [nombre, setNombre] = useState("");
-  const [correo, setCorreo] = useState("");
-  const [nombreUsuario, setNombreUsuario] = useState("");
-  const [paisResidencia, setPaisResidencia] = useState("");
-  const [numeroDocumento, setNumeroDocumento] = useState("");
-  // Set an initial default value that matches one of your backend enum values
-  const [tipoDocumento, setTipoDocumento] = useState("cedula");
-
-  const [contrasena, setContrasena] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Password validation logic
-  const hasMinLength = contrasena.length >= 8;
-  const hasUpperCase = /[A-Z]/.test(contrasena);
-  const hasLowerCase = /[a-z]/.test(contrasena);
-  const hasNumber = /[0-9]/.test(contrasena);
-  const hasSpecialChar = /[^A-Za-z0-9]/.test(contrasena);
-  const passwordsMatch = contrasena === confirmPassword;
+  const hasMinLength = registerData.contrasena.length >= 8;
+  const hasUpperCase = /[A-Z]/.test(registerData.contrasena);
+  const hasLowerCase = /[a-z]/.test(registerData.contrasena);
+  const hasNumber = /[0-9]/.test(registerData.contrasena);
+  const hasSpecialChar = /[^A-Za-z0-9]/.test(registerData.contrasena);
+  const passwordsMatch = registerData.contrasena === confirmPassword;
 
   const passwordStrength = [
     hasMinLength,
@@ -56,58 +45,6 @@ export const Register = () => {
     hasNumber,
     hasSpecialChar,
   ].filter(Boolean).length;
-
-  const handleRegister = async () => {
-    setError("");
-    setIsLoading(true);
-
-    try {
-      const userData = {
-        nombre: nombre,
-        correo: correo,
-        // Use part of the email as username if not provided
-        nombreUsuario: nombreUsuario || correo.split("@")[0],
-        contrasena: contrasena,
-        paisResidencia: paisResidencia,
-        numeroDocumento: numeroDocumento,
-        tipoDocumento: tipoDocumento, // This state holds the value from the select dropdown
-        tipoPersona: "personalizado", // Ensure this matches your backend enum if used
-        role: "USUARIO", // Default role, ensure it matches backend expected values ('USUARIO' or 'ADMIN')
-        ingresoMensual: 0, // Default value, adjust as needed
-        metaActual: true, // Default value, adjust as needed
-      };
-
-      console.log("Enviando datos al servidor:", userData);
-      console.log("Valor de tipoDocumento (frontend):", tipoDocumento); // For debugging
-
-      const response = await fetch("http://localhost:8080/finzen/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-      console.log("Respuesta del servidor:", data);
-
-      if (response.ok) {
-        showSuccessAlert("Cuenta creada exitosamente", "¡Bienvenido!");
-        setTimeout(() => {
-          navigate("/Profile"); // Redirect on success
-        }, 2000);
-      } else {
-        setError(data.message || "Error al crear la cuenta");
-        showErrorAlert(data.message || "Error al crear la cuenta");
-      }
-    } catch (error) {
-      console.error("Error en la solicitud:", error);
-      setError("Error al conectar con el servidor");
-      showErrorAlert("No se pudo conectar con el servidor");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleSocialLogin = async (provider: string) => {
     try {
@@ -125,18 +62,32 @@ export const Register = () => {
     setError("");
 
     if (step === 1) {
-      if (nombre.trim() && correo.trim()) {
+      if (registerData.nombre.trim() && registerData.correo.trim()) {
         setStep(2);
       } else {
         setError("Por favor completa el nombre y correo electrónico");
         showErrorAlert("Por favor completa el nombre y correo electrónico");
       }
     } else if (step === 2) {
-      if (paisResidencia.trim() && numeroDocumento.trim()) {
+      if (
+        registerData.paisResidencia.trim() &&
+        registerData.numeroDocumento.trim() &&
+        registerData.tipoDocumento &&
+        [
+          "cedula",
+          "pasaporte",
+          "tarjeta_de_identidad",
+          "cedula_extranjera",
+        ].includes(registerData.tipoDocumento)
+      ) {
         setStep(3);
       } else {
-        setError("Por favor completa el país y número de documento");
-        showErrorAlert("Por favor completa el país y número de documento");
+        setError(
+          "Por favor completa el país, selecciona un tipo de documento válido y número de documento"
+        );
+        showErrorAlert(
+          "Por favor completa el país, selecciona un tipo de documento válido y número de documento"
+        );
       }
     } else {
       if (!passwordsMatch) {
@@ -150,7 +101,16 @@ export const Register = () => {
         showErrorAlert("La contraseña debe ser más segura");
         return;
       }
-      await handleRegister();
+
+      setIsLoading(true);
+      try {
+        navigate("/Reporting");
+      } catch (error) {
+        setError("Error al continuar al siguiente paso");
+        showErrorAlert("Error al continuar al siguiente paso");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -182,18 +142,15 @@ export const Register = () => {
 
   return (
     <>
-      {/* Header */}
       <h2 className="text-2xl font-bold mb-1">{getStepTitle()}</h2>
       <p className="text-sm text-white/50 mb-5">{getStepDescription()}</p>
 
-      {/* Error message */}
       {error && (
         <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-md">
           <p className="text-sm text-red-300">{error}</p>
         </div>
       )}
 
-      {/* Progress bar */}
       <div className="flex items-center gap-4 mb-5.5">
         <div className="relative w-3/4 h-1 bg-white/20 rounded-full">
           <div
@@ -204,10 +161,8 @@ export const Register = () => {
         <span className="text-xs text-white/70">Paso {step} de 3</span>
       </div>
 
-      {/* Form */}
       <form className="space-y-4" onSubmit={handleContinue}>
         {step === 1 ? (
-          // Step 1: Basic Information
           <>
             <div className="relative">
               <label className="block text-sm text-white/50 mb-1">
@@ -217,8 +172,8 @@ export const Register = () => {
               <input
                 type="text"
                 placeholder="Tu nombre"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
+                value={registerData.nombre}
+                onChange={(e) => updateRegisterData({ nombre: e.target.value })}
                 required
                 disabled={isLoading}
                 className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-50"
@@ -234,8 +189,8 @@ export const Register = () => {
                 type="email"
                 required
                 placeholder="nombre@ejemplo.com"
-                value={correo}
-                onChange={(e) => setCorreo(e.target.value)}
+                value={registerData.correo}
+                onChange={(e) => updateRegisterData({ correo: e.target.value })}
                 disabled={isLoading}
                 className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-50"
               />
@@ -249,15 +204,16 @@ export const Register = () => {
               <input
                 type="text"
                 placeholder="Tu nombre de usuario"
-                value={nombreUsuario}
-                onChange={(e) => setNombreUsuario(e.target.value)}
+                value={registerData.nombreUsuario}
+                onChange={(e) =>
+                  updateRegisterData({ nombreUsuario: e.target.value })
+                }
                 disabled={isLoading}
                 className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-50"
               />
             </div>
           </>
         ) : step === 2 ? (
-          // Step 2: Identification Information
           <>
             <div className="relative">
               <label className="block text-sm text-white/50 mb-1">
@@ -267,8 +223,10 @@ export const Register = () => {
               <input
                 type="text"
                 placeholder="Colombia"
-                value={paisResidencia}
-                onChange={(e) => setPaisResidencia(e.target.value)}
+                value={registerData.paisResidencia}
+                onChange={(e) =>
+                  updateRegisterData({ paisResidencia: e.target.value })
+                }
                 required
                 disabled={isLoading}
                 className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-50"
@@ -280,26 +238,23 @@ export const Register = () => {
                 Tipo de documento *
               </label>
               <select
-                value={tipoDocumento}
-                onChange={(e) => setTipoDocumento(e.target.value)}
+                value={registerData.tipoDocumento}
+                onChange={(e) =>
+                  updateRegisterData({ tipoDocumento: e.target.value })
+                }
                 required
                 disabled={isLoading}
                 className="w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-50"
               >
+                <option value="" disabled>
+                  Selecciona un tipo de documento
+                </option>
                 <option value="cedula">Cédula de Ciudadanía</option>
-                {/* --- IMPORTANT CHANGE HERE --- */}
-                {/* Ensure this VALUE exactly matches your backend's Usuario.TipoDocumentoEnum for "Tarjeta de Identidad" */}
                 <option value="tarjeta_de_identidad">
                   Tarjeta de Identidad
-                </option>{" "}
-                {/* Corrected value */}
-                {/* --- END IMPORTANT CHANGE --- */}
+                </option>
                 <option value="cedula_extranjera">Cédula de Extranjería</option>
-                {/* --- IMPORTANT CHANGE HERE --- */}
-                {/* Ensure this VALUE exactly matches your backend's Usuario.TipoDocumentoEnum for "Pasaporte" */}
-                <option value="pasaporte">Pasaporte</option>{" "}
-                {/* Corrected value (from PASSPORT to PASAPORTE) */}
-                {/* --- END IMPORTANT CHANGE --- */}
+                <option value="pasaporte">Pasaporte</option>
               </select>
             </div>
 
@@ -311,8 +266,10 @@ export const Register = () => {
               <input
                 type="text"
                 placeholder="Número de documento"
-                value={numeroDocumento}
-                onChange={(e) => setNumeroDocumento(e.target.value)}
+                value={registerData.numeroDocumento}
+                onChange={(e) =>
+                  updateRegisterData({ numeroDocumento: e.target.value })
+                }
                 required
                 disabled={isLoading}
                 className="pl-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-50"
@@ -320,7 +277,6 @@ export const Register = () => {
             </div>
           </>
         ) : (
-          // Step 3: Password and Terms
           <>
             <div className="relative">
               <label className="block text-sm text-white/50 mb-1.5">
@@ -331,8 +287,10 @@ export const Register = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Mínimo 8 caracteres"
-                  value={contrasena}
-                  onChange={(e) => setContrasena(e.target.value)}
+                  value={registerData.contrasena}
+                  onChange={(e) =>
+                    updateRegisterData({ contrasena: e.target.value })
+                  }
                   required
                   disabled={isLoading}
                   className="pl-10 pr-10 w-full px-4 py-2 rounded-md bg-white/10 border border-white/20 text-sm text-white placeholder-white/50 focus:ring-2 focus:ring-indigo-500 focus:outline-none disabled:opacity-50"
@@ -351,8 +309,7 @@ export const Register = () => {
                 </button>
               </div>
 
-              {/* Password strength indicator */}
-              {contrasena && (
+              {registerData.contrasena && (
                 <div className="mt-2 space-y-2">
                   <div className="flex justify-between items-center">
                     <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
@@ -518,7 +475,6 @@ export const Register = () => {
           </>
         )}
 
-        {/* Navigation buttons */}
         <div className={`flex ${step > 1 ? "space-x-3" : ""} mt-4`}>
           {step > 1 && (
             <button
@@ -545,18 +501,17 @@ export const Register = () => {
             {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                {step < 3 ? "Continuando..." : "Creando cuenta..."}
+                {step < 3 ? "Continuando..." : "Siguiente..."}
               </>
             ) : (
               <>
-                {step < 3 ? "Continuar" : "Crear cuenta"} <span>→</span>
+                {step < 3 ? "Continuar" : "Siguiente"} <span>→</span>
               </>
             )}
           </button>
         </div>
       </form>
 
-      {/* Social login section (only visible on step 1) */}
       {step === 1 && (
         <>
           <div className="flex items-center my-6">
@@ -588,17 +543,14 @@ export const Register = () => {
               <AiOutlineGoogle className="w-19 h-4 text-white group-hover:text-violet-400" />
             </button>
           </div>
-        </>
-      )}
 
-      {/* Link to login (only visible on step 1) */}
-      {step === 1 && (
-        <p className="text-sm text-white/70 text-center mt-6">
-          ¿Ya tienes una cuenta?{" "}
-          <a href="./login" className="text-blue-400 hover:underline">
-            Inicia sesión
-          </a>
-        </p>
+          <p className="text-sm text-white/70 text-center mt-6">
+            ¿Ya tienes una cuenta?{" "}
+            <a href="./login" className="text-blue-400 hover:underline">
+              Inicia sesión
+            </a>
+          </p>
+        </>
       )}
     </>
   );
