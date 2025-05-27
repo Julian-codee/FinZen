@@ -8,7 +8,7 @@ interface Account {
 
 interface AccountCategoryCardProps {
   title: string;
-  accounts: Account[];
+  account: Account[];
 }
 
 // Función que determina ícono y color según el título de la categoría
@@ -21,10 +21,10 @@ const getAccountCardProps = (title: string) => {
   return { icon: <Banknote className="text-green-400" />, color: 'text-green-400' };
 };
 
-const AccountCategoryCard = ({ title, accounts }: AccountCategoryCardProps) => {
-  const total = accounts.reduce((sum, acc) => sum + acc.amount, 0);
+const AccountCategoryCard = ({ title, account }: AccountCategoryCardProps) => {
+  const total = account.reduce((sum, acc) => sum + acc.amount, 0);
   const { icon, color } = getAccountCardProps(title);
-  const description = `${accounts.length} ${accounts.length === 1 ? 'cuenta' : 'cuentas'}`;
+  const description = `${account.length} ${account.length === 1 ? 'cuenta' : 'cuentas'}`;
 
   return (
     <div className="border border-white/20 p-4 rounded-lg w-60 text-white shadow flex flex-col gap-2">
