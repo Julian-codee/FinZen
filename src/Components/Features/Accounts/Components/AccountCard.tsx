@@ -44,7 +44,7 @@ const AccountCard = ({
   const description = `${accounts.length} ${accounts.length === 1 ? 'cuenta' : 'cuentas'} ${title.toLowerCase().includes('crédito') ? '' : 'activas'}`;
 
   return (
-    <div className="border border-white/20 p-4 rounded-lg w-60 text-white shadow flex flex-col gap-2">
+    <div className="border border-white/20 p-6 rounded-2xl w-96 text-white shadow-xl flex flex-col gap-4">
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-sm font-medium">{title}</h3>
