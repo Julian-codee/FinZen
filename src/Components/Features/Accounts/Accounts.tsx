@@ -6,26 +6,42 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-import AccountCard from './Components/AccountCard';
-import BalanceToggle from './Components/BalanceToggle';
 import AccountTabs from './Components/AccountTabs';
 import TotalBalance from './Components/TotalBalance';
+import BalanceToggle from './Components/BalanceToggle';
 import AccountList from './Components/AccountList';
+import AccountCategoryCard from './Components/AccountCategoryCard';
 
-// Mapeo dinámico de tipos de cuenta → ícono y color
-const accountTypeMap = [
-  { keyword: 'crédito', icon: <CreditCard className="text-red-400" />, color: 'text-red-400' },
-  { keyword: 'inversión', icon: <LineChart className="text-blue-300" />, color: 'text-blue-300' },
-  { keyword: 'efectivo', icon: <PiggyBank className="text-yellow-300" />, color: 'text-yellow-300' },
-  { keyword: 'banco', icon: <Banknote className="text-blue-400" />, color: 'text-blue-400' },
-  { keyword: '', icon: <Banknote className="text-green-400" />, color: 'text-green-400' }, // default
-];
-
-// Función dinámica para determinar ícono y color basado en el título
+// Función que determina ícono y color según el título
 const getAccountCardProps = (title: string) => {
   const t = title.toLowerCase();
-  const match = accountTypeMap.find((entry) => t.includes(entry.keyword));
-  return match || accountTypeMap[accountTypeMap.length - 1]; // fallback
+  if (t.includes('corriente')) return { icon: <CreditCard className="text-red-400" />, color: 'text-red-400' };
+  if (t.includes('ahorros')) return { icon: <LineChart className="text-blue-300" />, color: 'text-blue-300' };
+  if (t.includes('efectivo')) return { icon: <PiggyBank className="text-yellow-300" />, color: 'text-yellow-300' };
+  if (t.includes('banco') || t.includes('corriente') || t.includes('ahorros')) return { icon: <Banknote className="text-blue-400" />, color: 'text-blue-400' };
+  return { icon: <Banknote className="text-green-400" />, color: 'text-green-400' };
+};
+
+// Agrupa cuentas por tipo (según keyword detectado en el título)
+const groupAccountsByCategory = (accounts: { title: string; amount: number }[]) => {
+  const categories: { [key: string]: typeof accounts } = {};
+
+  accounts.forEach((account) => {
+    const t = account.title.toLowerCase();
+    let category = 'Otros';
+
+    if (t.includes('corriente')) category = 'Corriente';
+    else if (t.includes('ahorros')) category = 'Ahorros';
+    else if (t.includes('efectivo')) category = 'Efectivo';
+    else if (t.includes('banco') || t.includes('corriente') || t.includes('ahorros')) category = 'Banco';
+
+    if (!categories[category]) {
+      categories[category] = [];
+    }
+    categories[category].push(account);
+  });
+
+  return categories;
 };
 
 const Accounts = () => {
@@ -44,7 +60,21 @@ const Accounts = () => {
       bank: 'Bancolombia',
       amount: 5200.0,
     },
+    {
+      id: 3,
+      title: 'Tarjeta de Crédito',
+      bank: 'Banco Popular',
+      amount: 3000.0,
+    },
+    {
+      id: 4,
+      title: 'Efectivo Principal',
+      bank: 'Caja',
+      amount: 1500.0,
+    },
   ]);
+
+  const grouped = groupAccountsByCategory(accounts);
 
   return (
     <div className="bg-[#020817] min-h-screen text-white p-8">
@@ -66,19 +96,11 @@ const Accounts = () => {
         <BalanceToggle visible={visible} toggle={() => setVisible(!visible)} />
       </div>
 
+      {/* Tarjetas por categoría */}
       <div className="flex flex-wrap gap-4 mb-6">
-        {accounts.map((acc) => {
-          const { icon, color } = getAccountCardProps(acc.title);
-          return (
-            <AccountCard
-              key={acc.id}
-              account={acc}
-              icon={icon}
-              textColor={color}
-              visible={visible}
-            />
-          );
-        })}
+        {Object.entries(grouped).map(([title, group]) => (
+          <AccountCategoryCard key={title} title={title} accounts={group} />
+        ))}
       </div>
 
       <h2 className="text-xl font-semibold mb-4">Tus Cuentas</h2>
@@ -87,4 +109,4 @@ const Accounts = () => {
   );
 };
 
-export default Accounts;
+export default Accounts
