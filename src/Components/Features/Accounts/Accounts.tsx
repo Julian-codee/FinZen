@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import {
-  Banknote,
-  CreditCard,
-  LineChart,
-  PiggyBank,
-} from 'lucide-react';
+
 
 import MovementsModal from './Components/MovementsModal';
 import AccountTabs from './Components/AccountTabs';
@@ -30,15 +25,7 @@ export interface Account {
   movements: Movement[];
 }
 
-// Función para determinar ícono y color según título
-const getAccountCardProps = (title: string) => {
-  const t = title.toLowerCase();
-  if (t.includes('corriente')) return { icon: <CreditCard className="text-red-400" />, color: 'text-red-400' };
-  if (t.includes('ahorros')) return { icon: <LineChart className="text-blue-300" />, color: 'text-blue-300' };
-  if (t.includes('efectivo')) return { icon: <PiggyBank className="text-yellow-300" />, color: 'text-yellow-300' };
-  if (t.includes('banco')) return { icon: <Banknote className="text-blue-400" />, color: 'text-blue-400' };
-  return { icon: <Banknote className="text-green-400" />, color: 'text-green-400' };
-};
+
 
 // Agrupa cuentas por categoría
 const groupAccountsByCategory = (accounts: Account[]) => {
