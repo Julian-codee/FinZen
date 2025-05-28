@@ -1,21 +1,25 @@
+import DashboardReporting from './Components/Features/Reporting/Components/Dashboard';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import './App.css';
+import { Hero } from './Components/Auth/Hero';
+import CustomProfile from './Components/Auth/CustomProfile';
+import { RegisterProvider } from './Components/Auth/RegisterContext';
+import { AuthPage } from './Components/Auth/AuthPage';
 
-import Dashboard from './Components/Features/Reporting/Components/Dashboard'
-import Accounts from './Components/Features/Accounts/Accounts'
-
-import './App.css'
-
-
-
-function App() {
-
-
+export default function App() {
   return (
-    <>
-     <Accounts />
-   <Dashboard />
-     </>
-  )
+    <RegisterProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<AuthPage />} />
+          <Route path="/register" element={<AuthPage />} /> {/* Asumiendo que AuthPage contiene Register */}
+          <Route path="/custom-profile" element={<CustomProfile />} /> {/* Ruta corregida */}
+          <Route path="/Reporting" element={<DashboardReporting />} />
+          <Route path="/dashboard" element={<Hero />} />
+          <Route path="/Hero" element={<Hero />} />
+          {/* Eliminar /Profile si no es necesario, o aclarar su propósito */}
+        </Routes>
+      </BrowserRouter>
+    </RegisterProvider>
+  );
 }
-
-export default App
-
