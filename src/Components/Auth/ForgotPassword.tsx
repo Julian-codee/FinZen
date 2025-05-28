@@ -15,7 +15,7 @@ import {
 import { AuthBackground } from "../../assets/Backgrounds/Auht-background";
 import { showErrorAlert, showSuccessAlert } from "../Ui/Alerts/Alerts";
 
-export default function Component() {
+export default function ForgotPassword() {
   const [currentStep, setCurrentStep] = useState(1);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");

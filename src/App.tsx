@@ -18,7 +18,7 @@ export default function App() {
           <Route path="/Reporting" element={<DashboardReporting />} />
           <Route path="/dashboard" element={<Hero />} />
           <Route path="/Hero" element={<Hero />} />
-          <Route path='/Forgot' element={<ForgotPassword />}/>
+          <Route path='/Forgot' element={<ForgotPassword/>}/>
           {/* Eliminar /Profile si no es necesario, o aclarar su propósito */}
         </Routes>
       </BrowserRouter>
