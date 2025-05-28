@@ -14,7 +14,7 @@ interface RegisterData {
   tipoPersona: string;
   role: string;
   ingresoMensual: number;
-  metaActual: boolean;
+  metaActual: number;
 }
 
 interface RegisterContextType {
