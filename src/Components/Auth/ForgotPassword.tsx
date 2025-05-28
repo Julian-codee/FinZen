@@ -8,7 +8,7 @@ import { showErrorAlert, showSuccessAlert } from "../Ui/Alerts/Alerts";
 
 const API_URL = "http://localhost:8080/finzen/auth"; // Adjust to your backend URL
 
-export default function ForgotPassword() {
+export default function Component() {
   const [currentStep, setCurrentStep] = useState(1);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
