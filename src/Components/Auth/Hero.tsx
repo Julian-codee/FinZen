@@ -1,63 +1,84 @@
 // src/components/Hero.tsx
-"use client";
-import { useState } from "react";
-import { Shell, Wallet, Check, Signal, ChartLine, Heart } from "lucide-react";
-import { Hero2 } from "../Ui/UiAuth/Hero2";
-import { Hero3 } from "../Ui/UiAuth/Hero3";
-import { Hero4 } from "../Ui/UiAuth/Hero4";
-import { Hero5 } from "../Ui/UiAuth/Hero5";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate
+"use client"
+import { useState, useEffect } from "react"
+import { Shell, Wallet, Check, Signal, LineChartIcon as ChartLine, Heart } from "lucide-react"
+import { Hero2 } from "../Ui/UiAuth/Hero2"
+import { Hero3 } from "../Ui/UiAuth/Hero3"
+import { Hero4 } from "../Ui/UiAuth/Hero4"
+import { Hero5 } from "../Ui/UiAuth/Hero5"
+import { useNavigate } from "react-router-dom" // Importa useNavigate
 
-export const Hero = () => {
-  const [currentStep, setCurrentStep] = useState(1);
-  const [selectedOptions, setSelectedOptions] = useState<
-    Record<string, boolean>
-  >({});
-  const [otherObjective, setOtherObjective] = useState("");
+interface HeroProps {
+  onBack?: () => void
+}
+
+export const Hero = ({ onBack }: HeroProps) => {
+  const [currentStep, setCurrentStep] = useState(1)
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, boolean>>({})
+  const [otherObjective, setOtherObjective] = useState("")
 
   // Estado para Hero2
-  const [financialStatusOptions, setFinancialStatusOptions] = useState<
-    Record<string, boolean>
-  >({});
+  const [financialStatusOptions, setFinancialStatusOptions] = useState<Record<string, boolean>>({})
 
   // Estado para los inputs de Hero3
-  const [knowledgeLevel, setKnowledgeLevel] = useState("");
-  const [knowledgeLevel2, setKnowledgeLevel2] = useState("");
-  const [knowledgeLevel3, setKnowledgeLevel3] = useState("");
-  const [knowledgeLevel4, setKnowledgeLevel4] = useState("");
+  const [knowledgeLevel, setKnowledgeLevel] = useState("")
+  const [knowledgeLevel2, setKnowledgeLevel2] = useState("")
+  const [knowledgeLevel3, setKnowledgeLevel3] = useState("")
+  const [knowledgeLevel4, setKnowledgeLevel4] = useState("")
 
   // Estado para los inputs de Hero4
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([])
 
   // Estado para los inputs de Hero5
-  const [props, setProps] = useState("");
-  const [props2, setProps2] = useState("");
-  const [props3, setProps3] = useState("");
-  const [props4, setProps4] = useState("");
+  const [props, setProps] = useState("")
+  const [props2, setProps2] = useState("")
+  const [props3, setProps3] = useState("")
+  const [props4, setProps4] = useState("")
 
   const [financialInputs, setFinancialInputs] = useState({
     ingresos: "",
     gastos: "",
     ahorros: "",
     deudas: "",
-  });
+  })
 
   // Inicializa el hook de navegación
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+  // Manejar el botón de retroceso del navegador cuando está en el primer paso
+  useEffect(() => {
+    if (currentStep === 1 && onBack) {
+      const handlePopState = (event: PopStateEvent) => {
+        event.preventDefault()
+        onBack() // Llamar a la función onBack para volver al selector de perfil
+      }
+
+      // Agregar un estado al historial para interceptar el botón de retroceso
+      window.history.pushState(null, "", window.location.href)
+
+      // Escuchar el evento popstate
+      window.addEventListener("popstate", handlePopState)
+
+      // Cleanup
+      return () => {
+        window.removeEventListener("popstate", handlePopState)
+      }
+    }
+  }, [currentStep, onBack])
 
   const handleHero2CheckboxChange = (id: string) => {
     setFinancialStatusOptions((prev) => ({
       ...prev,
       [id]: !prev[id],
-    }));
-  };
+    }))
+  }
 
   const handleHero2InputChange = (field: string, value: string) => {
     setFinancialInputs((prev) => ({
       ...prev,
       [field]: value,
-    }));
-  };
+    }))
+  }
 
   const financialGoals = [
     {
@@ -68,8 +89,7 @@ export const Hero = () => {
     {
       id: "pay_debts",
       title: "Pagar deudas",
-      description:
-        "Reducir o eliminar préstamos, tarjetas de crédito u otras deudas",
+      description: "Reducir o eliminar préstamos, tarjetas de crédito u otras deudas",
     },
     {
       id: "emergency_fund",
@@ -102,36 +122,37 @@ export const Hero = () => {
       description: "Financiar un emprendimiento o proyecto propio",
     },
     { id: "other", title: "Otro objetivo", description: "" },
-  ];
+  ]
 
   const handleCheckboxChange = (id: string) => {
     setSelectedOptions((prev) => ({
       ...prev,
       [id]: !prev[id],
-    }));
-  };
+    }))
+  }
 
   const handleNext = () => {
     if (currentStep < 5) {
-      setCurrentStep(currentStep + 1);
+      setCurrentStep(currentStep + 1)
     } else {
-      // Si estamos en el último paso y pulsamos "Siguiente", podrías redirigir
-      // Por ejemplo, a un dashboard o a una página de resumen final.
-      // navigate("/dashboard");
-      console.log("¡Cuestionario completado!");
+      // Si estamos en el último paso y pulsamos "Siguiente", redirigir
+      navigate("/Reporting")
+      console.log("¡Cuestionario completado!")
     }
-  };
+  }
 
   const handleBack = () => {
     if (currentStep > 1) {
-      setCurrentStep(currentStep - 1); // Retrocede un paso dentro del cuestionario
+      setCurrentStep(currentStep - 1) // Retrocede un paso dentro del cuestionario
     } else {
-      // Si estamos en el primer paso (currentStep === 1), navegamos a la ruta anterior
-      navigate(-1); // Esto hace lo mismo que el botón "atrás" del navegador
-      // O puedes especificar una ruta concreta si sabes a dónde quieres volver
-      // navigate("/seleccionar-perfil");
+      // Si estamos en el primer paso (currentStep === 1)
+      if (onBack) {
+        onBack() // Usar la función onBack proporcionada para volver al selector de perfil
+      } else {
+        navigate(-1) // Fallback al comportamiento anterior
+      }
     }
-  };
+  }
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -142,38 +163,29 @@ export const Hero = () => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <Shell className="w-8 h-8" />
               </div>
-              <h2 className="text-3xl font-bold text-white">
-                ¿Cuáles son tus principales objetivos financieros?
-              </h2>
+              <h2 className="text-3xl font-bold text-white">¿Cuáles son tus principales objetivos financieros?</h2>
             </div>
             <p className="text-gray-300 mb-10 text-xl">
-              Selecciona todos los objetivos que sean relevantes para ti. Esto
-              nos ayudará a personalizar tu experiencia.
+              Selecciona todos los objetivos que sean relevantes para ti. Esto nos ayudará a personalizar tu
+              experiencia.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {financialGoals.map((goal, index) => (
                 <div
                   key={goal.id}
                   className={
-                    index === financialGoals.length - 1 &&
-                    financialGoals.length % 2 !== 0
-                      ? "md:col-span-2"
-                      : ""
+                    index === financialGoals.length - 1 && financialGoals.length % 2 !== 0 ? "md:col-span-2" : ""
                   }
                 >
                   <div className="flex items-start mb-2">
                     <div
                       className="w-7 h-7 border border-blue-500 rounded-full flex-shrink-0 mr-3 mt-1 flex items-center justify-center cursor-pointer"
                       style={{
-                        backgroundColor: selectedOptions[goal.id]
-                          ? "#3b82f6"
-                          : "transparent",
+                        backgroundColor: selectedOptions[goal.id] ? "#3b82f6" : "transparent",
                       }}
                       onClick={() => handleCheckboxChange(goal.id)}
                     >
-                      {selectedOptions[goal.id] && (
-                        <Check className="text-white w-5 h-5 font-extrabold" />
-                      )}
+                      {selectedOptions[goal.id] && <Check className="text-white w-5 h-5 font-extrabold" />}
                     </div>
                     <div>
                       <label
@@ -182,9 +194,7 @@ export const Hero = () => {
                       >
                         {goal.title}
                       </label>
-                      {goal.description && (
-                        <p className="text-gray-400 mt-1">{goal.description}</p>
-                      )}
+                      {goal.description && <p className="text-gray-400 mt-1">{goal.description}</p>}
                     </div>
                   </div>
                   {goal.id === "other" && selectedOptions[goal.id] && (
@@ -202,7 +212,7 @@ export const Hero = () => {
               ))}
             </div>
           </>
-        );
+        )
       case 2:
         return (
           <>
@@ -210,13 +220,10 @@ export const Hero = () => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <Wallet className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
-                ¿Cuál es tu situación financiera actual?
-              </h2>
+              <h2 className="text-3xl font-bold mb-6">¿Cuál es tu situación financiera actual?</h2>
             </div>
             <p className="text-gray-300 mb-10 text-xl">
-              Esta información nos ayudará a ofrecerte recomendaciones más
-              precisas. Todos los datos son confidenciales.
+              Esta información nos ayudará a ofrecerte recomendaciones más precisas. Todos los datos son confidenciales.
             </p>
 
             {/* Pasamos los props a Hero2 */}
@@ -227,7 +234,7 @@ export const Hero = () => {
               onInputChange={handleHero2InputChange}
             />
           </>
-        );
+        )
       case 3:
         return (
           <>
@@ -235,13 +242,10 @@ export const Hero = () => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <Signal className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
-                ¿Cuál es tu nivel de experiencia financiera?
-              </h2>
+              <h2 className="text-3xl font-bold mb-6">¿Cuál es tu nivel de experiencia financiera?</h2>
             </div>
             <p className="text-gray-300 mb-10 text-xl">
-              Estas preguntas nos ayudarán a adaptar el contenido y las
-              herramientas a tu nivel de conocimiento.
+              Estas preguntas nos ayudarán a adaptar el contenido y las herramientas a tu nivel de conocimiento.
             </p>
 
             <Hero3
@@ -255,7 +259,7 @@ export const Hero = () => {
               onKnowledgeChange4={setKnowledgeLevel4}
             />
           </>
-        );
+        )
       case 4:
         return (
           <>
@@ -263,21 +267,15 @@ export const Hero = () => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <ChartLine className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
-                ¿Qué áreas financieras te interesan más?
-              </h2>
+              <h2 className="text-3xl font-bold mb-6">¿Qué áreas financieras te interesan más?</h2>
             </div>
             <p className="text-gray-300 mb-10 text-xl">
-              Selecciona las áreas que más te interesen para personalizar el
-              contenido y las herramientas que verás.
+              Selecciona las áreas que más te interesen para personalizar el contenido y las herramientas que verás.
             </p>
 
-            <Hero4
-              selectedItems={selectedInterests}
-              setSelectedItems={setSelectedInterests}
-            />
+            <Hero4 selectedItems={selectedInterests} setSelectedItems={setSelectedInterests} />
           </>
-        );
+        )
       case 5:
         return (
           <>
@@ -285,13 +283,10 @@ export const Hero = () => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <Heart className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
-                ¿Cómo prefieres usar Finzen?
-              </h2>
+              <h2 className="text-3xl font-bold mb-6">¿Cómo prefieres usar Finzen?</h2>
             </div>
             <p className="text-gray-300 mb-10 text-xl">
-              Estas preferencias nos ayudarán a personalizar tu experiencia en
-              la aplicación.
+              Estas preferencias nos ayudarán a personalizar tu experiencia en la aplicación.
             </p>
 
             <Hero5
@@ -305,13 +300,13 @@ export const Hero = () => {
               propsChange4={setProps4}
             />
           </>
-        );
+        )
       default:
-        return null;
+        return null
     }
-  };
+  }
 
-  const progress = (currentStep / 5) * 100;
+  const progress = (currentStep / 5) * 100
 
   return (
     <div className="w-full bg-[#020817] min-h-screen flex items-center justify-center p-4 -mt-10">
@@ -336,9 +331,7 @@ export const Hero = () => {
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-        <div className="bg-[#020817] border border-gray-700 rounded-xl p-8 mb-8">
-          {renderStepContent()}
-        </div>
+        <div className="bg-[#020817] border border-gray-700 rounded-xl p-8 mb-8">{renderStepContent()}</div>
         <div className="flex justify-between">
           <button
             onClick={handleBack}
@@ -359,5 +352,5 @@ export const Hero = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

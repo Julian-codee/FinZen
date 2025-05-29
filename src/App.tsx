@@ -5,6 +5,7 @@ import { Hero } from './Components/Auth/Hero';
 import CustomProfile from './Components/Auth/CustomProfile';
 import { RegisterProvider } from './Components/Auth/RegisterContext';
 import { AuthPage } from './Components/Auth/AuthPage';
+import Accounts from './Components/Features/Accounts/Accounts'
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/register" element={<AuthPage />} /> {/* Asumiendo que AuthPage contiene Register */}
           <Route path="/custom-profile" element={<CustomProfile />} /> {/* Ruta corregida */}
           <Route path="/Reporting" element={<DashboardReporting />} />
+          <Route path="/Accounts" element={<Accounts />} />
           <Route path="/dashboard" element={<Hero />} />
           <Route path="/Hero" element={<Hero />} />
           {/* Eliminar /Profile si no es necesario, o aclarar su propósito */}

@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DollarSign, Target, Loader2, ArrowLeft } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useRegister } from "./RegisterContext"
@@ -18,6 +18,25 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const { updateRegisterData, submitRegister } = useRegister()
+
+  // Manejar el botón de retroceso del navegador
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      event.preventDefault()
+      onBack() // Llamar a la función onBack para volver al selector de perfil
+    }
+
+    // Agregar un estado al historial para interceptar el botón de retroceso
+    window.history.pushState(null, "", window.location.href)
+
+    // Escuchar el evento popstate
+    window.addEventListener("popstate", handlePopState)
+
+    // Cleanup
+    return () => {
+      window.removeEventListener("popstate", handlePopState)
+    }
+  }, [onBack])
 
   const getUserTypeTitle = (type: string) => {
     const titles = {
@@ -51,7 +70,7 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
         metaActual: Number.parseFloat(meta.replace(/,/g, "")),
       })
       await submitRegister()
-      navigate("/Hero")
+      navigate("/Reporting")
     } catch (error: any) {
       showErrorAlert(error.message || "Error al registrar el usuario")
     } finally {
