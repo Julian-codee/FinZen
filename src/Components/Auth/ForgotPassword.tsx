@@ -38,6 +38,7 @@ export default function Component() {
     });
     showSuccessAlert(response.data.message || "Código enviado al correo.");
     setCurrentStep(2);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error("Error in handleEmailSubmit:", error.response?.data || error.message);
     showErrorAlert(
@@ -57,7 +58,8 @@ export default function Component() {
     try {
       // Optional: Add an endpoint to verify the code if needed, or proceed to step 3
       setCurrentStep(3);
-    } catch (error: any) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error: unknown) {
       showErrorAlert("Error al verificar el código. Inténtalo de nuevo.");
     }
   };
@@ -91,6 +93,7 @@ export default function Component() {
       setCode("");
       setPassword("");
       setConfirmPassword("");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       showErrorAlert(
         error.response?.data?.message ||
