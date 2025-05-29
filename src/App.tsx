@@ -15,8 +15,8 @@ export default function App() {
           <Route path="/" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} /> {/* Asumiendo que AuthPage contiene Register */}
           <Route path="/custom-profile" element={<CustomProfile />} /> {/* Ruta corregida */}
-          <Route path="/Reporting" element={<DashboardReporting />} />
-          <Route path="/dashboard" element={<Hero />} />
+          <Route path="/Reporting" element={<Hero />} />
+          <Route path="/dashboard" element={<DashboardReporting />} />
           <Route path="/Hero" element={<Hero />} />
           <Route path='/Forgot' element={<ForgotPassword/>}/>
           {/* Eliminar /Profile si no es necesario, o aclarar su propósito */}

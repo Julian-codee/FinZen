@@ -7,18 +7,23 @@ import { Hero3 } from "../Ui/UiAuth/Hero3";
 import { Hero4 } from "../Ui/UiAuth/Hero4";
 import { Hero5 } from "../Ui/UiAuth/Hero5";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
+import { useRegister } from "./RegisterContext";
 
 export const Hero = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState<
     Record<string, boolean>
   >({});
+   const {  updateRegisterData,submitRegister } = useRegister();
   const [otherObjective, setOtherObjective] = useState("");
 
   // Estado para Hero2
   const [financialStatusOptions, setFinancialStatusOptions] = useState<
     Record<string, boolean>
   >({});
+
+  
+  
 
   // Estado para los inputs de Hero3
   const [knowledgeLevel, setKnowledgeLevel] = useState("");
@@ -111,14 +116,18 @@ export const Hero = () => {
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Si estamos en el último paso y pulsamos "Siguiente", podrías redirigir
-      // Por ejemplo, a un dashboard o a una página de resumen final.
-      // navigate("/dashboard");
-      console.log("¡Cuestionario completado!");
+      // Enviar los datos al backend
+      try {
+        await submitRegister(); // Llama a la función del contexto para enviar los dato
+        console.log("Registro exitoso");
+        navigate("/dashboard");
+      } catch (error) {
+        console.error("Error al enviar los datos:", error);
+      }
     }
   };
 
@@ -225,6 +234,7 @@ export const Hero = () => {
               onCheckboxChange={handleHero2CheckboxChange}
               financialInputs={financialInputs}
               onInputChange={handleHero2InputChange}
+              updateRegisterData={updateRegisterData}
             />
           </>
         );

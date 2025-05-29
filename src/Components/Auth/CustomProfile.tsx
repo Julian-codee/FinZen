@@ -49,7 +49,7 @@ export default function SimplifiedProfileSelector() {
   const [showHeroForm, setShowHeroForm] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
-  const { updateRegisterData, submitRegister } = useRegister()
+  const { updateRegisterData } = useRegister()
 
   const handleContinue = async () => {
     if (!selected) {
@@ -57,15 +57,20 @@ export default function SimplifiedProfileSelector() {
       return
     }
 
-    // Guardar el tipo de persona seleccionado
-    updateRegisterData({ tipoPersona: selected })
-
-    if (selected === "personalizado") {
-      // Para perfil personalizado, mostrar el componente Hero
-      setShowHeroForm(true)
-    } else {
-      // Para otros perfiles, mostrar el formulario de detalles simple
-      setShowDetailsForm(true)
+    setIsLoading(true);
+    try {
+      updateRegisterData({ tipoPersona: selected });
+      
+      if (selected === "personalizado") {
+        navigate("/Hero");
+      } else {
+        navigate("/Hero");
+      }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      showErrorAlert(error.message || "Error al registrar el usuario");
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -80,7 +85,7 @@ export default function SimplifiedProfileSelector() {
   }
 
   // Si se seleccionó otro perfil, mostrar UserDetailsForm
-  if (showDetailsForm && selected && selected !== "personalizado") {
+  if (UserDetailsForm && selected && selected !== "personalizado") {
     return <UserDetailsForm userType={selected} onBack={handleBack} />
   }
 

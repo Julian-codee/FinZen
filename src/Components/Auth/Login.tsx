@@ -48,6 +48,7 @@ export const Login = () => {
         setError(data.message || "Credenciales inválidas");
         showErrorAlert(data.message || "Credenciales inválidas");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setError("Error al iniciar sesion");
       showErrorAlert("No se pudo conectar con el servidor");
