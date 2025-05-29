@@ -13,8 +13,10 @@ interface UserDetailsFormProps {
 }
 
 export default function UserDetailsForm({ userType, onBack }: UserDetailsFormProps) {
-  const [ingresos, setIngresos] = useState("")
-  const [meta, setMeta] = useState("")
+  const [ingresos, setIngresos] = useState(""); // Valor real
+  const [ingresosFormatted, setIngresosFormatted] = useState(""); // Valor formateado
+  const [meta, setMeta] = useState(""); // Valor real
+  const [metaFormatted, setMetaFormatted] = useState(""); // Valor formateado
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
   const { updateRegisterData, submitRegister } = useRegister()
@@ -42,16 +44,19 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
       showErrorAlert("Por favor ingresa el monto de tu meta financiera")
       return
     }
+    const ingresoMensual = Number(ingresos);
+    const metaActual = Number(meta);
 
     setIsLoading(true)
     try {
       updateRegisterData({
         tipoPersona: userType,
-        ingresoMensual: Number.parseFloat(ingresos.replace(/,/g, "")),
-        metaActual: Number.parseFloat(meta.replace(/,/g, "")),
+        ingresoMensual:ingresoMensual,
+        metaActual:metaActual,
       })
       await submitRegister()
-      navigate("/Hero")
+      navigate("/dashboard")
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       showErrorAlert(error.message || "Error al registrar el usuario")
     } finally {
@@ -64,15 +69,21 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
     return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   }
 
+  
+
   const handleIngresosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCurrency(e.target.value)
-    setIngresos(formatted)
-  }
+    const rawValue = e.target.value.replace(/,/g, ""); // Elimina las comas para obtener el valor real
+    setIngresos(rawValue); // Actualiza el valor real
+    setIngresosFormatted(formatCurrency(rawValue)); // Actualiza el valor formateado
+  };
 
   const handleMetaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCurrency(e.target.value)
-    setMeta(formatted)
-  }
+    const rawValue = e.target.value.replace(/,/g, ""); // Elimina las comas para obtener el valor real
+    setMeta(rawValue); // Actualiza el valor real
+    setMetaFormatted(formatCurrency(rawValue)); // Actualiza el valor formateado
+  };
+
+  
 
   return (
     <div className="min-h-screen bg-[#020817] text-white flex flex-col items-center justify-center px-4 py-12">
@@ -97,7 +108,7 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                value={ingresos}
+                value={ingresosFormatted}
                 onChange={handleIngresosChange}
                 placeholder="0"
                 className="w-full pl-10 pr-4 py-3 bg-[#1E2530] border border-slate-500/30 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
@@ -115,7 +126,7 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
               <Target className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                value={meta}
+                value={metaFormatted}
                 onChange={handleMetaChange}
                 placeholder="0"
                 className="w-full pl-10 pr-4 py-3 bg-[#1E2530] border border-slate-500/30 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
