@@ -51,6 +51,7 @@ export const Register = () => {
       setIsLoading(true);
       setError("");
       window.location.href = `http://localhost:8080/finzen/auth/${provider}`;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setError(`Error al conectar con ${provider}`);
       setIsLoading(false);
@@ -105,6 +106,7 @@ export const Register = () => {
       setIsLoading(true);
       try {
         navigate("/custom-profile");
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         setError("Error al continuar al siguiente paso");
         showErrorAlert("Error al continuar al siguiente paso");

@@ -74,7 +74,7 @@ export default function CustomProfile() {
   const [selected, setSelected] = useState<ProfileType>("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { updateRegisterData, submitRegister } = useRegister();
+  const { updateRegisterData } = useRegister();
 
   const handleContinue = async () => {
     if (!selected) {
@@ -85,12 +85,13 @@ export default function CustomProfile() {
     setIsLoading(true);
     try {
       updateRegisterData({ tipoPersona: selected });
-      await submitRegister();
+      
       if (selected === "personalizado") {
         navigate("/Hero");
       } else {
         navigate("/Hero");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       showErrorAlert(error.message || "Error al registrar el usuario");
     } finally {
