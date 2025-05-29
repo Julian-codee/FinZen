@@ -1,8 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { CheckCircle, Rocket, Users, Briefcase, HeartHandshakeIcon, Settings } from "lucide-react"
+import { CheckCircle, Rocket, Users, Briefcase, HeartHandshakeIcon, Settings, Loader2 } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { useRegister } from "./RegisterContext"
+import { showErrorAlert } from "../Ui/Alerts/Alerts"
 import UserDetailsForm from "./UserDeatailsForm"
+import { Hero } from "./Hero"
 
 type ProfileType = "padre_de_familia" | "joven_profesional" | "emprendedor" | "jubilado" | "personalizado" | ""
 
@@ -42,19 +46,41 @@ const profileOptions = [
 export default function SimplifiedProfileSelector() {
   const [selected, setSelected] = useState<ProfileType>("")
   const [showDetailsForm, setShowDetailsForm] = useState(false)
+  const [showHeroForm, setShowHeroForm] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+  const { updateRegisterData, submitRegister } = useRegister()
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!selected) {
+      showErrorAlert("Por favor selecciona un tipo de usuario")
       return
     }
-    setShowDetailsForm(true)
+
+    // Guardar el tipo de persona seleccionado
+    updateRegisterData({ tipoPersona: selected })
+
+    if (selected === "personalizado") {
+      // Para perfil personalizado, mostrar el componente Hero
+      setShowHeroForm(true)
+    } else {
+      // Para otros perfiles, mostrar el formulario de detalles simple
+      setShowDetailsForm(true)
+    }
   }
 
   const handleBack = () => {
     setShowDetailsForm(false)
+    setShowHeroForm(false)
   }
 
-  if (showDetailsForm && selected) {
+  // Si se seleccionó perfil personalizado, mostrar Hero
+  if (showHeroForm && selected === "personalizado") {
+    return <Hero />
+  }
+
+  // Si se seleccionó otro perfil, mostrar UserDetailsForm
+  if (showDetailsForm && selected && selected !== "personalizado") {
     return <UserDetailsForm userType={selected} onBack={handleBack} />
   }
 
@@ -88,12 +114,19 @@ export default function SimplifiedProfileSelector() {
 
       <button
         className={`bg-blue-500 hover:bg-blue-600/100 transition px-20 py-2 rounded-md text-white font-semibold ${
-          !selected ? "opacity-50 cursor-not-allowed" : ""
+          isLoading || !selected ? "opacity-50 cursor-not-allowed" : ""
         }`}
         onClick={handleContinue}
-        disabled={!selected}
+        disabled={isLoading || !selected}
       >
-        Continuar →
+        {isLoading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin inline-block mr-2" />
+            Procesando...
+          </>
+        ) : (
+          "Continuar →"
+        )}
       </button>
     </div>
   )

@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { DollarSign, Target, Loader2, ArrowLeft } from "lucide-react"
 import { useNavigate } from "react-router-dom"
