@@ -15,6 +15,7 @@ import {
   BadgeDollarSign,
   DollarSign
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -22,6 +23,9 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
+
+  const Navigate = useNavigate();
+
   return (
     <div
       className={`
@@ -98,6 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
            bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-lg py-3 flex items-center justify-center w-full
             cursor-pointer text-lg font-medium transition-colors duration-200
           `}
+          onClick={() => Navigate("/Transaction")}
         >
           <Plus className={`w-5 h-5 ${isOpen ? 'mr-2' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Nueva Transacción</span>}
