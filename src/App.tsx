@@ -6,6 +6,7 @@ import CustomProfile from './Components/Auth/CustomProfile';
 import { RegisterProvider } from './Components/Auth/RegisterContext';
 import { AuthPage } from './Components/Auth/AuthPage';
 import ForgotPassword from './Components/Auth/ForgotPassword';
+import {Sidebar} from './Components/Ui/UiDashBoard/SideBar';
 
 export default function App() {
   return (
@@ -19,6 +20,15 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardReporting />} />
           <Route path="/Hero" element={<Hero />} />
           <Route path='/Forgot' element={<ForgotPassword/>}/>
+          <Route
+            path='/sideBar'
+            element={
+              <Sidebar
+                isOpen={true}
+                toggleSidebar={() => {}}
+              />
+            }
+          />
           {/* Eliminar /Profile si no es necesario, o aclarar su propósito */}
         </Routes>
       </BrowserRouter>

@@ -1,10 +1,17 @@
-
+import { useState } from "react"; // Necesitamos useState aquí
 import * as XLSX from "xlsx";
 import DateRangeSelector from "./DateRangeSelector";
 import Filters from "./Filters";
 import DashboardTabs from "./DashboardTabs";
+import {Sidebar} from "../../../Ui/UiDashBoard/SideBar"; // Asegúrate de que la ruta sea correcta
 
 const FinancialDashboard = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Estado del sidebar gestionado aquí
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   const financialData = [
     { month: "Ene", income: 4000, expenses: 2300 },
     { month: "Feb", income: 4500, expenses: 2500 },
@@ -33,30 +40,45 @@ const FinancialDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#020817] text-white p-6">
-      <div>
-        <h1 className="text-3xl font-bold">Informes</h1>
-        <p className="mt-2 text-gray-400">
-          Analiza tus finanzas con informes detallados y visualizaciones
-          personalizables.
-        </p>
-      </div>
+    // Contenedor principal que gestiona el layout del sidebar y el contenido
+    <div className="flex min-h-screen"> {/* Contenedor flex para el layout */}
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} /> {/* Sidebar dentro del dashboard */}
 
-      <div className="flex justify-between items-center my-6">
-        <DateRangeSelector />
-        <button
-          onClick={exportToExcel}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center gap-2"
-        >
-          Exportar
-        </button>
-      </div>
+      {/*
+        El contenido principal del dashboard ajusta su margen izquierdo dinámicamente
+        basado en el estado del sidebar que ahora gestiona este mismo componente.
+      */}
+      <div
+        className={`
+          flex-grow p-6 bg-[#020817] text-white
+          transition-all duration-300 ease-in-out
+          ${isSidebarOpen ? 'ml-64' : 'ml-20'} // Ajusta el margen según el ancho del sidebar
+        `}
+      >
+        <div>
+          <h1 className="text-3xl font-bold">Informes</h1>
+          <p className="mt-2 text-gray-400">
+            Analiza tus finanzas con informes detallados y visualizaciones
+            personalizables.
+          </p>
+        </div>
 
-      <Filters />
-      <DashboardTabs
-        financialData={financialData}
-        categoryData={categoryData}
-      />
+        <div className="flex justify-between items-center my-6">
+          <DateRangeSelector />
+          <button
+            onClick={exportToExcel}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md flex items-center gap-2"
+          >
+            Exportar
+          </button>
+        </div>
+
+        <Filters />
+        <DashboardTabs
+          financialData={financialData}
+          categoryData={categoryData}
+        />
+      </div>
     </div>
   );
 };
