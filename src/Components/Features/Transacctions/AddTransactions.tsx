@@ -31,7 +31,6 @@ export const AddTransaction: React.FC = () => {
   const [displayMonto, setDisplayMonto] = useState<string>('0,00');
   const [tipoTransaccion, setTipoTransaccion] = useState<'gasto' | 'ingreso'>('gasto');
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null);
-  const [fecha] = useState<string>(new Date().toISOString().split('T')[0]);
   const [nota, setNota] = useState<string>('');
 
   //SideBar
@@ -253,7 +252,7 @@ export const AddTransaction: React.FC = () => {
                     key={categoria.nombre}
                     className={`flex flex-col border-2 items-center justify-center p-2.5 rounded-md transition-all duration-300
                       ${categoriaSeleccionada === categoria.nombre 
-                        ? 'bg-gradient-to-r from-indigo-500 to-blue-500 border-indigo-500 transition-colors ' // Estilo de selección
+                        ? 'bg-gradient-to-r from-indigo-500 to-blue-500 border-indigo-500 transition-colors' // Estilo de selección
                         : `bg-[#020817] ${neonClasses} shadow-md hover:shadow-lg` // Estilo de neón
                       }
                     `}
