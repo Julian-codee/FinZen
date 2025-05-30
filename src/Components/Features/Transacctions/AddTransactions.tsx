@@ -271,7 +271,7 @@ export const AddTransaction: React.FC = () => {
           <div className="relative inline-block w-full mb-6">
             <button
               onClick={toggleCalendar}
-              className="inline-flex items-center gap-2 w-full h-12 bg-[#020817] border border-white/40 text-gray-300 text-sm rounded-md px-4 py-2"
+              className="inline-flex items-center gap-2 w-full h-12 bg-[#020817] border border-white/40 text-gray-300 text-sm rounded-md px-4 py-2 focus:ring-2 focus:ring-violet-500"
             >
               <CalendarDays className="w-4 h-4 text-gray-400" />
               <span>{formatDate()}</span>
