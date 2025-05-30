@@ -7,6 +7,7 @@ import { RegisterProvider } from './Components/Auth/RegisterContext';
 import { AuthPage } from './Components/Auth/AuthPage';
 import ForgotPassword from './Components/Auth/ForgotPassword';
 import {Sidebar} from './Components/Ui/UiDashBoard/SideBar';
+import { AddTransaction } from './Components/Features/Transacctions/AddTransactions';
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/dashboard" element={<DashboardReporting />} />
           <Route path="/Hero" element={<Hero />} />
           <Route path='/Forgot' element={<ForgotPassword/>}/>
+          <Route path='/Transaction' element={<AddTransaction/>}/>
           <Route
             path='/sideBar'
             element={
