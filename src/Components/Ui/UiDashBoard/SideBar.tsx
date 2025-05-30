@@ -12,7 +12,8 @@ import {
   Settings,
   Plus,
   Menu,
-  BadgeDollarSign
+  BadgeDollarSign,
+  DollarSign
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -34,7 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
         onClick={toggleSidebar}
         className={`
           absolute -right-4.5 top-0.5
-          bg-[#020817] text-white p-4 border-l border-white/40 rounded-full shadow-lg
+          bg-[#020817] text-white p-4 border-l border-white/60 rounded-full shadow-lg
           
           transition-transform duration-300 ease-in-out
           ${isOpen ? 'rotate-180' : 'rotate-180'}
@@ -45,7 +46,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       </button>
 
       <div className="px-5 mb-10 flex items-center">
-        {isOpen && <h1 className="text-2xl font-bold flex"> <BadgeDollarSign className='mr-3 m-1'/> Finzen</h1>}
+        {isOpen && <h1 className="text-2xl font-bold flex bg-gradient-to-r from-indigo-500 to-blue-500 bg-clip-text text-transparent"> <BadgeDollarSign className='mr-3 m-1 text-indigo-500/90'/> Finzen</h1>}
       </div>
 
       <ul className="flex-grow">
@@ -66,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Informes</span>}
         </li>
         <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
-          <FileText className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
+          <DollarSign className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Cuentas</span>}
         </li>
         <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
@@ -85,7 +86,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           <Target className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Metas Financieras</span>}
         </li>
-        <li className={`flex items-center px-4 py-3 cursor:pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
           <Settings className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Configuración</span>}
         </li>
@@ -94,10 +95,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       <div className="px-5">
         <button
           className={`
-            bg-[#4CAF50] text-white rounded-lg py-3 flex items-center justify-center w-full
-            cursor-pointer text-lg font-medium hover:bg-[#45a049] transition-colors duration-200
+           bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-lg py-3 flex items-center justify-center w-full
+            cursor-pointer text-lg font-medium transition-colors duration-200
           `}
-          onClick={toggleSidebar}
         >
           <Plus className={`w-5 h-5 ${isOpen ? 'mr-2' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Nueva Transacción</span>}
