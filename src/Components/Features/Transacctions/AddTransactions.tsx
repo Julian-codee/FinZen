@@ -1,48 +1,55 @@
 // src/components/AgregarTransaccion.tsx
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import {
   CalendarDays,
   ShoppingCart,
-  Bus,
-  Film,
-  Lightbulb,
   Home,
-  ShoppingBag,
-  Hospital,
-  Utensils,
   Coffee,
-  Globe,
-  Smartphone,
-  BookOpen,
   Gamepad2,
   Music,
   Plus,
   Delete,
   TrendingDown,
-  TrendingUp
-} from 'lucide-react';
-import React, { useState, useEffect } from 'react';
-import { DayPicker } from 'react-day-picker';
-import { Sidebar } from '../../Ui/UiDashBoard/SideBar';
+  TrendingUp,
+  UtensilsCrossed,
+  Zap,
+  Heart,
+  Pizza,
+  Wifi,
+  Phone,
+  GraduationCap,
+  PartyPopper,
+  Car,
+} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { DayPicker } from "react-day-picker";
+import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
 
 export const AddTransaction: React.FC = () => {
-  const [monto, setMonto] = useState<string>('0');
-  const [displayMonto, setDisplayMonto] = useState<string>('0,00');
-  const [tipoTransaccion, setTipoTransaccion] = useState<'gasto' | 'ingreso'>('gasto');
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null);
-  const [nota, setNota] = useState<string>('');
+  const [monto, setMonto] = useState<string>("0");
+  const [displayMonto, setDisplayMonto] = useState<string>("0,00");
+  const [tipoTransaccion, setTipoTransaccion] = useState<"gasto" | "ingreso">(
+    "gasto"
+  );
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<
+    string | null
+  >(null);
+  const [nota, setNota] = useState<string>("");
+  const [cuentaSeleccionada, setCuentaSeleccionada] = useState<string>("");
 
-  //SideBar
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Estado del sidebar gestionado aquí
+  // Sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  //Calendario
+  // Calendario
   const [showCalendar, setShowCalendar] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date()); // Inicializado con la fecha actual
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
+    new Date()
+  );
 
   const toggleCalendar = () => setShowCalendar(!showCalendar);
 
@@ -55,74 +62,84 @@ export const AddTransaction: React.FC = () => {
 
   const formatDate = () => {
     if (selectedDate) {
-      return format(selectedDate, 'd MMMM', { locale: es });
+      return format(selectedDate, "d MMMM", { locale: es });
     }
-    return 'Selecciona una fecha';
+    return "Selecciona una fecha";
   };
 
   useEffect(() => {
-    const cleanMonto = monto.replace(/\./g, '').replace(/,/g, '');
-    const formatter = new Intl.NumberFormat('es-CO', {
+    const cleanMonto = monto.replace(/\./g, "").replace(/,/g, "");
+    const formatter = new Intl.NumberFormat("es-CO", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-      useGrouping: true
+      useGrouping: true,
     });
 
-    const parsedMonto = parseFloat(cleanMonto.replace(',', '.'));
+    const parsedMonto = parseFloat(cleanMonto.replace(",", "."));
 
     if (!isNaN(parsedMonto)) {
       setDisplayMonto(formatter.format(parsedMonto));
     } else {
-      setDisplayMonto('0,00');
+      setDisplayMonto("0,00");
     }
 
-    if (monto === '0,') {
-      setDisplayMonto('0,');
-    } else if (monto.startsWith('0') && monto.length > 1 && !monto.startsWith('0,')) {
-      setDisplayMonto(formatter.format(parseFloat(cleanMonto.substring(1).replace(',', '.'))));
-    } else if (monto.includes(',')) {
-      const [intPart, decPart] = monto.split(',');
-      let formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    if (monto === "0,") {
+      setDisplayMonto("0,");
+    } else if (
+      monto.startsWith("0") &&
+      monto.length > 1 &&
+      !monto.startsWith("0,")
+    ) {
+      setDisplayMonto(
+        formatter.format(parseFloat(cleanMonto.substring(1).replace(",", ".")))
+      );
+    } else if (monto.includes(",")) {
+      const [intPart, decPart] = monto.split(",");
+      let formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
       let displayedDecPart = decPart;
-      if (decPart === undefined || decPart === '') {
-        displayedDecPart = '';
+      if (decPart === undefined || decPart === "") {
+        displayedDecPart = "";
       } else if (decPart.length === 1) {
-        displayedDecPart += '0';
+        displayedDecPart += "0";
       }
       setDisplayMonto(`${formattedInt},${displayedDecPart}`);
     }
   }, [monto]);
 
   const handleMontoClick = (valor: string) => {
-    setMonto(prevMonto => {
+    setMonto((prevMonto) => {
       let currentInput = prevMonto;
 
-      if (valor === 'del') {
-        if (currentInput.length === 1 || currentInput === '0') {
-          return '0';
+      if (valor === "del") {
+        if (currentInput.length === 1 || currentInput === "0") {
+          return "0";
         }
-        if (currentInput.endsWith(',') && currentInput.length === 2 && currentInput.startsWith('0')) {
-          return '0';
+        if (
+          currentInput.endsWith(",") &&
+          currentInput.length === 2 &&
+          currentInput.startsWith("0")
+        ) {
+          return "0";
         }
         return currentInput.slice(0, -1);
       }
 
-      if (valor === ',') {
-        if (currentInput.includes(',')) {
+      if (valor === ",") {
+        if (currentInput.includes(",")) {
           return currentInput;
         }
-        if (currentInput === '0') {
-          return '0,';
+        if (currentInput === "0") {
+          return "0,";
         }
-        return currentInput + ',';
+        return currentInput + ",";
       }
 
-      if (currentInput === '0' && valor !== ',') {
+      if (currentInput === "0" && valor !== ",") {
         return valor;
       }
 
-      if (currentInput.includes(',')) {
-        const parts = currentInput.split(',');
+      if (currentInput.includes(",")) {
+        const parts = currentInput.split(",");
         if (parts[1] && parts[1].length >= 2) {
           return currentInput;
         }
@@ -133,57 +150,129 @@ export const AddTransaction: React.FC = () => {
 
   const handleGuardarTransaccion = () => {
     const transaccion = {
-      monto: parseFloat(monto.replace(',', '.')),
+      monto: parseFloat(monto.replace(",", ".")),
       tipo: tipoTransaccion,
       categoria: categoriaSeleccionada,
-      fecha: selectedDate ? selectedDate.toISOString().split('T')[0] : null,
+      fecha: selectedDate ? selectedDate.toISOString().split("T")[0] : null,
       nota: nota,
+      cuenta: cuentaSeleccionada,
     };
-    console.log('Transacción a guardar:', transaccion);
-    setMonto('0');
-    setTipoTransaccion('gasto');
+    console.log("Transacción a guardar:", transaccion);
+    // Reiniciar estados
+    setMonto("0");
+    setTipoTransaccion("gasto");
     setCategoriaSeleccionada(null);
     setSelectedDate(new Date());
-    setNota('');
+    setNota("");
+    setCuentaSeleccionada("");
   };
 
-  const categorias = [
-    { nombre: 'Comida', icono: <Utensils size={18} /> },
-    { nombre: 'Supermercado', icono: <ShoppingCart size={18} /> },
-    { nombre: 'Transporte', icono: <Bus size={18} /> },
-    { nombre: 'Entretenimiento', icono: <Film size={18} /> },
-    { nombre: 'Servicios', icono: <Lightbulb size={18} /> },
-    { nombre: 'Hogar', icono: <Home size={18} /> },
-    { nombre: 'Compras', icono: <ShoppingBag size={18} /> },
-    { nombre: 'Salud', icono: <Hospital size={18} /> },
-    { nombre: 'Restaurante', icono: <Utensils size={18} /> },
-    { nombre: 'Café', icono: <Coffee size={18} /> },
-    { nombre: 'Internet', icono: <Globe size={18} /> },
-    { nombre: 'Teléfono', icono: <Smartphone size={18} /> },
-    { nombre: 'Educación', icono: <BookOpen size={18} /> },
-    { nombre: 'Ocio', icono: <Gamepad2 size={18} /> },
-    { nombre: 'Música', icono: <Music size={18} /> },
-    { nombre: 'Otros', icono: <Plus size={18} /> },
-  ];
-
-  // Colores base para el borde de neón
-  const coloresNeon = [
-    'border-[#f9c94b]/60 ',
-    'border-[#60f410]/60 ',
-    'border-[#1055f4]/60 ',
-    'border-purple-500/60 ',
-    'border-yellow-500/60 ',
-    'border-teal-500/60' ,
-    'border-indigo-500/60' ,
-    'border-pink-500/60 ',
-    'border-orange-500/60 ',
-    'border-cyan-500/60' ,
-    'border-lime-500/60 ',
-    'border-fuchsia-500/60 ',
-    'border-rose-500/60 ',
-    'border-emeral-500/60 ',
-    'border-amber-500/60 ',
-    'border-violet-500/60 ',
+  const categories = [
+    {
+      id: "comida",
+      name: "Comida",
+      icon: <UtensilsCrossed className="w-4 h-4" />,
+      bgColor: "bg-[#FED7AA]",
+      textColor: "text-[#EA580C]",
+    },
+    {
+      id: "supermercado",
+      name: "Supermercado",
+      icon: <ShoppingCart className="w-4 h-4" />,
+      bgColor: "bg-[#BBF7D0]",
+      textColor: "text-[#059669]",
+    },
+    {
+      id: "vivienda",
+      name: "Vivienda",
+      icon: <Home className="w-4 h-4" />,
+      bgColor: "bg-[#DBEAFE]",
+      textColor: "text-[#2563EB]",
+    },
+    {
+      id: "transporte",
+      name: "Transporte",
+      icon: <Car className="w-4 h-4" />,
+      bgColor: "bg-[#BFDBFE]",
+      textColor: "text-[#3B82F6]",
+    },
+    {
+      id: "entretenimiento",
+      name: "Entretenimiento",
+      icon: <Gamepad2 className="w-4 h-4" />,
+      bgColor: "bg-[#E9D5FF]",
+      textColor: "text-[#9333EA]",
+    },
+    {
+      id: "servicios",
+      name: "Servicios",
+      icon: <Zap className="w-4 h-4" />,
+      bgColor: "bg-[#FEF3C7]",
+      textColor: "text-[#D97706]",
+    },
+    {
+      id: "cafe",
+      name: "Café",
+      icon: <Coffee className="w-4 h-4" />,
+      bgColor: "bg-[#FED7AA]",
+      textColor: "text-[#92400E]",
+    },
+    {
+      id: "salud",
+      name: "Salud",
+      icon: <Heart className="w-4 h-4" />,
+      bgColor: "bg-[#FECACA]",
+      textColor: "text-[#DC2626]",
+    },
+    {
+      id: "restaurante",
+      name: "Restaurante",
+      icon: <Pizza className="w-4 h-4" />,
+      bgColor: "bg-[#FED7AA]",
+      textColor: "text-[#EA580C]",
+    },
+    {
+      id: "internet",
+      name: "Internet",
+      icon: <Wifi className="w-4 h-4" />,
+      bgColor: "bg-[#BFDBFE]",
+      textColor: "text-[#3B82F6]",
+    },
+    {
+      id: "telefono",
+      name: "Teléfono",
+      icon: <Phone className="w-4 h-4" />,
+      bgColor: "bg-[#E9D5FF]",
+      textColor: "text-[#9333EA]",
+    },
+    {
+      id: "educacion",
+      name: "Educación",
+      icon: <GraduationCap className="w-4 h-4" />,
+      bgColor: "bg-[#BBF7D0]",
+      textColor: "text-[#059669]",
+    },
+    {
+      id: "ocio",
+      name: "Ocio",
+      icon: <PartyPopper className="w-4 h-4" />,
+      bgColor: "bg-[#FECACA]",
+      textColor: "text-[#DC2626]",
+    },
+    {
+      id: "musica",
+      name: "Música",
+      icon: <Music className="w-4 h-4" />,
+      bgColor: "bg-[#E9D5FF]",
+      textColor: "text-[#9333EA]",
+    },
+    {
+      id: "otros",
+      name: "Otros",
+      icon: <Plus className="w-4 h-4" />,
+      bgColor: "bg-[#F3F4F6]",
+      textColor: "text-[#6B7280]",
+    },
   ];
 
   return (
@@ -191,33 +280,59 @@ export const AddTransaction: React.FC = () => {
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       <div className="min-h-screen bg-[#020817] text-white flex flex-col items-center justify-center py-4 px-2">
-        <div className="w-[95%] sm:w-[80%]b border border-white/40 md:w-[60%] lg:w-[40%] bg-[#020817] rounded-lg shadow-lg p-4">
+        <div className="w-[95%] sm:w-[80%] md:w-[60%] lg:w-[40%] bg-[#020817] rounded-lg shadow-lg p-4">
           <h1 className="text-xl font-bold mb-1">Agregar Transacción</h1>
-          <p className="text-gray-400 text-sm mb-4">Registra tus gastos e ingresos de manera rápida y sencilla.</p>
-
+          <p className="text-gray-400 text-sm mb-4">
+            Registra tus gastos e ingresos de manera rápida y sencilla.
+          </p>
+          <p className="text-left mb-2 pl-2.5">Nombre de la Transacción</p>{" "}
+          {/* Ajustado a pl-2.5 */}
+          <input
+            type="text"
+            placeholder="Nombre de la Transaccion"
+            className="w-full p-2.5 rounded-md bg-[#020817] border border-white/40 text-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500 pl-2.5 mb-4"
+          />
           <div className="flex rounded-md p-0.5 mb-4">
             <button
-              className={`flex-1 py-5 text-base border m-2 border-white/40 rounded-md font-semibold transition-colors duration-200 ${tipoTransaccion === 'gasto' ? 'bg-rose-500 text-white' : 'text-red-500 hover:bg-neutral-700'}`}
-              onClick={() => setTipoTransaccion('gasto')}
+              className={`flex-1 py-5 text-base border m-2 border-white/40 rounded-md font-semibold transition-colors duration-200 ${
+                tipoTransaccion === "gasto"
+                  ? "bg-rose-500 text-white"
+                  : "text-red-500 hover:bg-neutral-700"
+              }`}
+              onClick={() => setTipoTransaccion("gasto")}
             >
               <TrendingDown className="inline-block mr-1" size={18} /> Gasto
             </button>
             <button
-              className={`flex-1 py-2 text-base border m-2 border-white/40 rounded-md font-semibold transition-colors duration-200 ${tipoTransaccion === 'ingreso' ? 'bg-green-600 text-white' : 'text-green-600 hover:bg-neutral-700'}`}
-              onClick={() => setTipoTransaccion('ingreso')}
+              className={`flex-1 py-2 text-base border m-2 border-white/40 rounded-md font-semibold transition-colors duration-200 ${
+                tipoTransaccion === "ingreso"
+                  ? "bg-green-600 text-white"
+                  : "text-green-600 hover:bg-neutral-700"
+              }`}
+              onClick={() => setTipoTransaccion("ingreso")}
             >
               <TrendingUp className="inline-block mr-1" size={18} /> Ingreso
             </button>
           </div>
-
           <div className="mb-4">
             <h2 className="text-lg font-semibold mb-2">Monto</h2>
             <div className="flex justify-end mb-3">
-              <span className="text-3xl font-bold text-white">$ {displayMonto}</span>
+              <span className="text-3xl font-bold text-white">
+                $ {displayMonto}
+              </span>
             </div>
 
             <div className="grid grid-cols-4 gap-1.5 mb-3">
-              {['10,000','30,000' ,'50,000' ,'60,000' ,'80,000' ,'100,000' ,'300,000','500,000' ].map((val) => (
+              {[
+                "10,000",
+                "30,000",
+                "50,000",
+                "60,000",
+                "80,000",
+                "100,000",
+                "300,000",
+                "500,000",
+              ].map((val) => (
                 <button
                   key={val}
                   className="col-span-1 bg-neutral-800 hover:bg-neutral-700 text-gray-300 py-2.5 rounded-md text-base font-medium"
@@ -228,46 +343,71 @@ export const AddTransaction: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-3 gap-1.5">
-              {['1', '2', '3', '4', '5', '6', '7', '8', '9', ',', '0', 'del'].map((key) => (
+              {[
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6",
+                "7",
+                "8",
+                "9",
+                ",",
+                "0",
+                "del",
+              ].map((key) => (
                 <button
                   key={key}
-                  className={`py-3 border border-white/40 rounded-md text-xl font-bold ${key === 'del' ? 'bg-[#020817] hover:bg-neutral-700 text-red-400' : 'bg-[#020817] hover:bg-neutral-600'}`}
-                  onClick={() => handleMontoClick(key === 'del' ? 'del' : key)}
+                  className={`py-3 border border-white/40 rounded-md text-xl font-bold ${
+                    key === "del"
+                      ? "bg-[#020817] hover:bg-neutral-700 text-red-400"
+                      : "bg-[#020817] hover:bg-neutral-600"
+                  }`}
+                  onClick={() => handleMontoClick(key === "del" ? "del" : key)}
                 >
-                  {key === 'del' ? <Delete size={25} className='ml-17' /> : key}
+                  {key === "del" ? <Delete size={25} className="ml-17" /> : key}
                 </button>
               ))}
             </div>
           </div>
 
+
+          {/* Sección de Categoría */}
           <div className="mb-4">
             <h2 className="text-lg font-semibold mb-2">Categoría</h2>
             <div className="grid grid-cols-4 gap-1.5">
-              {categorias.map((categoria, index) => {
-                // Obtiene las clases de borde y sombra del array de colores de neón
-                const neonClasses = coloresNeon[index % coloresNeon.length];
-
-                return (
-                  <button
-                    key={categoria.nombre}
-                    className={`flex flex-col border-2 items-center justify-center p-2.5 rounded-md transition-all duration-300
-                      ${categoriaSeleccionada === categoria.nombre 
-                        ? 'bg-gradient-to-r from-indigo-500 to-blue-500 border-indigo-500 transition-colors' // Estilo de selección
-                        : `bg-[#020817] ${neonClasses} shadow-md hover:shadow-lg` // Estilo de neón
-                      }
-                    `}
-                    onClick={() => setCategoriaSeleccionada(categoria.nombre)}
+              {" "}
+              {/* Ajustado a gap-1.5 para consistencia */}
+              {categories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setCategoriaSeleccionada(category.id)}
+                  className={`${
+                    category.bgColor
+                  } rounded-lg p-2 flex flex-col items-center justify-center min-h-[60px] transition-all hover:scale-105
+                    ${
+                      categoriaSeleccionada === category.id
+                        ? "ring-2 ring-blue-500" // Estilo de selección, compatible con tu estética
+                        : ""
+                    }
+                  `}
+                >
+                  <div className={`${category.textColor} mb-1`}>
+                    {category.icon}
+                  </div>
+                  <span
+                    className={`${category.textColor} text-xs font-medium text-center leading-tight`}
                   >
-                    <span className="mb-0.5">{categoria.icono}</span>
-                    <span className="text-xs text-gray-300">{categoria.nombre}</span>
-                  </button>
-                );
-              })}
+                    {category.name}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
 
 
-            {/*Calendario*/}
+          {/* Calendario */}
           <div className="relative inline-block w-full mb-6">
             <button
               onClick={toggleCalendar}
@@ -286,14 +426,31 @@ export const AddTransaction: React.FC = () => {
                   numberOfMonths={1}
                   locale={es}
                   modifiersClassNames={{
-                    selected: 'bg-blue-600 text-white',
-                    today: 'border border-white',
+                    selected: "bg-blue-600 text-white",
+                    today: "border border-white",
                   }}
                 />
               </div>
             )}
           </div>
 
+
+          {/* Campo de selección de Cuenta */}
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold mb-2">Presupuesto</h2>
+            <select
+              value={cuentaSeleccionada}
+              onChange={(e) => setCuentaSeleccionada(e.target.value)}
+              className="w-full p-2.5 rounded-md bg-[#020817] border border-white/40 text-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            >
+              <option value="" disabled>
+                Selecciona un presupuesto
+              </option>
+              <option value="efectivo">Efectivo</option>
+              <option value="banco">Cuenta de Banco</option>
+              <option value="tarjeta_credito">Tarjeta de Crédito</option>
+            </select>
+          </div>
           <div className="mb-6">
             <h2 className="text-lg font-semibold mb-2">Nota (Opcional)</h2>
             <textarea
@@ -304,7 +461,6 @@ export const AddTransaction: React.FC = () => {
               className="w-full p-2.5 rounded-md bg-[#020817] border border-white/40 text-gray-300 focus:outline-none focus:ring-2 focus:ring-violet-500 resize-y"
             ></textarea>
           </div>
-
           <button
             onClick={handleGuardarTransaccion}
             className="w-full bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-3 rounded-md text-lg transition-colors duration-200"
