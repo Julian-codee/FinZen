@@ -38,7 +38,7 @@ export const Login = () => {
 
         // Redirigir al dashboard después de un pequeño delay para mostrar el mensaje
         setTimeout(() => {
-          navigate("/Reporting");
+          navigate("/BudgetDashboard");
         }, 2000);
       } else {
         setError(data.message || "Credenciales inválidas");
