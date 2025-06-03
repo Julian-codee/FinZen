@@ -54,7 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       </div>
 
       <ul className="flex-grow">
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/")}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/Home")}>
           <Home className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden" >Inicio</span>}
         </li>
@@ -62,7 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           <ArrowLeftRight className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Transacciones</span>}
         </li>
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/BudgetDashboard")}>
           <Wallet className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Presupuesto</span>}
         </li>
