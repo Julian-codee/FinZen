@@ -43,7 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           
           transition-transform duration-300 ease-in-out
           ${isOpen ? 'rotate-180' : 'rotate-180'}
-          z-30
+          z-30 cursor-pointer
         `}
       >
         <Menu className="w-6 h-6" />
@@ -54,11 +54,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       </div>
 
       <ul className="flex-grow">
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/")}>
           <Home className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
-          {isOpen && <span className="whitespace-nowrap overflow-hidden">Inicio</span>}
+          {isOpen && <span className="whitespace-nowrap overflow-hidden" >Inicio</span>}
         </li>
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/Transactions")}>
           <ArrowLeftRight className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Transacciones</span>}
         </li>
@@ -66,7 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           <Wallet className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Presupuesto</span>}
         </li>
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/Reporting")}>
           <BarChart2 className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Informes</span>}
         </li>
@@ -102,7 +102,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
            bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-lg py-3 flex items-center justify-center w-full
             cursor-pointer text-lg font-medium transition-colors duration-200
           `}
-          onClick={() => Navigate("/Transaction")}
+          onClick={() => Navigate("/AddTransaction")}
         >
           <Plus className={`w-5 h-5 ${isOpen ? 'mr-2' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Nueva Transacción</span>}

@@ -8,20 +8,23 @@ import { AuthPage } from './Components/Auth/AuthPage';
 import ForgotPassword from './Components/Auth/ForgotPassword';
 import {Sidebar} from './Components/Ui/UiDashBoard/SideBar';
 import { AddTransaction } from './Components/Features/Transacctions/AddTransactions';
+import { DashBoardPrincipal } from './Components/Features/DashBoard/DashBoardPrincipal';
+import { Transactions } from './Components/Features/Transacctions/Transactions';
 
 export default function App() {
   return (
     <RegisterProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<AuthPage />} />
+          <Route path="/" element={<DashBoardPrincipal />} /> {/* Ruta principal */}
           <Route path="/register" element={<AuthPage />} /> {/* Asumiendo que AuthPage contiene Register */}
           <Route path="/custom-profile" element={<CustomProfile />} /> {/* Ruta corregida */}
           <Route path="/Reporting" element={<DashboardReporting />} />
           <Route path="/dashboard" element={<DashboardReporting />} />
           <Route path="/Hero" element={<Hero />} />
           <Route path='/Forgot' element={<ForgotPassword/>}/>
-          <Route path='/Transaction' element={<AddTransaction/>}/>
+          <Route path='/AddTransaction' element={<AddTransaction/>}/>
+          <Route path='/Transactions' element={<Transactions/>}/>
           <Route
             path='/sideBar'
             element={
