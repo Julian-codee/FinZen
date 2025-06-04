@@ -74,7 +74,7 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
         metaActual:metaActual,
       })
       await submitRegister()
-      navigate("/Hero")
+      navigate("/Reporting")
     } catch (error: any) {
       showErrorAlert(error.message || "Error al registrar el usuario")
     } finally {

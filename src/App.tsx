@@ -9,6 +9,8 @@ import Accounts from './Components/Features/Accounts/Accounts'
 import BudgetDashboard from './Components/Features/Budgets/BudgetDashboard';
 import { DashBoardPrincipal } from './Components/Features/DashBoard/DashBoardPrincipal';
 import ForgotPassword from './Components/Auth/ForgotPassword';
+import { Sidebar } from './Components/Ui/UiDashBoard/SideBar';
+import { Transactions } from './Components/Features/Transacctions/Transactions';
 
 export default function App() {
   return (
@@ -25,6 +27,16 @@ export default function App() {
           <Route path="/dashboard" element={<Hero />} />
           <Route path="/Hero" element={<Hero />} />
           <Route path="/Forgot" element={<ForgotPassword />} />
+          <Route path="/Transactions" element={<Transactions />} />
+             <Route
+            path='/sideBar'
+            element={
+              <Sidebar
+                isOpen={true}
+                toggleSidebar={() => {}}
+              />
+            }
+          />
           {/* Eliminar /Profile si no es necesario, o aclarar su propósito */}
         </Routes>
       </BrowserRouter>
