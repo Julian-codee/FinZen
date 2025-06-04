@@ -16,6 +16,7 @@ import { Education } from './Components/Features/FinancialEducation/Education';
 import { Assistant } from './Components/Features/AssistantAI/Assistant';
 import { Goals } from './Components/Features/Goals/Goals';
 import { Configuration } from './Components/Features/Configuration/Configuration';
+import { AddTransaction } from './Components/Features/Transacctions/AddTransactions';
 
 export default function App() {
   return (
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="/IA" element={<Assistant />} />
           <Route path="/Goals" element={<Goals />} />
           <Route path="/Settings" element={<Configuration />} />
+          <Route path="/AddTransaction" element={<AddTransaction />} />
           <Route
             path='/sideBar'
             element={
