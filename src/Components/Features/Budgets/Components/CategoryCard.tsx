@@ -1,119 +1,29 @@
 "use client"
 
 import { useState } from "react"
-import { MoreVertical, Edit, Plus } from "lucide-react"
+import { MoreVertical, Edit, Plus, Trash2 } from "lucide-react"
 import type { BudgetCategory } from "../types/budget-types"
+import { categoryList } from "../utils/category-config"
+import { formatCurrency, getProgressColor, calculatePercentage } from "../utils/budgest-utils"
 
 interface CategoryCardProps {
   category: BudgetCategory
   onDelete: (id: string) => void
-  onUpdateBudget?: (id: string, newBudget: number) => void
+  onUpdateBudget: (id: string, newBudget: number) => void
+  onAddTransaction?: (categoryId: string) => void
 }
 
-// Mapeo de iconos y colores para las categorías del modal
-const categoryConfig = {
-  comida: {
-    icon: "🍽️",
-    bgColor: "bg-[#FED7AA]",
-    textColor: "text-[#EA580C]",
-  },
-  supermercado: {
-    icon: "🛒",
-    bgColor: "bg-[#BBF7D0]",
-    textColor: "text-[#059669]",
-  },
-  vivienda: {
-    icon: "🏠",
-    bgColor: "bg-[#DBEAFE]",
-    textColor: "text-[#2563EB]",
-  },
-  transporte: {
-    icon: "🚗",
-    bgColor: "bg-[#BFDBFE]",
-    textColor: "text-[#3B82F6]",
-  },
-  entretenimiento: {
-    icon: "🎮",
-    bgColor: "bg-[#E9D5FF]",
-    textColor: "text-[#9333EA]",
-  },
-  servicios: {
-    icon: "⚡",
-    bgColor: "bg-[#FEF3C7]",
-    textColor: "text-[#D97706]",
-  },
-  cafe: {
-    icon: "☕",
-    bgColor: "bg-[#FED7AA]",
-    textColor: "text-[#92400E]",
-  },
-  salud: {
-    icon: "❤️",
-    bgColor: "bg-[#FECACA]",
-    textColor: "text-[#DC2626]",
-  },
-  restaurante: {
-    icon: "🍕",
-    bgColor: "bg-[#FED7AA]",
-    textColor: "text-[#EA580C]",
-  },
-  internet: {
-    icon: "📶",
-    bgColor: "bg-[#BFDBFE]",
-    textColor: "text-[#3B82F6]",
-  },
-  telefono: {
-    icon: "📞",
-    bgColor: "bg-[#E9D5FF]",
-    textColor: "text-[#9333EA]",
-  },
-  educacion: {
-    icon: "🎓",
-    bgColor: "bg-[#BBF7D0]",
-    textColor: "text-[#059669]",
-  },
-  ocio: {
-    icon: "🎉",
-    bgColor: "bg-[#FECACA]",
-    textColor: "text-[#DC2626]",
-  },
-  musica: {
-    icon: "🎵",
-    bgColor: "bg-[#E9D5FF]",
-    textColor: "text-[#9333EA]",
-  },
-  otros: {
-    icon: "➕",
-    bgColor: "bg-[#F3F4F6]",
-    textColor: "text-[#6B7280]",
-  },
-}
-
-export default function CategoryCard({ category, onDelete, onUpdateBudget }: CategoryCardProps) {
+export default function CategoryCard({ category, onDelete, onUpdateBudget, onAddTransaction }: CategoryCardProps) {
   const [showDropdown, setShowDropdown] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editBudget, setEditBudget] = useState(category.budget.toString())
+
   const remaining = category.budget - category.spent
-  const percentage = category.budget > 0 ? (category.spent / category.budget) * 100 : 0
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-CO", {
-      style: "currency",
-      currency: "COP",
-      minimumFractionDigits: 2,
-    }).format(amount)
-  }
-
-  const getProgressColor = (spent: number, budget: number) => {
-    const percentage = budget > 0 ? (spent / budget) * 100 : 0
-    if (percentage >= 100) return "bg-[#EF4444]"
-    if (percentage >= 80) return "bg-[#F59E0B]"
-    return "bg-[#3B82F6]"
-  }
+  const percentage = calculatePercentage(category.spent, category.budget)
 
   const handleEditSave = () => {
     const newBudget = Number.parseFloat(editBudget)
-    if (!isNaN(newBudget) && newBudget >= 0 && onUpdateBudget) {
+    if (!isNaN(newBudget) && newBudget >= 0) {
       onUpdateBudget(category.id, newBudget)
     }
     setIsEditing(false)
@@ -127,22 +37,20 @@ export default function CategoryCard({ category, onDelete, onUpdateBudget }: Cat
   }
 
   const handleAddBudget = () => {
-    if (onUpdateBudget) {
-      onUpdateBudget(category.id, 0)
-    }
     setIsEditing(true)
     setShowDropdown(false)
   }
 
-  // Obtener configuración de la categoría
-  const config = categoryConfig[category.categoryType as keyof typeof categoryConfig] || categoryConfig.otros
+  // Encontrar la configuración de la categoría
+  const categoryConfig =
+    categoryList.find((c) => c.id === category.categoryType) || categoryList[categoryList.length - 1]
 
   return (
     <div className="bg-[#020817] border border-white/40 rounded-xl p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
-          <div className={`w-10 h-10 ${config.bgColor} rounded-lg flex items-center justify-center`}>
-            <span className="text-lg">{config.icon}</span>
+          <div className={`w-10 h-10 ${categoryConfig.bgColor} rounded-lg flex items-center justify-center`}>
+            <div className={categoryConfig.textColor}>{categoryConfig.icon}</div>
           </div>
           <h3 className="text-lg font-semibold text-white">{category.name}</h3>
         </div>
@@ -194,7 +102,7 @@ export default function CategoryCard({ category, onDelete, onUpdateBudget }: Cat
                 <MoreVertical className="w-4 h-4" />
               </button>
               {showDropdown && (
-                <div className="absolute right-0 mt-2 w-36 bg-[#020817] border border-white/40 rounded-lg shadow-lg z-10">
+                <div className="absolute right-0 mt-2 w-40 bg-[#020817] border border-white/40 rounded-lg shadow-lg z-10">
                   {category.budget === 0 ? (
                     <button
                       onClick={handleAddBudget}
@@ -212,7 +120,19 @@ export default function CategoryCard({ category, onDelete, onUpdateBudget }: Cat
                       className="w-full text-left px-3 py-2 text-white hover:bg-[#475569] rounded-t-lg flex items-center"
                     >
                       <Edit className="w-4 h-4 mr-2" />
-                      Editar
+                      Editar Presupuesto
+                    </button>
+                  )}
+                  {onAddTransaction && (
+                    <button
+                      onClick={() => {
+                        onAddTransaction(category.id)
+                        setShowDropdown(false)
+                      }}
+                      className="w-full text-left px-3 py-2 text-white hover:bg-[#475569] flex items-center"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Registrar Gasto
                     </button>
                   )}
                   <button
@@ -220,8 +140,9 @@ export default function CategoryCard({ category, onDelete, onUpdateBudget }: Cat
                       onDelete(category.id)
                       setShowDropdown(false)
                     }}
-                    className="w-full text-left px-3 py-2 text-red-400 hover:bg-[#475569] rounded-b-lg"
+                    className="w-full text-left px-3 py-2 text-red-400 hover:bg-[#475569] rounded-b-lg flex items-center"
                   >
+                    <Trash2 className="w-4 h-4 mr-2" />
                     Eliminar
                   </button>
                 </div>

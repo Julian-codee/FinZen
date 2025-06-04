@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Plus } from "lucide-react"
 import type { BudgetCategory } from "../types/budget-types"
-import AddCategoryDialog from "./AddCategoryDialog"
+import RegisterExpenseDialog from "./RegisterExpenseDialog"
 import CategoryCard from "./CategoryCard"
 
 interface CategoriesSectionProps {
@@ -11,16 +11,17 @@ interface CategoriesSectionProps {
   onAddCategory: (category: Omit<BudgetCategory, "id" | "spent">) => void
   onDeleteCategory: (id: string) => void
   onUpdateBudget?: (id: string, newBudget: number) => void
+  onRegisterExpense?: (id: string, amount: number) => void
 }
 
 export default function CategoriesSection({
   categories,
-  onAddCategory,
   onDeleteCategory,
   onUpdateBudget,
+  onRegisterExpense,
 }: CategoriesSectionProps) {
   const [searchFilter, setSearchFilter] = useState("")
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isRegisterExpenseOpen, setIsRegisterExpenseOpen] = useState(false)
 
   const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(searchFilter.toLowerCase()),
@@ -34,11 +35,12 @@ export default function CategoriesSection({
           <p className="text-gray-400">Gestiona tus límites de gasto por categoría</p>
         </div>
         <button
-          onClick={() => setIsAddDialogOpen(true)}
-          className="bg-[#3B82F6] hover:bg-[#2563EB] px-4 py-2 rounded-lg transition-colors flex items-center"
+          onClick={() => setIsRegisterExpenseOpen(true)}
+          className="bg-[#F59E0B] hover:bg-[#D97706] px-4 py-2 rounded-lg transition-colors flex items-center"
+          disabled={categories.length === 0}
         >
           <Plus className="w-4 h-4 mr-2" />
-          Añadir
+          Registrar Gasto
         </button>
       </div>
 
@@ -60,16 +62,17 @@ export default function CategoriesSection({
             key={category.id}
             category={category}
             onDelete={onDeleteCategory}
-            onUpdateBudget={onUpdateBudget}
+            onUpdateBudget={onUpdateBudget || (() => {})}
           />
         ))}
       </div>
 
-      {/* Add Category Dialog */}
-      <AddCategoryDialog
-        isOpen={isAddDialogOpen}
-        onClose={() => setIsAddDialogOpen(false)}
-        onAddCategory={onAddCategory}
+      {/* Register Expense Dialog */}
+      <RegisterExpenseDialog
+        isOpen={isRegisterExpenseOpen}
+        onClose={() => setIsRegisterExpenseOpen(false)}
+        categories={categories}
+        onRegisterExpense={onRegisterExpense || (() => {})}
       />
     </div>
   )
