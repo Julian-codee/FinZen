@@ -18,16 +18,16 @@ export default function DateNavigation({ currentDate, onNavigate, onNewBudget }:
       <div className="flex items-center space-x-4">
         <button
           onClick={() => onNavigate("prev")}
-          className="bg-[#020817] border border-[#2A3441] hover:bg-[#243041] p-2 rounded-lg transition-colors"
+          className="bg-[#020817] border border-white/40 hover:bg-[#243041] p-2 rounded-lg transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
         </button>
-        <div className="bg-[#020817] border border-[#2A3441] px-6 py-2 rounded-lg">
+        <div className="bg-[#020817] border border-white/40 px-6 py-2 rounded-lg">
           <span className="text-lg font-medium">{formatMonth(currentDate)}</span>
         </div>
         <button
           onClick={() => onNavigate("next")}
-          className="bg-[#020817] border border-[#2A3441] hover:bg-[#243041] p-2 rounded-lg transition-colors"
+          className="bg-[#020817] border border-white/40 hover:bg-[#243041] p-2 rounded-lg transition-colors"
         >
           <ChevronRight className="w-4 h-4" />
         </button>

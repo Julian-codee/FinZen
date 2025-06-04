@@ -1,5 +1,6 @@
 "use client"
 
+import { formatCurrency } from "../utils/budgest-utils"
 import type { BudgetCategory } from "../types/budget-types"
 
 interface SummaryCardsProps {
@@ -13,14 +14,6 @@ export default function SummaryCards({ categories }: SummaryCardsProps) {
   const spentPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0
   const availablePercentage = totalBudget > 0 ? (totalAvailable / totalBudget) * 100 : 0
   const exceededCategories = categories.filter((cat) => cat.spent > cat.budget).length
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-CO", {
-      style: "currency",
-      currency: "COP",
-      minimumFractionDigits: 2,
-    }).format(amount)
-  }
 
   const summaryData = [
     {
@@ -54,7 +47,7 @@ export default function SummaryCards({ categories }: SummaryCardsProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {summaryData.map((item, index) => (
-        <div key={index} className="bg-[#020817] border border-[#2A3441] rounded-xl p-6">
+        <div key={index} className="bg-[#020817] border border-white/40 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-gray-400 font-medium">{item.title}</h3>
             <div className={`w-8 h-8 ${item.iconColor}/20 rounded-full flex items-center justify-center`}>
