@@ -70,27 +70,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           <BarChart2 className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Informes</span>}
         </li>
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/Accounts")}>
           <DollarSign className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Cuentas</span>}
         </li>
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/TaxReport")}>
           <FileText className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Informe Fiscal</span>}
         </li>
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/FinancialEducation")}>
           <Book className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Educación Financiera</span>}
         </li>
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/IA")}>
           <Sparkles className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Asistente IA</span>}
         </li>
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/Goals")}>
           <Target className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Metas Financieras</span>}
         </li>
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/Settings")}>
           <Settings className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden">Configuración</span>}
         </li>
