@@ -20,16 +20,17 @@ export const TabNavigation: React.FC = () => {
   return (
     <>
       {/*Tipo de Vista*/}
-      <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6">
+      {/* Añadimos 'w-fit' para que el div tome el ancho de su contenido */}
+      <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6 w-fit">
         {typeView.map((type) => (
           <button
             key={type}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
-              activeViewTab === type // Usa activeViewTab aquí
-                ? "bg-indigo-600 text-white"
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ease-in-out ${
+              activeViewTab === type
+                ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white"
                 : "text-gray-400 hover:bg-gray-700"
             }`}
-            onClick={() => setActiveViewTab(type)} // Actualiza activeViewTab
+            onClick={() => setActiveViewTab(type)}
           >
             {type}
           </button>
@@ -37,16 +38,17 @@ export const TabNavigation: React.FC = () => {
       </div>
 
       {/*Tipo de deduccion*/}
-      <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6">
+      {/* Añadimos 'w-fit' para que el div tome el ancho de su contenido */}
+      <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6 w-fit">
         {tabs.map((tab) => (
           <button
             key={tab}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
-              activeDeductionTab === tab // Usa activeDeductionTab aquí
-                ? "bg-indigo-600 text-white"
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ease-in-out ${
+              activeDeductionTab === tab
+                ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white"
                 : "text-gray-400 hover:bg-gray-700"
             }`}
-            onClick={() => setActiveDeductionTab(tab)} // Actualiza activeDeductionTab
+            onClick={() => setActiveDeductionTab(tab)}
           >
             {tab}
           </button>

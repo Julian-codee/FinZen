@@ -1,53 +1,60 @@
-import React from "react";
+import { CalendarRange, Download, Printer, Share2 } from "lucide-react";
+import React, { useState } from "react"; // Importa useState
 
 export const Header: React.FC = () => {
+  // Estado para almacenar el año seleccionado en el select
+  const [selectedYear, setSelectedYear] = useState<string>(""); // Inicializa con un string vacío para representar "ningún año seleccionado"
+
+  const handleYearChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedYear(event.target.value);
+  };
+
   return (
     <div className="flex justify-between items-center mb-8">
       <div>
         <h1 className="text-2xl font-bold text-white">Informe Fiscal</h1>
-        <p className="text-white/70">Genera tu declaración de renta con la información de tus finanzas personales.</p>
+        <p className="text-white/70">
+          Genera tu declaración de renta con la información de tus finanzas
+          personales.
+        </p>
       </div>
-      <p></p>
-      <div className="flex space-x-4">
-        <span className="text-gray-400">2024</span>
-        <button className="p-2 rounded-md hover:bg-gray-700">
-          <svg
-            className="w-5 h-5 text-gray-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
+
+      {/*Selector para la fecha*/}
+      <div className="flex space-x-6">
+        <div className="relative flex items-center border border-white/50 bg-[#111827] rounded-md">
+          {" "}
+          {/* Contenedor para el select y el icono */}
+          {!selectedYear && ( // Muestra el icono solo si no hay un año seleccionado
+            <CalendarRange className="absolute  w-4 left-3 text-gray-400 pointer-events-none" />
+          )}
+          <select
+            className={`p-2 rounded-md hover:bg-gray-700 appearance-none pr-8 cursor-pointer ${
+              !selectedYear ? "pl-9" : "pl-2"
+            }`} // Ajusta el padding izquierdo si el icono está presente
+            value={selectedYear} // Controla el valor del select con el estado
+            onChange={handleYearChange} // Maneja el cambio del select
           >
-            <path
-              fillRule="evenodd"
-              d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-              clipRule="evenodd"
-            ></path>
-          </svg>
+            <option value="" disabled>
+              Año
+            </option>{" "}
+            {/* Opción por defecto oculta */}
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+          </select>
+        </div>
+
+        {/*Boton Para Imprimir*/}
+        <button className="p-2 rounded-md hover:bg-gray-700 border border-white/50 bg-[#111827] cursor-pointer">
+          <Printer className="w-4 h-4 text-gray-400" />
         </button>
-        <button className="p-2 rounded-md hover:bg-gray-700">
-          <svg
-            className="w-5 h-5 text-gray-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M5 4a2 2 0 00-2 2v6a2 2 0 002 2h2V4H5z"></path>
-            <path d="M12 4a2 2 0 012-2h2a2 2 0 012 2v6a2 2 0 01-2 2h-2a2 2 0 01-2-2V4z"></path>
-          </svg>
+        {/* Botón para descargar */}
+        <button className="p-2 rounded-md hover:bg-gray-700 border border-white/50 bg-[#111827] cursor-pointer">
+          <Download className="w-4 h-4 text-gray-400" />
         </button>
-        <button className="p-2 rounded-md hover:bg-gray-700">
-          <svg
-            className="w-5 h-5 text-gray-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fillRule="evenodd"
-              d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.736-1.564l-3.535.707a.5.5 0 01-.58-.707l.707-3.535A8.841 8.841 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM9 9a1 1 0 00-2 0v2a1 1 0 002 0V9zm4-1a1 1 0 00-2 0v3a1 1 0 002 0V8z"
-              clipRule="evenodd"
-            ></path>
-          </svg>
+        <button className="p-2 rounded-md hover:bg-gray-700 border border-white/50 bg-[#111827] cursor-pointer">
+          <Share2 className="w-4 h-4 text-gray-400" />
         </button>
       </div>
     </div>
