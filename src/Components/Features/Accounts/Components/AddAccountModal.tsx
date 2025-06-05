@@ -1,80 +1,143 @@
-import { useState, useEffect, useId } from "react";
-import { X, Landmark, PiggyBank, Wallet } from "lucide-react";
+"use client"
+
+import { useState, useEffect, useId } from "react"
+import { X, Landmark, PiggyBank, Wallet, CreditCard, TrendingUp, Building } from "lucide-react"
 
 interface Props {
-  open: boolean;
-  onClose: () => void;
-  onAdd: (account: {
-    id: number;
-    title: string;
-    type: string;
-    bank: string;
-    number: string;
-    amount: number;
-  }) => void;
+  open: boolean
+  onClose: () => void
+  onAdd: (item: {
+    id: number
+    title: string
+    type: string
+    amount: number
+    bank?: string
+    number?: string
+    creditLimit?: number
+    platform?: string
+    investmentType?: string
+  }) => void
+  type?: string // Nuevo prop para determinar el tipo
 }
 
-export default function AddAccountModal({ open, onClose, onAdd }: Props) {
-  const [title, setName] = useState("");
-  const [accountType, setAccountType] = useState<"corriente" | "ahorros" | "efectivo" | null>(null);
-  const [bank, setBank] = useState("");
-  const [number, setNumber] = useState("");
-  const [amount, setBalance] = useState<number | "">("");
+export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas" }: Props) {
+  const [title, setName] = useState("")
+  const [itemType, setItemType] = useState<string | null>(null)
+  const [bank, setBank] = useState("")
+  const [number, setNumber] = useState("")
+  const [amount, setBalance] = useState<number | "">("")
+  const [creditLimit, setCreditLimit] = useState<number | "">("")
+  const [platform, setPlatform] = useState("")
   const [errors, setErrors] = useState({
     title: false,
     type: false,
     bank: false,
     number: false,
     amount: false,
-  });
+    creditLimit: false,
+    platform: false,
+  })
 
-  const nameInputId = useId();
+  const nameInputId = useId()
+
+  // Configuración según el tipo
+  const getConfig = () => {
+    switch (type) {
+      case "Tarjetas":
+        return {
+          title: "Añadir Nueva Tarjeta",
+          description: "Añade una nueva tarjeta de crédito o débito a tu perfil financiero.",
+          buttonText: "Crear tarjeta",
+          types: [
+            { key: "credito", label: "Crédito", icon: CreditCard },
+            { key: "debito", label: "Débito", icon: CreditCard },
+          ],
+        }
+      case "Inversiones":
+        return {
+          title: "Añadir Nueva Inversión",
+          description: "Añade una nueva inversión o cuenta de inversión a tu portafolio.",
+          buttonText: "Crear inversión",
+          types: [
+            { key: "acciones", label: "Acciones", icon: TrendingUp },
+            { key: "fondos", label: "Fondos", icon: Building },
+            { key: "crypto", label: "Crypto", icon: TrendingUp },
+          ],
+        }
+      default:
+        return {
+          title: "Añadir Nueva Cuenta",
+          description: "Añade una nueva cuenta bancaria o de efectivo a tu perfil financiero.",
+          buttonText: "Crear cuenta",
+          types: [
+            { key: "corriente", label: "Corriente", icon: Landmark },
+            { key: "ahorros", label: "Ahorros", icon: PiggyBank },
+            { key: "efectivo", label: "Efectivo", icon: Wallet },
+          ],
+        }
+    }
+  }
+
+  const config = getConfig()
 
   useEffect(() => {
     if (!open) {
-      setName("");
-      setAccountType(null);
-      setBank("");
-      setNumber("");
-      setBalance("");
+      setName("")
+      setItemType(null)
+      setBank("")
+      setNumber("")
+      setBalance("")
+      setCreditLimit("")
+      setPlatform("")
       setErrors({
         title: false,
         type: false,
         bank: false,
         number: false,
         amount: false,
-      });
+        creditLimit: false,
+        platform: false,
+      })
     }
-  }, [open]);
+  }, [open])
 
   const validate = () => {
     const newErrors = {
       title: title.trim() === "",
-      type: accountType === null,
-      bank: bank.trim() === "",
-      number: number.trim().length !== 4 || !/^\d{4}$/.test(number),
+      type: itemType === null,
+      bank: type === "Cuentas" || type === "Tarjetas" ? bank.trim() === "" : false,
+      number: type === "Cuentas" || type === "Tarjetas" ? number.trim().length !== 4 || !/^\d{4}$/.test(number) : false,
       amount: amount === "" || typeof amount !== "number" || amount < 0,
-    };
-    setErrors(newErrors);
-    return !Object.values(newErrors).some(Boolean);
-  };
+      creditLimit:
+        type === "Tarjetas" && itemType === "credito"
+          ? creditLimit === "" || typeof creditLimit !== "number" || creditLimit <= 0
+          : false,
+      platform: type === "Inversiones" ? platform.trim() === "" : false,
+    }
+    setErrors(newErrors)
+    return !Object.values(newErrors).some(Boolean)
+  }
 
   const handleAdd = () => {
-    if (!validate()) return;
+    if (!validate()) return
 
-    onAdd({
+    const finalItem = {
       id: Date.now(),
       title,
-      type: accountType!,
-      bank,
-      number,
+      type: itemType!,
       amount: typeof amount === "number" ? amount : 0,
-    });
+      ...(type === "Cuentas" || type === "Tarjetas" ? { bank, number } : {}),
+      ...(type === "Tarjetas" && itemType === "credito"
+        ? { creditLimit: typeof creditLimit === "number" ? creditLimit : 0 }
+        : {}),
+      ...(type === "Inversiones" ? { platform, investmentType: itemType ?? undefined } : {}),
+    }
+    
+    onAdd(finalItem)
+    onClose()
+  }
 
-    onClose();
-  };
-
-  if (!open) return null;
+  if (!open) return null
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
@@ -83,17 +146,29 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
           <X className="w-5 h-5" />
         </button>
 
-        <h2 className="text-xl font-semibold">Añadir Nueva Cuenta</h2>
-        <p className="text-sm text-gray-400 mt-1">Añade una nueva cuenta bancaria o de efectivo a tu perfil financiero.</p>
+        <h2 className="text-xl font-semibold">{config.title}</h2>
+        <p className="text-sm text-gray-400 mt-1">{config.description}</p>
 
         <div className="space-y-4 mt-6">
-          {/* Nombre de la cuenta */}
+          {/* Nombre */}
           <div>
-            <label htmlFor={nameInputId} className="block text-sm mb-1">Nombre de la cuenta</label>
+            <label htmlFor={nameInputId} className="block text-sm mb-1">
+              {type === "Tarjetas"
+                ? "Nombre de la tarjeta"
+                : type === "Inversiones"
+                  ? "Nombre de la inversión"
+                  : "Nombre de la cuenta"}
+            </label>
             <input
               id={nameInputId}
               type="text"
-              placeholder="Ej: Cuenta Corriente Principal"
+              placeholder={
+                type === "Tarjetas"
+                  ? "Ej: Tarjeta Visa Principal"
+                  : type === "Inversiones"
+                    ? "Ej: Portafolio Diversificado"
+                    : "Ej: Cuenta Corriente Principal"
+              }
               value={title}
               onChange={(e) => setName(e.target.value)}
               className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
@@ -103,78 +178,118 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
             {errors.title && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
           </div>
 
-          {/* Tipo de cuenta */}
+          {/* Tipo */}
           <div>
-            <label className="block text-sm mb-2">Tipo de cuenta</label>
+            <label className="block text-sm mb-2">
+              {type === "Tarjetas"
+                ? "Tipo de tarjeta"
+                : type === "Inversiones"
+                  ? "Tipo de inversión"
+                  : "Tipo de cuenta"}
+            </label>
             <div className="flex gap-2">
-              <button
-                onClick={() => setAccountType("corriente")}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition ${
-                  accountType === "corriente"
-                    ? "bg-[#020817] border-white/40 text-white"
-                    : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"
-                }`}
-              >
-                <Landmark className="w-4 h-4" /> Corriente
-              </button>
-              <button
-                onClick={() => setAccountType("ahorros")}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition ${
-                  accountType === "ahorros"
-                    ? "bg-[#1e293b] border-blue-600 text-white"
-                    : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"
-                }`}
-              >
-                <PiggyBank className="w-4 h-4" /> Ahorros
-              </button>
-              <button
-                onClick={() => setAccountType("efectivo")}
-                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition ${
-                  accountType === "efectivo"
-                    ? "bg-[#1e293b] border-yellow-500 text-white"
-                    : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-yellow-500"
-                }`}
-              >
-                <Wallet className="w-4 h-4" /> Efectivo 
-              </button>
+              {config.types.map(({ key, label, icon: Icon }) => (
+                <button
+                  key={key}
+                  onClick={() => setItemType(key)}
+                  className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm border transition ${
+                    itemType === key
+                      ? "bg-[#1e293b] border-blue-600 text-white"
+                      : "bg-[#1e293b] border-[#334155] text-gray-400 hover:border-blue-600"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" /> {label}
+                </button>
+              ))}
             </div>
-            {errors.type && <p className="text-red-500 text-sm mt-1">Selecciona un tipo de cuenta.</p>}
+            {errors.type && <p className="text-red-500 text-sm mt-1">Selecciona un tipo.</p>}
           </div>
 
-          {/* Banco */}
-          <div>
-            <label className="block text-sm mb-1">Banco</label>
-            <input
-              type="text"
-              placeholder="Ej: Banco Santander"
-              value={bank}
-              onChange={(e) => setBank(e.target.value)}
-              className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
-                errors.bank ? "border-red-500" : "border-white/40"
-              }`}
-            />
-            {errors.bank && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
-          </div>
+          {/* Banco/Plataforma */}
+          {(type === "Cuentas" || type === "Tarjetas") && (
+            <div>
+              <label className="block text-sm mb-1">Banco</label>
+              <input
+                type="text"
+                placeholder="Ej: Banco Santander"
+                value={bank}
+                onChange={(e) => setBank(e.target.value)}
+                className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                  errors.bank ? "border-red-500" : "border-white/40"
+                }`}
+              />
+              {errors.bank && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
+            </div>
+          )}
 
-          {/* Número de cuenta */}
-          <div>
-            <label className="block text-sm mb-1">Número de cuenta (últimos 4 dígitos)</label>
-            <input
-              type="text"
-              placeholder="Ej: 1234"
-              value={number}
-              maxLength={4}
-              onChange={(e) => setNumber(e.target.value.replace(/\D/g, ""))}
-              className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
-                errors.number ? "border-red-500" : "border-white/40"
-              }`}
-            />
-            {errors.number && <p className="text-red-500 text-sm mt-1">Ingresa los 4 dígitos.</p>}
-          </div>
+          {type === "Inversiones" && (
+            <div>
+              <label className="block text-sm mb-1">Plataforma</label>
+              <input
+                type="text"
+                placeholder="Ej: eToro, Binance, GBM+"
+                value={platform}
+                onChange={(e) => setPlatform(e.target.value)}
+                className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                  errors.platform ? "border-red-500" : "border-white/40"
+                }`}
+              />
+              {errors.platform && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
+            </div>
+          )}
 
-          {/* Saldo inicial */}
+          {/* Número de cuenta/tarjeta */}
+          {(type === "Cuentas" || type === "Tarjetas") && (
+            <div>
+              <label className="block text-sm mb-1">
+                {type === "Tarjetas" ? "Número de tarjeta (últimos 4 dígitos)" : "Número de cuenta (últimos 4 dígitos)"}
+              </label>
+              <input
+                type="text"
+                placeholder="Ej: 1234"
+                value={number}
+                maxLength={4}
+                onChange={(e) => setNumber(e.target.value.replace(/\D/g, ""))}
+                className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
+                  errors.number ? "border-red-500" : "border-white/40"
+                }`}
+              />
+              {errors.number && <p className="text-red-500 text-sm mt-1">Ingresa los 4 dígitos.</p>}
+            </div>
+          )}
+
+          {/* Límite de crédito para tarjetas de crédito */}
+          {type === "Tarjetas" && itemType === "credito" && (
+            <div>
+              <label className="block text-sm mb-1">Límite de crédito</label>
+              <div
+                className={`flex items-center bg-[#020817] rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-600 ${
+                  errors.creditLimit ? "border-red-500" : "border-white/40 border"
+                }`}
+              >
+                <span className="text-gray-400 mr-2">$</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  value={creditLimit}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    setCreditLimit(value === "" ? "" : Number.parseFloat(value))
+                  }}
+                  className="bg-transparent outline-none w-full text-white placeholder-gray-500"
+                />
+              </div>
+              {errors.creditLimit && <p className="text-red-500 text-sm mt-1">Ingresa un límite válido.</p>}
+            </div>
+          )}
+
+          {/* Saldo/Valor inicial */}
           <div>
-            <label className="block text-sm mb-1">Saldo inicial</label>
+            <label className="block text-sm mb-1">
+              {type === "Inversiones" ? "Valor inicial" : type === "Tarjetas" ? "Saldo actual" : "Saldo inicial"}
+            </label>
             <div
               className={`flex items-center bg-[#020817] rounded-lg px-3 py-2 focus-within:ring-2 focus-within:ring-blue-600 ${
                 errors.amount ? "border-red-500" : "border-white/40 border"
@@ -188,8 +303,8 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
                 placeholder="0.00"
                 value={amount}
                 onChange={(e) => {
-                  const value = e.target.value;
-                  setBalance(value === "" ? "" : parseFloat(value));
+                  const value = e.target.value
+                  setBalance(value === "" ? "" : Number.parseFloat(value))
                 }}
                 className="bg-transparent outline-none w-full text-white placeholder-gray-500"
               />
@@ -209,11 +324,11 @@ export default function AddAccountModal({ open, onClose, onAdd }: Props) {
               onClick={handleAdd}
               className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white transition"
             >
-              Crear cuenta
+              {config.buttonText}
             </button>
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

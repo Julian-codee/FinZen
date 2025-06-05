@@ -1,0 +1,206 @@
+import {
+  UtensilsCrossed,
+  ShoppingCart,
+  Home,
+  Car,
+  Gamepad2,
+  Zap,
+  Coffee,
+  Heart,
+  Pizza,
+  Wifi,
+  Phone,
+  GraduationCap,
+  PartyPopper,
+  Music,
+  Plus,
+} from "lucide-react"
+
+export const categoryIcons = {
+  comida: <UtensilsCrossed className="w-4 h-4" />,
+  supermercado: <ShoppingCart className="w-4 h-4" />,
+  vivienda: <Home className="w-4 h-4" />,
+  transporte: <Car className="w-4 h-4" />,
+  entretenimiento: <Gamepad2 className="w-4 h-4" />,
+  servicios: <Zap className="w-4 h-4" />,
+  cafe: <Coffee className="w-4 h-4" />,
+  salud: <Heart className="w-4 h-4" />,
+  restaurante: <Pizza className="w-4 h-4" />,
+  internet: <Wifi className="w-4 h-4" />,
+  telefono: <Phone className="w-4 h-4" />,
+  educacion: <GraduationCap className="w-4 h-4" />,
+  ocio: <PartyPopper className="w-4 h-4" />,
+  musica: <Music className="w-4 h-4" />,
+  otros: <Plus className="w-4 h-4" />,
+}
+
+export const categoryColors = {
+  comida: {
+    bgColor: "bg-[#FED7AA]",
+    textColor: "text-[#EA580C]",
+  },
+  supermercado: {
+    bgColor: "bg-[#BBF7D0]",
+    textColor: "text-[#059669]",
+  },
+  vivienda: {
+    bgColor: "bg-[#DBEAFE]",
+    textColor: "text-[#2563EB]",
+  },
+  transporte: {
+    bgColor: "bg-[#BFDBFE]",
+    textColor: "text-[#3B82F6]",
+  },
+  entretenimiento: {
+    bgColor: "bg-[#E9D5FF]",
+    textColor: "text-[#9333EA]",
+  },
+  servicios: {
+    bgColor: "bg-[#FEF3C7]",
+    textColor: "text-[#D97706]",
+  },
+  cafe: {
+    bgColor: "bg-[#FED7AA]",
+    textColor: "text-[#92400E]",
+  },
+  salud: {
+    bgColor: "bg-[#FECACA]",
+    textColor: "text-[#DC2626]",
+  },
+  restaurante: {
+    bgColor: "bg-[#FED7AA]",
+    textColor: "text-[#EA580C]",
+  },
+  internet: {
+    bgColor: "bg-[#BFDBFE]",
+    textColor: "text-[#3B82F6]",
+  },
+  telefono: {
+    bgColor: "bg-[#E9D5FF]",
+    textColor: "text-[#9333EA]",
+  },
+  educacion: {
+    bgColor: "bg-[#BBF7D0]",
+    textColor: "text-[#059669]",
+  },
+  ocio: {
+    bgColor: "bg-[#FECACA]",
+    textColor: "text-[#DC2626]",
+  },
+  musica: {
+    bgColor: "bg-[#E9D5FF]",
+    textColor: "text-[#9333EA]",
+  },
+  otros: {
+    bgColor: "bg-[#F3F4F6]",
+    textColor: "text-[#6B7280]",
+  },
+}
+
+export const categoryList = [
+  {
+    id: "comida",
+    name: "Comida",
+    icon: <UtensilsCrossed className="w-4 h-4" />,
+    bgColor: "bg-[#FED7AA]",
+    textColor: "text-[#EA580C]",
+  },
+  {
+    id: "supermercado",
+    name: "Supermercado",
+    icon: <ShoppingCart className="w-4 h-4" />,
+    bgColor: "bg-[#BBF7D0]",
+    textColor: "text-[#059669]",
+  },
+  {
+    id: "vivienda",
+    name: "Vivienda",
+    icon: <Home className="w-4 h-4" />,
+    bgColor: "bg-[#DBEAFE]",
+    textColor: "text-[#2563EB]",
+  },
+  {
+    id: "transporte",
+    name: "Transporte",
+    icon: <Car className="w-4 h-4" />,
+    bgColor: "bg-[#BFDBFE]",
+    textColor: "text-[#3B82F6]",
+  },
+  {
+    id: "entretenimiento",
+    name: "Entretenimiento",
+    icon: <Gamepad2 className="w-4 h-4" />,
+    bgColor: "bg-[#E9D5FF]",
+    textColor: "text-[#9333EA]",
+  },
+  {
+    id: "servicios",
+    name: "Servicios",
+    icon: <Zap className="w-4 h-4" />,
+    bgColor: "bg-[#FEF3C7]",
+    textColor: "text-[#D97706]",
+  },
+  {
+    id: "cafe",
+    name: "Café",
+    icon: <Coffee className="w-4 h-4" />,
+    bgColor: "bg-[#FED7AA]",
+    textColor: "text-[#92400E]",
+  },
+  {
+    id: "salud",
+    name: "Salud",
+    icon: <Heart className="w-4 h-4" />,
+    bgColor: "bg-[#FECACA]",
+    textColor: "text-[#DC2626]",
+  },
+  {
+    id: "restaurante",
+    name: "Restaurante",
+    icon: <Pizza className="w-4 h-4" />,
+    bgColor: "bg-[#FED7AA]",
+    textColor: "text-[#EA580C]",
+  },
+  {
+    id: "internet",
+    name: "Internet",
+    icon: <Wifi className="w-4 h-4" />,
+    bgColor: "bg-[#BFDBFE]",
+    textColor: "text-[#3B82F6]",
+  },
+  {
+    id: "telefono",
+    name: "Teléfono",
+    icon: <Phone className="w-4 h-4" />,
+    bgColor: "bg-[#E9D5FF]",
+    textColor: "text-[#9333EA]",
+  },
+  {
+    id: "educacion",
+    name: "Educación",
+    icon: <GraduationCap className="w-4 h-4" />,
+    bgColor: "bg-[#BBF7D0]",
+    textColor: "text-[#059669]",
+  },
+  {
+    id: "ocio",
+    name: "Ocio",
+    icon: <PartyPopper className="w-4 h-4" />,
+    bgColor: "bg-[#FECACA]",
+    textColor: "text-[#DC2626]",
+  },
+  {
+    id: "musica",
+    name: "Música",
+    icon: <Music className="w-4 h-4" />,
+    bgColor: "bg-[#E9D5FF]",
+    textColor: "text-[#9333EA]",
+  },
+  {
+    id: "otros",
+    name: "Otros",
+    icon: <Plus className="w-4 h-4" />,
+    bgColor: "bg-[#F3F4F6]",
+    textColor: "text-[#6B7280]",
+  },
+]

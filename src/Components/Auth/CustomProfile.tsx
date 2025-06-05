@@ -77,9 +77,9 @@ export default function SimplifiedProfileSelector() {
     setShowHeroForm(false)
   }
 
-  // Si se seleccionó perfil personalizado, mostrar Hero
+  // Si se seleccionó perfil personalizado, mostrar Hero con onBack
   if (showHeroForm && selected === "personalizado") {
-    return <Hero />
+    return <Hero onBack={handleBack} />
   }
 
   // Si se seleccionó otro perfil, mostrar UserDetailsForm

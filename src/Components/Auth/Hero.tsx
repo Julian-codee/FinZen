@@ -1,29 +1,35 @@
 // src/components/Hero.tsx
 "use client";
-import { useState } from "react";
-import { Shell, Wallet, Check, Signal, ChartLine, Heart } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  Shell,
+  Wallet,
+  Check,
+  Signal,
+  LineChartIcon as ChartLine,
+  Heart,
+} from "lucide-react";
 import { Hero2 } from "../Ui/UiAuth/Hero2";
 import { Hero3 } from "../Ui/UiAuth/Hero3";
 import { Hero4 } from "../Ui/UiAuth/Hero4";
 import { Hero5 } from "../Ui/UiAuth/Hero5";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
-import { useRegister } from "./RegisterContext";
 
-export const Hero = () => {
+interface HeroProps {
+  onBack?: () => void;
+}
+
+export const Hero = ({ onBack }: HeroProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedOptions, setSelectedOptions] = useState<
     Record<string, boolean>
   >({});
-   const {  updateRegisterData,submitRegister } = useRegister();
   const [otherObjective, setOtherObjective] = useState("");
 
   // Estado para Hero2
   const [financialStatusOptions, setFinancialStatusOptions] = useState<
     Record<string, boolean>
   >({});
-
-  
-  
 
   // Estado para los inputs de Hero3
   const [knowledgeLevel, setKnowledgeLevel] = useState("");
@@ -49,6 +55,27 @@ export const Hero = () => {
 
   // Inicializa el hook de navegación
   const navigate = useNavigate();
+
+  // Manejar el botón de retroceso del navegador cuando está en el primer paso
+  useEffect(() => {
+    if (currentStep === 1 && onBack) {
+      const handlePopState = (event: PopStateEvent) => {
+        event.preventDefault();
+        onBack(); // Llamar a la función onBack para volver al selector de perfil
+      };
+
+      // Agregar un estado al historial para interceptar el botón de retroceso
+      window.history.pushState(null, "", window.location.href);
+
+      // Escuchar el evento popstate
+      window.addEventListener("popstate", handlePopState);
+
+      // Cleanup
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+      };
+    }
+  }, [currentStep, onBack]);
 
   const handleHero2CheckboxChange = (id: string) => {
     setFinancialStatusOptions((prev) => ({
@@ -117,14 +144,14 @@ export const Hero = () => {
   };
 
   const handleNext = async () => {
-    if (currentStep < 5 ) {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     } else {
       // Enviar los datos al backend
       try {
         await submitRegister(); // Llama a la función del contexto para enviar los dato
         console.log("Registro exitoso");
-        navigate("/register");
+        navigate("/dashboard");
       } catch (error) {
         console.error("Error al enviar los datos:", error);
       }
@@ -135,10 +162,12 @@ export const Hero = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1); // Retrocede un paso dentro del cuestionario
     } else {
-      // Si estamos en el primer paso (currentStep === 1), navegamos a la ruta anterior
-      navigate(-1); // Esto hace lo mismo que el botón "atrás" del navegador
-      // O puedes especificar una ruta concreta si sabes a dónde quieres volver
-      // navigate("/seleccionar-perfil");
+      // Si estamos en el primer paso (currentStep === 1)
+      if (onBack) {
+        onBack(); // Usar la función onBack proporcionada para volver al selector de perfil
+      } else {
+        navigate(-1); // Fallback al comportamiento anterior
+      }
     }
   };
 
@@ -234,7 +263,7 @@ export const Hero = () => {
               onCheckboxChange={handleHero2CheckboxChange}
               financialInputs={financialInputs}
               onInputChange={handleHero2InputChange}
-              updateRegisterData={updateRegisterData}
+              updateRegisterData={() => {}}
             />
           </>
         );
