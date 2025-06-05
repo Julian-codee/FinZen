@@ -63,9 +63,7 @@ export default function SimplifiedProfileSelector() {
       
       if (selected === "personalizado") {
         navigate("/Hero");
-      } else {
-        navigate("/Hero");
-      }
+      } 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       showErrorAlert(error.message || "Error al registrar el usuario");

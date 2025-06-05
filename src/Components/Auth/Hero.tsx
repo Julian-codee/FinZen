@@ -117,14 +117,14 @@ export const Hero = () => {
   };
 
   const handleNext = async () => {
-    if (currentStep < 5) {
+    if (currentStep < 5 ) {
       setCurrentStep(currentStep + 1);
     } else {
       // Enviar los datos al backend
       try {
         await submitRegister(); // Llama a la función del contexto para enviar los dato
         console.log("Registro exitoso");
-        navigate("/dashboard");
+        navigate("/register");
       } catch (error) {
         console.error("Error al enviar los datos:", error);
       }
