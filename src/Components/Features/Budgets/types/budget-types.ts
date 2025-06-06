@@ -12,18 +12,17 @@ export interface NewCategoryForm {
   categoryType: string
 }
 
-export interface MonthlyBudget {
+export interface Budget {
   id: string
-  month: number
-  year: number
+  name: string
   totalBudget: number
+  createdDate: string
   categories: BudgetCategory[]
+  status: "active" | "completed" | "paused"
 }
 
-export interface Transaction {
-  id: string
-  categoryId: string
-  amount: number
-  description: string
-  date: Date
+export interface BudgetData {
+  name: string
+  totalBudget: number
+  categories: Array<{ name: string; budget: number; categoryType: string }>
 }

@@ -8,6 +8,7 @@ import CategoryCard from "./CategoryCard"
 
 interface CategoriesSectionProps {
   categories: BudgetCategory[]
+  budgetName?: string
   onAddCategory: (category: Omit<BudgetCategory, "id" | "spent">) => void
   onDeleteCategory: (id: string) => void
   onUpdateBudget?: (id: string, newBudget: number) => void
@@ -16,6 +17,7 @@ interface CategoriesSectionProps {
 
 export default function CategoriesSection({
   categories,
+  budgetName,
   onDeleteCategory,
   onUpdateBudget,
   onRegisterExpense,
@@ -33,6 +35,11 @@ export default function CategoriesSection({
         <div>
           <h2 className="text-2xl font-bold mb-2">Presupuestos por Categoría</h2>
           <p className="text-gray-400">Gestiona tus límites de gasto por categoría</p>
+          {budgetName && (
+            <div className="mt-2">
+              <span className="text-sm text-blue-400 bg-blue-400/10 px-3 py-1 rounded-full">📊 {budgetName}</span>
+            </div>
+          )}
         </div>
         <button
           onClick={() => setIsRegisterExpenseOpen(true)}
@@ -61,6 +68,7 @@ export default function CategoriesSection({
           <CategoryCard
             key={category.id}
             category={category}
+            budgetName={budgetName}
             onDelete={onDeleteCategory}
             onUpdateBudget={onUpdateBudget || (() => {})}
           />

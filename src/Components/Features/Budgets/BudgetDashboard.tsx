@@ -5,14 +5,19 @@ import DateNavigation from "./Components/DateNavigation"
 import SummaryCards from "./Components/SummaryCards"
 import TabNavigation from "./Components/TabsNavigation"
 import CategoriesSection from "./Components/CategoriesSection"
+import DistributionSection from "./Components/DistributionSection"
+import HistorySection from "./Components/HistorySection"
 import AddBudgetDialog from "./Components/AddBudgetDialog"
 import type { BudgetCategory } from "./types/budget-types"
+
 
 export default function BudgetDashboard() {
   const [currentDate, setCurrentDate] = useState(new Date()) // Fecha actual
   const [activeTab, setActiveTab] = useState("categorias")
   const [categories, setCategories] = useState<BudgetCategory[]>([]) // Inicializado como array vacío
   const [isAddBudgetOpen, setIsAddBudgetOpen] = useState(false)
+
+  
 
   const navigateMonth = (direction: "prev" | "next") => {
     setCurrentDate((prev) => {
@@ -91,19 +96,9 @@ export default function BudgetDashboard() {
           />
         )
       case "distribucion":
-        return (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-semibold mb-2">Distribución del Presupuesto</h3>
-            <p className="text-gray-400">Vista de distribución en desarrollo...</p>
-          </div>
-        )
+        return <DistributionSection categories={categories} />
       case "historial":
-        return (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-semibold mb-2">Historial de Presupuestos</h3>
-            <p className="text-gray-400">Vista de historial en desarrollo...</p>
-          </div>
-        )
+        return <HistorySection categories={categories} />
       default:
         return null
     }
@@ -129,43 +124,52 @@ export default function BudgetDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#020817] text-white p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex justify-between items-start mb-8">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Presupuesto</h1>
-            <p className="text-gray-400 text-lg">
-              Gestiona tus presupuestos mensuales y controla tus gastos por categoría.
-            </p>
+    // Contenedor principal de toda la aplicación. Debe ser un flex container
+    <div className="flex min-h-screen bg-[#020817] text-white">
+     
+      <div
+        className={`
+          flex-1 p-6 transition-all duration-300 ease-in-out
+         
+        `}
+      >
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">Presupuesto</h1>
+              <p className="text-gray-400 text-lg">
+                Gestiona tus presupuestos mensuales y controla tus gastos por categoría.
+              </p>
+            </div>
+            <button className="bg-transparent border border-gray-600 hover:bg-gray-800 p-2 rounded-lg transition-colors">
+              <Share2 className="w-5 h-5" />
+            </button>
           </div>
-          <button className="bg-transparent border border-gray-600 hover:bg-gray-800 p-2 rounded-lg transition-colors">
-            <Share2 className="w-5 h-5" />
-          </button>
+
+          {/* Date Navigation */}
+          <DateNavigation
+            currentDate={currentDate}
+            onNavigate={navigateMonth}
+            onNewBudget={() => setIsAddBudgetOpen(true)}
+          />
+
+          {/* Summary Cards - Solo mostrar si hay categorías */}
+          {categories.length > 0 && <SummaryCards categories={categories} />}
+
+          {/* Tab Navigation - Solo mostrar si hay categorías */}
+          {categories.length > 0 && <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />}
+
+          {/* Empty State o Tab Content */}
+          {categories.length === 0 ? renderEmptyState() : renderTabContent()}
+
+          {/* Add Budget Dialog */}
+          <AddBudgetDialog
+            isOpen={isAddBudgetOpen}
+            onClose={() => setIsAddBudgetOpen(false)}
+            onAddBudget={handleAddBudget}
+          />
         </div>
-
-        {/* Date Navigation */}
-        <DateNavigation
-          currentDate={currentDate}
-          onNavigate={navigateMonth}
-          onNewBudget={() => setIsAddBudgetOpen(true)}
-        />
-
-        {/* Summary Cards - Solo mostrar si hay categorías */}
-        {categories.length > 0 && <SummaryCards categories={categories} />}
-
-        {/* Tab Navigation - Solo mostrar si hay categorías */}
-        {categories.length > 0 && <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />}
-
-        {/* Empty State o Tab Content */}
-        {categories.length === 0 ? renderEmptyState() : renderTabContent()}
-
-        {/* Add Budget Dialog */}
-        <AddBudgetDialog
-          isOpen={isAddBudgetOpen}
-          onClose={() => setIsAddBudgetOpen(false)}
-          onAddBudget={handleAddBudget}
-        />
       </div>
     </div>
   )
