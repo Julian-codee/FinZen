@@ -5,18 +5,18 @@ import DateNavigation from "./Components/DateNavigation"
 import SummaryCards from "./Components/SummaryCards"
 import TabNavigation from "./Components/TabsNavigation"
 import CategoriesSection from "./Components/CategoriesSection"
+import DistributionSection from "./Components/DistributionSection"
+import HistorySection from "./Components/HistorySection"
 import AddBudgetDialog from "./Components/AddBudgetDialog"
 import type { BudgetCategory } from "./types/budget-types"
-import { Sidebar } from "../../Ui/UiDashBoard/SideBar" // Asegúrate de que esta ruta sea correcta
+import { Sidebar } from "../../Ui/UiDashBoard/SideBar"
 
 export default function BudgetDashboard() {
-  const [currentDate, setCurrentDate] = useState(new Date()) // Fecha actual
+  const [currentDate, setCurrentDate] = useState(new Date())
   const [activeTab, setActiveTab] = useState("categorias")
-  const [categories, setCategories] = useState<BudgetCategory[]>([]) // Inicializado como array vacío
+  const [categories, setCategories] = useState<BudgetCategory[]>([])
   const [isAddBudgetOpen, setIsAddBudgetOpen] = useState(false)
-
-  // Sidebar
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false) // Estado para la sidebar
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
@@ -59,20 +59,17 @@ export default function BudgetDashboard() {
     totalBudget: number
     categories: Array<{ name: string; budget: number; categoryType: string }>
   }) => {
-    // Distribuir el presupuesto total entre las categorías seleccionadas
     const categoryCount = budgetData.categories.length
     const budgetPerCategory = categoryCount > 0 ? budgetData.totalBudget / categoryCount : 0
 
-    // Crear nuevas categorías con el presupuesto distribuido
     const newCategories: BudgetCategory[] = budgetData.categories.map((cat, index) => ({
       id: (Date.now() + index).toString(),
       name: cat.name,
       spent: 0,
-      budget: budgetPerCategory, // Distribuir el presupuesto equitativamente
+      budget: budgetPerCategory,
       categoryType: cat.categoryType,
     }))
 
-    // Filtrar categorías que no existan ya (evitar duplicados por nombre y tipo)
     const filteredNewCategories = newCategories.filter(
       (newCat) =>
         !categories.some(
@@ -82,7 +79,6 @@ export default function BudgetDashboard() {
         ),
     )
 
-    // Agregar solo las categorías que no existen
     setCategories([...categories, ...filteredNewCategories])
   }
 
@@ -99,25 +95,14 @@ export default function BudgetDashboard() {
           />
         )
       case "distribucion":
-        return (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-semibold mb-2">Distribución del Presupuesto</h3>
-            <p className="text-gray-400">Vista de distribución en desarrollo...</p>
-          </div>
-        )
+        return <DistributionSection categories={categories} />
       case "historial":
-        return (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-semibold mb-2">Historial de Presupuestos</h3>
-            <p className="text-gray-400">Vista de historial en desarrollo...</p>
-          </div>
-        )
+        return <HistorySection categories={categories} />
       default:
         return null
     }
   }
 
-  // Mensaje para mostrar cuando no hay categorías
   const renderEmptyState = () => {
     if (categories.length === 0) {
       return (
@@ -137,18 +122,15 @@ export default function BudgetDashboard() {
   }
 
   return (
-    // Contenedor principal de toda la aplicación. Debe ser un flex container
     <div className="flex min-h-screen bg-[#020817] text-white">
-      {/* Sidebar - La Sidebar recibe las props isSidebarOpen y toggleSidebar */}
-      {/* ¡Importante! El componente Sidebar (en su propio archivo) debe manejar su ancho y visibilidad */}
+      {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-      {/* Contenido principal del Dashboard */}
-      {/* El margen izquierdo se ajusta dinámicamente según el estado de la Sidebar */}
+      {/* Contenido principal */}
       <div
         className={`
           flex-1 p-6 transition-all duration-300 ease-in-out
-          ${isSidebarOpen ? "ml-64" : "ml-20"} /* Ajusta 'ml-20' si tu sidebar cerrada es de otro ancho */
+          ${isSidebarOpen ? "ml-64" : "ml-20"}
         `}
       >
         <div className="max-w-7xl mx-auto">
@@ -165,23 +147,21 @@ export default function BudgetDashboard() {
             </button>
           </div>
 
-          {/* Date Navigation */}
+          {/* Navegación por mes */}
           <DateNavigation
             currentDate={currentDate}
             onNavigate={navigateMonth}
             onNewBudget={() => setIsAddBudgetOpen(true)}
           />
 
-          {/* Summary Cards - Solo mostrar si hay categorías */}
+          {/* Resumen y Tabs */}
           {categories.length > 0 && <SummaryCards categories={categories} />}
-
-          {/* Tab Navigation - Solo mostrar si hay categorías */}
           {categories.length > 0 && <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />}
 
-          {/* Empty State o Tab Content */}
+          {/* Contenido principal o estado vacío */}
           {categories.length === 0 ? renderEmptyState() : renderTabContent()}
 
-          {/* Add Budget Dialog */}
+          {/* Diálogo para nuevo presupuesto */}
           <AddBudgetDialog
             isOpen={isAddBudgetOpen}
             onClose={() => setIsAddBudgetOpen(false)}
