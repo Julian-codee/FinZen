@@ -1,99 +1,157 @@
 import React from "react";
-import { Percent } from "lucide-react"; // Importa el ícono de porcentaje
+import { Building, TrendingDown, TrendingUp } from "lucide-react"; // Importa el ícono de edificio/patrimonio
 
 export const PatrimonyForm: React.FC = () => {
   return (
     <>
-      {/* Encabezado de la sección de Deducciones */}
+      {/* Encabezado de la sección de Patrimonio */}
       <div className="flex items-center text-gray-400 mb-4">
-        <Percent className="text-white" />
+        {" "}
+        {/* Ajustado mb y eliminado mt-12 */}
+        <Building className="text-blue-500" />
+        {/* Cambiado el color del ícono a blanco para consistencia */}
         <h2 className="text-xl font-semibold text-white">Patrimonio</h2>
       </div>
       {/* Descripción de la sección */}
       <p className="text-gray-400 mb-6">
-        Ingresa tus deducciones para la declaración de renta 2024. Recuerda incluir gastos de salud, educación y otros permitidos por la ley.
+        {" "}
+        {/* Ajustado mb */}
+        Registra tus activos y pasivos a 31 de diciembre de 2024.
       </p>
 
-      {/* Grid para los campos del formulario de deducciones */}
+      {/* Bloque de Activos */}
+      <h3 className="text-lg font-semibold text-white mt-8 mb-4 flex"><TrendingUp className="mr-2 text-green-400"/> Activos</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {" "}
+        {/* Añadido margen inferior para separar de Pasivos */}
+        {/* Campo para Efectivo y Equivalentes */}
+        <div>
+          <label
+            htmlFor="efectivo"
+            className="block text-white/80 text-sm font-medium mb-1"
+          >
+            Bienes Raíces
+          </label>
+          <input
+            type="text"
+            id="efectivo"
+            className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+            placeholder="$ 00.00"
+          />
+        </div>
+        {/* Campo para Inversiones */}
+        <div>
+          <label
+            htmlFor="inversiones"
+            className="block text-white/80 text-sm font-medium mb-1"
+          >
+            Vehiculos
+          </label>
+          <input
+            type="text"
+            id="inversiones"
+            className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+            placeholder="$ 00.00"
+          />
+        </div>
+        {/* Campo para Bienes Inmuebles */}
+        <div>
+          <label
+            htmlFor="inmuebles"
+            className="block text-white/80 text-sm font-medium mb-1"
+          >
+            Activos Financieros
+          </label>
+          <input
+            type="text"
+            id="inmuebles"
+            className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+            placeholder="$ 00.00"
+          />
+        </div>
+        {/* Campo para Vehículos y Otros Activos */}
+        <div>
+          <label
+            htmlFor="vehiculos"
+            className="block text-white/80 text-sm font-medium mb-1"
+          >
+            Otros Activos
+          </label>
+          <input
+            type="text"
+            id="vehiculos"
+            className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+            placeholder="$ 00.00"
+          />
+        </div>
+      </div>
+
+      {/* Bloque de Pasivos */}
+      <h3 className="text-lg font-semibold text-white mb-4 flex"><TrendingDown className="mr-2 text-red-500"/>Pasivos</h3>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Campo para Deducción por Salud */}
+        {/* Campo para Hipotecas */}
         <div>
           <label
-            htmlFor="deduccionSalud"
+            htmlFor="deudasBancarias"
             className="block text-white/80 text-sm font-medium mb-1"
           >
-            Gastos de Salud (Medicina Prepagada, EPS)
+            Hipotecas
           </label>
           <input
-            type="number"
-            id="deduccionSalud"
+            type="text"
+            id="deudasBancarias"
             className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
-            placeholder="0"
+            placeholder="$ 00.00"
           />
         </div>
 
-        {/* Campo para Deducción por Educación */}
+        {/* Campo para Préstamo */}
         <div>
           <label
-            htmlFor="deduccionEducacion"
+            htmlFor="tarjetasCredito"
             className="block text-white/80 text-sm font-medium mb-1"
           >
-            Gastos de Educación (Matrículas, Pensiones)
+            Préstamos
           </label>
           <input
-            type="number"
-            id="deduccionEducacion"
+            type="text"
+            id="tarjetasCredito"
             className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
-            placeholder="0"
+            placeholder="$ 00.00"
           />
         </div>
 
-        {/* Campo para Deducción por Intereses de Vivienda */}
+        {/* Campo para Hipotecas */}
         <div>
           <label
-            htmlFor="deduccionVivienda"
+            htmlFor="hipotecas"
             className="block text-white/80 text-sm font-medium mb-1"
           >
-            Intereses Préstamos de Vivienda
+            Hipotecas y Créditos de Vivienda
           </label>
           <input
-            type="number"
-            id="deduccionVivienda"
+            type="text"
+            id="hipotecas"
             className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
-            placeholder="0"
+            placeholder="$ 00.00"
           />
         </div>
 
-        {/* Campo para Deducción por Donaciones */}
+        {/* Campo para Otros Pasivos */}
         <div>
           <label
-            htmlFor="deduccionDonaciones"
+            htmlFor="otrosPasivos"
             className="block text-white/80 text-sm font-medium mb-1"
           >
-            Donaciones
+            Otros Pasivos (Deudas Personales)
           </label>
           <input
-            type="number"
-            id="deduccionDonaciones"
+            type="text"
+            id="otrosPasivos"
             className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
-            placeholder="0"
+            placeholder="$ 00.00"
           />
-        </div>
-
-        {/* Campo para Otras Deducciones (ocupa 2 columnas en pantallas medianas) */}
-        <div className="md:col-span-2">
-          <label
-            htmlFor="otrasDeducciones"
-            className="block text-white/80 text-sm font-medium mb-1"
-          >
-            Otras Deducciones
-          </label>
-          <textarea
-            id="otrasDeducciones"
-            rows={3} // Número de filas visibles
-            className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
-            placeholder="Describe otras deducciones aplicables..."
-          ></textarea>
         </div>
       </div>
     </>

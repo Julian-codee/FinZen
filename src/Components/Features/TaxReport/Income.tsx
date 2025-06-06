@@ -1,17 +1,17 @@
 import React from "react";
-import { Percent } from "lucide-react"; // Importa el ícono de porcentaje
+import { CircleDollarSign } from "lucide-react"; // Importa el ícono de porcentaje
 
 export const IncomeForm: React.FC = () => {
   return (
     <>
       {/* Encabezado de la sección de Deducciones */}
-      <div className="flex items-center text-gray-400 mb-4">
-        <Percent className="text-white" />
+      <div className="flex items-center text-gray-400 mb-1 mt-12">
+        <CircleDollarSign className="text-green-500" />
         <h2 className="text-xl font-semibold text-white">Ingresos</h2>
       </div>
       {/* Descripción de la sección */}
-      <p className="text-gray-400 mb-6">
-        Ingresa tus deducciones para la declaración de renta 2024. Recuerda incluir gastos de salud, educación y otros permitidos por la ley.
+      <p className="text-gray-400 mb-10">
+        Registra todos tus ingresos recibidos durante el año 2024
       </p>
 
       {/* Grid para los campos del formulario de deducciones */}
@@ -22,7 +22,7 @@ export const IncomeForm: React.FC = () => {
             htmlFor="deduccionSalud"
             className="block text-white/80 text-sm font-medium mb-1"
           >
-            Gastos de Salud (Medicina Prepagada, EPS)
+            Ingresos Laborales
           </label>
           <input
             type="number"
@@ -38,7 +38,7 @@ export const IncomeForm: React.FC = () => {
             htmlFor="deduccionEducacion"
             className="block text-white/80 text-sm font-medium mb-1"
           >
-            Gastos de Educación (Matrículas, Pensiones)
+            Trabajo independiente
           </label>
           <input
             type="number"
@@ -54,7 +54,7 @@ export const IncomeForm: React.FC = () => {
             htmlFor="deduccionVivienda"
             className="block text-white/80 text-sm font-medium mb-1"
           >
-            Intereses Préstamos de Vivienda
+            Arrendamientos
           </label>
           <input
             type="number"
@@ -70,7 +70,7 @@ export const IncomeForm: React.FC = () => {
             htmlFor="deduccionDonaciones"
             className="block text-white/80 text-sm font-medium mb-1"
           >
-            Donaciones
+            Dividendos
           </label>
           <input
             type="number"
@@ -81,19 +81,36 @@ export const IncomeForm: React.FC = () => {
         </div>
 
         {/* Campo para Otras Deducciones (ocupa 2 columnas en pantallas medianas) */}
-        <div className="md:col-span-2">
+        <div>
           <label
-            htmlFor="otrasDeducciones"
+            htmlFor="deduccionVivienda"
             className="block text-white/80 text-sm font-medium mb-1"
           >
-            Otras Deducciones
+            Otros Ingresos
           </label>
-          <textarea
-            id="otrasDeducciones"
-            rows={3} // Número de filas visibles
+          <input
+            type="number"
+            id="deduccionVivienda"
             className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
-            placeholder="Describe otras deducciones aplicables..."
-          ></textarea>
+            placeholder="0"
+          />
+        </div>
+
+        {/* Campo para Otras Deducciones (ocupa 2 columnas en pantallas medianas) */}
+
+        <div>
+          <label
+            htmlFor="deduccionVivienda"
+            className="block text-white/80 text-sm font-medium mb-1"
+          >
+            Intereses
+          </label>
+          <input
+            type="number"
+            id="deduccionVivienda"
+            className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+            placeholder="0"
+          />
         </div>
       </div>
     </>
