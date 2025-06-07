@@ -58,13 +58,13 @@ export const TaxReport = () => {
         activeDeductionTab === "Personal" ? (
           // Si la pestaña activa es "Personal", mostramos este formulario inline
           <>
-            <div className="flex items-center text-gray-400 mb-4">
-              <UserRound className="text-white" />
+            <div className="flex items-center text-gray-400 mb-1 mt-12">
+              <UserRound className="text-white mr-2" />
               <h2 className="text-xl font-semibold text-white">
                 Información Personal
               </h2>
             </div>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-400 mb-10">
               Ingresa tus datos personales para la declaración de renta 2024
             </p>
 

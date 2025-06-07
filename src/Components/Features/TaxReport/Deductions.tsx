@@ -6,7 +6,7 @@ export const DeductionsForm: React.FC = () => {
     <>
       {/* Encabezado de la sección de Deducciones */}
       <div className="flex items-center text-gray-400 mb-1 mt-12">
-        <BanknoteArrowDownIcon className="text-red-500" />
+        <BanknoteArrowDownIcon className="text-red-500 mr-2" />
         <h2 className="text-xl font-semibold text-white">Deducciones</h2>
       </div>
       {/* Descripción de la sección */}

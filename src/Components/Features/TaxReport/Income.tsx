@@ -6,7 +6,7 @@ export const IncomeForm: React.FC = () => {
     <>
       {/* Encabezado de la sección de Deducciones */}
       <div className="flex items-center text-gray-400 mb-1 mt-12">
-        <CircleDollarSign className="text-green-500" />
+        <CircleDollarSign className="text-green-500 mr-2" />
         <h2 className="text-xl font-semibold text-white">Ingresos</h2>
       </div>
       {/* Descripción de la sección */}

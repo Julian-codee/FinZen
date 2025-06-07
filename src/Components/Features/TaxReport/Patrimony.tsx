@@ -5,15 +5,15 @@ export const PatrimonyForm: React.FC = () => {
   return (
     <>
       {/* Encabezado de la sección de Patrimonio */}
-      <div className="flex items-center text-gray-400 mb-4">
+      <div className="flex items-center text-gray-400 mb-1 mt-12 ">
         {" "}
         {/* Ajustado mb y eliminado mt-12 */}
-        <Building className="text-blue-500" />
+        <Building className="text-blue-500 mr-2" />
         {/* Cambiado el color del ícono a blanco para consistencia */}
         <h2 className="text-xl font-semibold text-white">Patrimonio</h2>
       </div>
       {/* Descripción de la sección */}
-      <p className="text-gray-400 mb-6">
+      <p className="text-gray-400 mb-10">
         {" "}
         {/* Ajustado mb */}
         Registra tus activos y pasivos a 31 de diciembre de 2024.
