@@ -138,7 +138,6 @@ export default function HistorySection({ categories }: HistorySectionProps) {
 
   // Filtrar datos según el período seleccionado
   const getFilteredData = () => {
-    const now = new Date()
     let filteredData = historyData
 
     switch (selectedPeriod) {
