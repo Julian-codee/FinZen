@@ -8,12 +8,19 @@ import { formatCurrency, getProgressColor, calculatePercentage } from "../utils/
 
 interface CategoryCardProps {
   category: BudgetCategory
+  budgetName?: string
   onDelete: (id: string) => void
   onUpdateBudget: (id: string, newBudget: number) => void
   onAddTransaction?: (categoryId: string) => void
 }
 
-export default function CategoryCard({ category, onDelete, onUpdateBudget, onAddTransaction }: CategoryCardProps) {
+export default function CategoryCard({
+  category,
+  budgetName,
+  onDelete,
+  onUpdateBudget,
+  onAddTransaction,
+}: CategoryCardProps) {
   const [showDropdown, setShowDropdown] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editBudget, setEditBudget] = useState(category.budget.toString())
@@ -47,6 +54,13 @@ export default function CategoryCard({ category, onDelete, onUpdateBudget, onAdd
 
   return (
     <div className="bg-[#020817] border border-white/40 rounded-xl p-6">
+      {/* Budget Name Header */}
+      {budgetName && (
+        <div className="mb-3 pb-2 border-b border-white/20">
+          <span className="text-xs text-blue-400 font-medium bg-blue-400/10 px-2 py-1 rounded">{budgetName}</span>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-3">
           <div className={`w-10 h-10 ${categoryConfig.bgColor} rounded-lg flex items-center justify-center`}>
