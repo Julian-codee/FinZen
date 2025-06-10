@@ -1,7 +1,8 @@
 import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
 import { useState } from "react";
 import { HeaderEducation } from "./HeaderEducation";
-import { WallStreetArticles } from "./CardArticle";
+
+
 
 export const Education = () => {
   // Sidebar
@@ -26,8 +27,6 @@ export const Education = () => {
         `}
       >
         <HeaderEducation />
-
-        <WallStreetArticles/>
       </div>
     </>
   );
