@@ -1,25 +1,35 @@
 "use client"
 
-import { useState } from "react"
+import React, { useState } from "react"
 import { X } from "lucide-react"
+
+interface Category {
+  id: string
+  name: string
+  icon: React.ReactElement
+  bgColor: string
+  textColor: string
+}
 
 interface AddTransactionDialogProps {
   isOpen: boolean
   onClose: () => void
-  onSubmit: (amount: number, description: string) => void
-  categoryName: string
+  onSubmit: (amount: number, description: string, categoryId: string) => void
+  categories: Category[]
 }
 
-export default function AddTransactionDialog({ isOpen, onClose, onSubmit, categoryName }: AddTransactionDialogProps) {
+export default function AddTransactionDialog({ isOpen, onClose, onSubmit, categories }: AddTransactionDialogProps) {
   const [amount, setAmount] = useState("")
   const [description, setDescription] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<string>("")
 
   const handleSubmit = () => {
     const amountValue = Number.parseFloat(amount)
-    if (!isNaN(amountValue) && amountValue > 0 && description.trim()) {
-      onSubmit(amountValue, description.trim())
+    if (!isNaN(amountValue) && amountValue > 0 && description.trim() && selectedCategory) {
+      onSubmit(amountValue, description.trim(), selectedCategory)
       setAmount("")
       setDescription("")
+      setSelectedCategory("")
     }
   }
 
@@ -33,7 +43,7 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
           <div>
             <h2 className="text-lg font-bold text-white mb-1">Registrar Gasto</h2>
             <p className="text-gray-400 text-sm">
-              Categoría: <span className="text-white">{categoryName}</span>
+              Selecciona una categoría
             </p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white">
@@ -74,6 +84,26 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
           />
         </div>
 
+        {/* Category Selection */}
+        <div className="mb-4">
+          <label htmlFor="transaction-category" className="block text-sm font-medium text-gray-300 mb-2">
+            Categoría
+          </label>
+          <select
+            id="transaction-category"
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full bg-[#020817] border border-white/40 text-white px-3 py-2.5 rounded-lg focus:outline-none focus:border-blue-500"
+          >
+            <option value="">Selecciona una categoría</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {/* Action Buttons */}
         <div className="flex space-x-3">
           <button
@@ -84,7 +114,7 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
           </button>
           <button
             onClick={handleSubmit}
-            disabled={!amount || !description.trim()}
+            disabled={!amount || !description.trim() || !selectedCategory}
             className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2.5 rounded-lg text-sm font-medium transition-colors"
           >
             Registrar
