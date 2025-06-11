@@ -2,6 +2,7 @@ import { Book, GraduationCap, Library, Lightbulb, Search } from "lucide-react";
 import { useState } from "react";
 import { WallStreetArticles } from "./CardArticle";
 import FinancialTipCard from "./Cardtips"; // Asegúrate de que este es el nombre de importación correcto para ConsejosFinancieros
+import GlosarioFinanciero from "./CardGloray";
 
 export const HeaderEducation = () => {
   const [activeTab, setActiveTab] = useState("Recursos");
@@ -124,6 +125,7 @@ export const HeaderEducation = () => {
             <p>
               Consulta definiciones de términos financieros comunes y su
               utilidad en la vida diaria.
+              <GlosarioFinanciero selectedCategory="Todos" />
             </p>
           </div>
         )}

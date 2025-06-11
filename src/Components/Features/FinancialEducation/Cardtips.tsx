@@ -70,7 +70,7 @@ export default function ConsejosFinancieros({
             className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl p-7 border border-gray-700 flex flex-col justify-between transform transition duration-300 hover:scale-105 hover:shadow-3xl"
           >
             <div className="flex justify-between items-center mb-5">
-              <span className="bg-blue-600 text-white text-[70%] font-bold px-4 py-1.5 rounded-full shadow-md">
+              <span className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white text-[70%] font-bold px-4 py-1.5 rounded-full shadow-md">
                 {consejo.categoria}
               </span>
               <Bookmark
