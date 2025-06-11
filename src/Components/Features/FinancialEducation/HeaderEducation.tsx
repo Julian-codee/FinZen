@@ -111,10 +111,9 @@ export const HeaderEducation = () => {
               Consejos financieros
             </h2>
             <p>
-              Aquí irán los consejos personalizados. Nivel seleccionado:{" "}
+              Aquí irán los consejos personalizados.{" "}
               {/* Pasa selectedCourses como prop al componente FinancialTipCard */}
               <FinancialTipCard selectedCategory={selectedCourses} />
-              <span className="text-white font-medium">{selectedCourses}</span>
             </p>
           </div>
         )}
