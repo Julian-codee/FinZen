@@ -7,6 +7,7 @@ import { RegisterProvider } from './Components/Auth/RegisterContext';
 import { AuthPage } from './Components/Auth/AuthPage';
 import Accounts from './Components/Features/Accounts/Accounts'
 import BudgetDashboard from './Components/Features/Budgets/BudgetDashboard';
+import Transactions from './Components/Features/TransactionsDashboard/Transactions';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/BudgetDashboard" element={<BudgetDashboard></BudgetDashboard>}></Route>
           <Route path="/dashboard" element={<Hero />} />
           <Route path="/Hero" element={<Hero />} />
+          <Route path="/Transactions" element={<Transactions />} />
           {/* Eliminar /Profile si no es necesario, o aclarar su propósito */}
         </Routes>
       </BrowserRouter>
