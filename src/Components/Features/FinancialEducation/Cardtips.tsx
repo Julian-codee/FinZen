@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { tipsData } from "../../../Apis/tipsApi";
-import { Lightbulb, Bookmark } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 
 const API_KEY = "f1nz3n-2025-4PI-k3y-d4ta-Acc3ss";
 
@@ -54,6 +54,7 @@ export default function ConsejosFinancieros({
       <h2 className="text-3xl font-bold text-center mb-8 text-gray-100">
         Consejos Financieros
       </h2>
+      <p></p>
       {loading && (
         <p className="text-center text-gray-400">Cargando consejos...</p>
       )}
@@ -73,10 +74,8 @@ export default function ConsejosFinancieros({
               <span className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white text-[70%] font-bold px-4 py-1.5 rounded-full shadow-md">
                 {consejo.categoria}
               </span>
-              <Bookmark
-                className="text-gray-400 hover:text-blue-400 cursor-pointer transition duration-200"
-                size={22}
-              />
+            
+              
             </div>
 
             <div className="mb-5 flex-grow">

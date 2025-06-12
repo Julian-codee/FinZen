@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { GlosaryApi } from "../../../Apis/GlosaryApi"; // Asegúrate que esté correctamente importado
+import { GlosaryApi } from "../../../Apis/GlosaryApi";
 import { BookOpen } from "lucide-react";
 
 const API_KEY = "f1nz3n-2025-4PI-k3y-d4ta-Acc3ss";
@@ -13,24 +13,39 @@ type GlosarioItem = {
 
 type GlosarioProps = {
   selectedCategory: string;
+  searchQuery: string; // Agrega esta prop
 };
 
 export default function GlosarioFinanciero({
   selectedCategory,
+  searchQuery, // Recibe la prop
 }: GlosarioProps) {
   const [items, setItems] = useState<GlosarioItem[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true); // Restablece el estado de carga cada vez que cambian las dependencias
     try {
       if (GlosaryApi.api_key === API_KEY) {
-        const filteredItems = GlosaryApi.glosario.filter((item) => {
+        let filteredItems = GlosaryApi.glosario.filter((item) => {
           if (selectedCategory === "Todos") return true;
           return (
             item.categoria.toLowerCase() === selectedCategory.toLowerCase()
           );
         });
+
+        // Aplica el filtro de búsqueda si hay un searchQuery
+        if (searchQuery) {
+          const lowerCaseQuery = searchQuery.toLowerCase();
+          filteredItems = filteredItems.filter(
+            (item) =>
+              item.titulo.toLowerCase().includes(lowerCaseQuery) ||
+              item.descripcion.toLowerCase().includes(lowerCaseQuery) ||
+              item.categoria.toLowerCase().includes(lowerCaseQuery)
+          );
+        }
+
         setItems(filteredItems);
       } else {
         setError("API Key inválida ❌");
@@ -41,7 +56,7 @@ export default function GlosarioFinanciero({
     } finally {
       setLoading(false);
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, searchQuery]); // Asegúrate de incluir searchQuery en las dependencias
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 min-h-screen text-white">
@@ -54,7 +69,7 @@ export default function GlosarioFinanciero({
       {error && <p className="text-center text-red-500 font-bold">{error}</p>}
       {!loading && !error && items.length === 0 && (
         <p className="text-center text-gray-400">
-          No se encontraron términos para esta categoría.
+          No se encontraron términos para esta búsqueda o categoría.
         </p>
       )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">

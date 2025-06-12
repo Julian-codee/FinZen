@@ -1,13 +1,14 @@
 import { Book, GraduationCap, Library, Lightbulb, Search } from "lucide-react";
 import { useState } from "react";
 import { WallStreetArticles } from "./CardArticle";
-import FinancialTipCard from "./Cardtips"; // Asegúrate de que este es el nombre de importación correcto para ConsejosFinancieros
+import FinancialTipCard from "./Cardtips";
 import GlosarioFinanciero from "./CardGloray";
+import YoutubeCourses from "./CardCourses";
 
 export const HeaderEducation = () => {
   const [activeTab, setActiveTab] = useState("Recursos");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCourses, setSelectedCourses] = useState("Todos"); // Este es el estado que necesitas pasar
+  const [selectedCourses, setSelectedCourses] = useState("Todos");
 
   const tabs = [
     { name: "Recursos", icon: <Book size={18} /> },
@@ -56,25 +57,27 @@ export const HeaderEducation = () => {
         ))}
       </div>
 
-      {/* Barra de búsqueda y filtros */}
+      {/* Contenedor de barra de búsqueda y filtros */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-        {/* Barra de búsqueda */}
-        <div className="relative flex-grow w-full md:w-auto">
-          <input
-            type="text"
-            placeholder="Buscar recursos..."
-            className="w-[38%] pl-10 pr-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-md"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-            <Search size={20} />
-          </span>
-        </div>
+        {/* Barra de búsqueda - Solo visible en la pestaña "Glosario" */}
+        {activeTab === "Glosario" && (
+          <div className="relative flex-grow w-full md:w-auto">
+            <input
+              type="text"
+              placeholder="Buscar en el glosario..."
+              className="w-[38%] pl-10 pr-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-md"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <Search size={20} />
+            </span>
+          </div>
+        )}
 
-        {/* Filtros de nivel: solo para 'Consejos' */}
+        {/* Mueve los filtros de nivel aquí, dentro del mismo flexbox, para que se alineen a la derecha */}
         {activeTab === "Consejos" && (
-          <div className="flex space-x-2 bg-gray-800 rounded-lg p-1 shadow-lg">
+          <div className="flex space-x-2 bg-gray-800 rounded-lg p-1 shadow-lg ml-auto"> {/* ml-auto para alinear a la derecha */}
             {CoursesLevel.map((course) => (
               <button
                 key={course}
@@ -97,46 +100,37 @@ export const HeaderEducation = () => {
       <div className="mt-8 text-gray-400">
         {activeTab === "Recursos" && (
           <div>
-            <h2 className="text-2xl font-semibold mb-2">Recursos educativos</h2>
-            <p>
-              Aquí podrás encontrar artículos, guías y herramientas para mejorar
-              tu educación financiera.
+         
               <WallStreetArticles />
-            </p>
+           
           </div>
         )}
 
         {activeTab === "Consejos" && (
           <div>
-            <h2 className="text-2xl font-semibold mb-2">
-              Consejos financieros
-            </h2>
-            <p>
-              Aquí irán los consejos personalizados.{" "}
-              {/* Pasa selectedCourses como prop al componente FinancialTipCard */}
+         
+        
               <FinancialTipCard selectedCategory={selectedCourses} />
-            </p>
+        
           </div>
         )}
 
         {activeTab === "Glosario" && (
           <div>
-            <h2 className="text-2xl font-semibold mb-2">Glosario financiero</h2>
-            <p>
-              Consulta definiciones de términos financieros comunes y su
-              utilidad en la vida diaria.
-              <GlosarioFinanciero selectedCategory="Todos" />
-            </p>
+        
+              <GlosarioFinanciero
+                selectedCategory="Todos"
+                searchQuery={searchQuery}
+              />
+            
           </div>
         )}
 
         {activeTab === "Cursos" && (
           <div>
-            <h2 className="text-2xl font-semibold mb-2">Cursos disponibles</h2>
-            <p>
-              Explora nuestros cursos para aprender sobre finanzas personales de
-              forma estructurada.
-            </p>
+          
+
+            <YoutubeCourses />
           </div>
         )}
       </div>
