@@ -1,12 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 
-export const TabNavigation: React.FC = () => {
-  // Estado para los botones de "Tipo de Vista"
-  const [activeViewTab, setActiveViewTab] = useState("Formulario");
+// Define las props que este componente recibirá del padre
+interface TabNavigationProps {
+  activeViewTab: string;
+  setActiveViewTab: (tab: string) => void;
+  activeDeductionTab: string; // Recibe el estado de la pestaña activa
+  setActiveDeductionTab: (tab: string) => void; // Recibe la función para actualizar la pestaña activa
+}
 
-  // Estado para los botones de "Tipo de deducción"
-  const [activeDeductionTab, setActiveDeductionTab] = useState("Personal");
-
+export const TabNavigation: React.FC<TabNavigationProps> = ({
+  activeViewTab,
+  setActiveViewTab,
+  activeDeductionTab,
+  setActiveDeductionTab,
+}) => {
+  // Define las pestañas principales
   const tabs = [
     "Personal",
     "Ingresos",
@@ -15,38 +23,41 @@ export const TabNavigation: React.FC = () => {
     "Impuestos",
   ];
 
+  // Define los tipos de vista
   const typeView = ["Formulario", "Vista Previa"];
 
   return (
     <>
-      {/*Tipo de Vista*/}
-      <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6">
+      {/* Sección para los botones de "Tipo de Vista" */}
+      {/* Añadimos 'w-fit' para que el div tome el ancho de su contenido */}
+      <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6 w-fit">
         {typeView.map((type) => (
           <button
             key={type}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
-              activeViewTab === type // Usa activeViewTab aquí
-                ? "bg-indigo-600 text-white"
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ease-in-out ${
+              activeViewTab === type
+                ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white"
                 : "text-gray-400 hover:bg-gray-700"
             }`}
-            onClick={() => setActiveViewTab(type)} // Actualiza activeViewTab
+            onClick={() => setActiveViewTab(type)}
           >
             {type}
           </button>
         ))}
       </div>
 
-      {/*Tipo de deduccion*/}
-      <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6">
+      {/* Sección para los botones de "Tipo de deducción" */}
+      {/* Añadimos 'w-fit' para que el div tome el ancho de su contenido */}
+      <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6 w-fit">
         {tabs.map((tab) => (
           <button
             key={tab}
-            className={`px-4 py-2 rounded-md text-sm font-medium ${
-              activeDeductionTab === tab // Usa activeDeductionTab aquí
-                ? "bg-indigo-600 text-white"
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ease-in-out ${
+              activeDeductionTab === tab
+                ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white"
                 : "text-gray-400 hover:bg-gray-700"
             }`}
-            onClick={() => setActiveDeductionTab(tab)} // Actualiza activeDeductionTab
+            onClick={() => setActiveDeductionTab(tab)} // Llama a la función del padre para actualizar el estado
           >
             {tab}
           </button>

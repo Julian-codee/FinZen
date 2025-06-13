@@ -150,7 +150,7 @@ const Account = () => {
 
       <div
         className={`
-          flex-1 p-6 transition-all duration-300 ease-in-out text-white
+          flex-1 p-6 transition-all duration-300 ease-in-out text-white bg-[#020817]
           ${
             isSidebarOpen ? "ml-64" : "ml-20"
           } /* Ajusta 'ml-20' si tu sidebar cerrada es de otro ancho */
