@@ -1,15 +1,18 @@
-import { useState } from 'react';
-import { Calendar, X } from 'lucide-react';
+"use client";
+
+import { useState, useEffect } from "react";
+import { Calendar, X } from "lucide-react";
 
 interface Movement {
   id: string | number;
   description: string;
   amount: number;
   date: string;
-  type: 'Ingreso' | 'Gasto' | 'Transferencia';
+  type: "Ingreso" | "Gasto" | "Transferencia";
 }
 
 interface Account {
+  id: number;
   title: string;
   movements: Movement[];
 }
@@ -21,45 +24,140 @@ interface MovementsModalProps {
 }
 
 const MovementsModal = ({ open, onClose, account }: MovementsModalProps) => {
-  const [filter, setFilter] = useState<'Todos' | 'Ingreso' | 'Gasto' | 'Transferencia'>('Todos');
+  const [filter, setFilter] = useState<"Todos" | "Ingreso" | "Gasto" | "Transferencia">("Todos");
   const [showForm, setShowForm] = useState(false);
-  const [localMovements, setLocalMovements] = useState<Movement[]>(account?.movements ?? []);
+  const [localMovements, setLocalMovements] = useState<Movement[]>([]);
   const [formData, setFormData] = useState({
-    description: '',
-    amount: '',
-    date: new Date().toISOString().split('T')[0],
-    type: 'Gasto',
+    description: "",
+    amount: "",
+    date: new Date().toISOString().split("T")[0],
+    type: "Gasto",
   });
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch movimientos cuando el modal se abre o cambia la cuenta
+  useEffect(() => {
+    if (!open || !account) {
+      setLocalMovements([]);
+      return;
+    }
+
+    const fetchMovements = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setError("Token no encontrado");
+          return;
+        }
+
+        const response = await fetch(`http://localhost:8080/finzen/cuentas/${account.id}/movimientos`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, 
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const mappedMovements: Movement[] = data.map((mov: any) => ({
+            id: mov.id || mov.idMovimiento || Date.now(),
+            description: mov.descripcion || mov.description || "",
+            amount: mov.monto || mov.amount || 0,
+            date: mov.fecha || mov.date || new Date().toISOString().split("T")[0],
+            type: mov.tipo || mov.type || "Gasto",
+          }));
+          setLocalMovements(mappedMovements);
+          setError(null);
+        } else {
+          if (response.status === 401) {
+            setError("Token inválido o expirado");
+          } else {
+            setError(`Error al obtener movimientos: ${response.status}`);
+          }
+        }
+      } catch (err) {
+        setError("Error al conectar con el servidor");
+        console.error("Error fetching movements:", err);
+      }
+    };
+
+    fetchMovements();
+  }, [open, account]);
 
   if (!open || !account) return null;
 
   const filteredMovements =
-    filter === 'Todos'
+    filter === "Todos"
       ? localMovements
       : localMovements.filter((mov) => mov.type === filter);
 
   const formatAmount = (amount: number) =>
     amount > 0
-      ? `+$${amount.toLocaleString('es-CO', { minimumFractionDigits: 2 })}`
-      : `$${Math.abs(amount).toLocaleString('es-CO', { minimumFractionDigits: 2 })}`;
+      ? `+$${amount.toLocaleString("es-CO", { minimumFractionDigits: 2 })}`
+      : `$${Math.abs(amount).toLocaleString("es-CO", { minimumFractionDigits: 2 })}`;
 
-  const handleAddTransaction = () => {
-    const newMovement: Movement = {
-      id: Date.now(),
-      description: formData.description,
-      amount: parseFloat(formData.amount),
-      date: formData.date,
-      type: formData.type as Movement['type'],
-    };
+  const handleAddTransaction = async () => {
+    const amount = parseFloat(formData.amount);
+    if (!formData.description || isNaN(amount)) {
+      setError("Por favor, completa todos los campos correctamente");
+      return;
+    }
 
-    setLocalMovements([...localMovements, newMovement]);
-    setFormData({
-      description: '',
-      amount: '',
-      date: new Date().toISOString().split('T')[0],
-      type: 'Gasto',
-    });
-    setShowForm(false);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Token no encontrado");
+        return;
+      }
+
+      const newMovement = {
+        descripcion: formData.description,
+        monto: amount,
+        fecha: formData.date,
+        tipo: formData.type,
+      };
+
+      const response = await fetch(``, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newMovement),
+      });
+
+      if (response.ok) {
+        const createdMovement = await response.json();
+        setLocalMovements([
+          ...localMovements,
+          {
+            id: createdMovement.id || Date.now(),
+            description: formData.description,
+            amount,
+            date: formData.date,
+            type: formData.type as Movement["type"],
+          },
+        ]);
+        setFormData({
+          description: "",
+          amount: "",
+          date: new Date().toISOString().split("T")[0],
+          type: "Gasto",
+        });
+        setShowForm(false);
+        setError(null);
+      } else {
+        if (response.status === 401) {
+          setError("Token inválido o expirado");
+        } else {
+          setError("Error al crear el movimiento");
+        }
+      }
+    } catch (err) {
+      setError("Error al conectar con el servidor");
+      console.error("Error creating movement:", err);
+    }
   };
 
   return (
@@ -72,26 +170,12 @@ const MovementsModal = ({ open, onClose, account }: MovementsModalProps) => {
         <h2 className="text-xl font-semibold mb-1">Movimientos de {account.title}</h2>
         <p className="text-sm text-gray-400 mb-5">Historial de transacciones de tu cuenta</p>
 
+        {error && (
+          <p className="text-red-500 text-sm mb-4">{error}</p>
+        )}
+
         {/* Filtros y botón Añadir */}
-        <div className="flex gap-3 mb-4">
-          {['Todos', 'Ingreso', 'Gasto', 'Transferencia'].map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f as any)}
-              className={`px-4 py-1.5 rounded-md text-sm font-medium transition ${
-                filter === f ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
-            >
-              {f}
-            </button>
-          ))}
-          <button
-            className="ml-auto bg-blue-600 hover:bg-blue-700 px-4 py-1.5 rounded-md text-sm font-medium"
-            onClick={() => setShowForm(true)}
-          >
-            + Añadir
-          </button>
-        </div>
+        
 
         {/* Formulario de nueva transacción */}
         {showForm && (
@@ -168,11 +252,11 @@ const MovementsModal = ({ open, onClose, account }: MovementsModalProps) => {
               <li key={mov.id} className="flex justify-between items-center py-3 text-sm">
                 <span
                   className={`font-semibold ${
-                    mov.type === 'Ingreso'
-                      ? 'text-green-400'
-                      : mov.type === 'Gasto'
-                      ? 'text-red-400'
-                      : 'text-blue-400'
+                    mov.type === "Ingreso"
+                      ? "text-green-400"
+                      : mov.type === "Gasto"
+                      ? "text-red-400"
+                      : "text-blue-400"
                   }`}
                 >
                   {mov.description}
@@ -184,10 +268,10 @@ const MovementsModal = ({ open, onClose, account }: MovementsModalProps) => {
                 <span
                   className={`font-semibold ${
                     mov.amount > 0
-                      ? 'text-green-400'
-                      : mov.type === 'Transferencia'
-                      ? 'text-blue-400'
-                      : 'text-red-400'
+                      ? "text-green-400"
+                      : mov.type === "Transferencia"
+                      ? "text-blue-400"
+                      : "text-red-400"
                   }`}
                 >
                   {formatAmount(mov.amount)}

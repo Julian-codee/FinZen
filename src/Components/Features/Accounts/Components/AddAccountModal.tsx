@@ -1,33 +1,26 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useId } from "react"
-import { X, Landmark, PiggyBank, Wallet, CreditCard, TrendingUp, Building } from "lucide-react"
+import { useState, useEffect, useId } from "react";
+import { X, Landmark, PiggyBank, Wallet, CreditCard, TrendingUp, Building } from "lucide-react";
+import { Account } from "../Accounts";
 
 interface Props {
-  open: boolean
-  onClose: () => void
-  onAdd: (item: {
-    id: number
-    title: string
-    type: string
-    amount: number
-    bank?: string
-    number?: string
-    creditLimit?: number
-    platform?: string
-    investmentType?: string
-  }) => void
-  type?: string // Nuevo prop para determinar el tipo
+  open: boolean;
+  onClose: () => void;
+  onAdd: (item: Account) => void;
+  type?: string;
+  initialData?: Account | null;
 }
 
-export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas" }: Props) {
-  const [title, setName] = useState("")
-  const [itemType, setItemType] = useState<string | null>(null)
-  const [bank, setBank] = useState("")
-  const [number, setNumber] = useState("")
-  const [amount, setBalance] = useState<number | "">("")
-  const [creditLimit, setCreditLimit] = useState<number | "">("")
-  const [platform, setPlatform] = useState("")
+export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas", initialData = null }: Props) {
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [itemType, setItemType] = useState<string | null>(initialData?.type || null);
+  const [bank, setBank] = useState(initialData?.bank || "");
+  const [number, setNumber] = useState(initialData?.number || "");
+  const [amount, setAmount] = useState<number | "">(initialData?.amount || "");
+  const [creditLimit, setCreditLimit] = useState<number | "">(initialData?.creditLimit || "");
+  const [platform, setPlatform] = useState(initialData?.platform || "");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState({
     title: false,
     type: false,
@@ -36,59 +29,65 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
     amount: false,
     creditLimit: false,
     platform: false,
-  })
+  });
 
-  const nameInputId = useId()
+  const nameInputId = useId();
 
-  // Configuración según el tipo
   const getConfig = () => {
     switch (type) {
       case "Tarjetas":
         return {
-          title: "Añadir Nueva Tarjeta",
-          description: "Añade una nueva tarjeta de crédito o débito a tu perfil financiero.",
-          buttonText: "Crear tarjeta",
+          title: initialData ? "Editar Tarjeta" : "Añadir Nueva Tarjeta",
+          description: initialData
+            ? "Edita los detalles de tu tarjeta."
+            : "Añade una nueva tarjeta de crédito o débito a tu perfil financiero.",
+          buttonText: initialData ? "Actualizar tarjeta" : "Crear tarjeta",
           types: [
             { key: "credito", label: "Crédito", icon: CreditCard },
             { key: "debito", label: "Débito", icon: CreditCard },
           ],
-        }
+        };
       case "Inversiones":
         return {
-          title: "Añadir Nueva Inversión",
-          description: "Añade una nueva inversión o cuenta de inversión a tu portafolio.",
-          buttonText: "Crear inversión",
+          title: initialData ? "Editar Inversión" : "Añadir Nueva Inversión",
+          description: initialData
+            ? "Edita los detalles de tu inversión."
+            : "Añade una nueva inversión o cuenta de inversión a tu portafolio.",
+          buttonText: initialData ? "Actualizar inversión" : "Crear inversión",
           types: [
             { key: "acciones", label: "Acciones", icon: TrendingUp },
             { key: "fondos", label: "Fondos", icon: Building },
             { key: "crypto", label: "Crypto", icon: TrendingUp },
           ],
-        }
+        };
       default:
         return {
-          title: "Añadir Nueva Cuenta",
-          description: "Añade una nueva cuenta bancaria o de efectivo a tu perfil financiero.",
-          buttonText: "Crear cuenta",
+          title: initialData ? "Editar Cuenta" : "Añadir Nueva Cuenta",
+          description: initialData
+            ? "Edita los detalles de tu cuenta."
+            : "Añade una nueva cuenta bancaria o de efectivo a tu perfil financiero.",
+          buttonText: initialData ? "Actualizar cuenta" : "Crear cuenta",
           types: [
             { key: "corriente", label: "Corriente", icon: Landmark },
             { key: "ahorros", label: "Ahorros", icon: PiggyBank },
             { key: "efectivo", label: "Efectivo", icon: Wallet },
           ],
-        }
+        };
     }
-  }
+  };
 
-  const config = getConfig()
+  const config = getConfig();
 
   useEffect(() => {
-    if (!open) {
-      setName("")
-      setItemType(null)
-      setBank("")
-      setNumber("")
-      setBalance("")
-      setCreditLimit("")
-      setPlatform("")
+    if (open) {
+      setTitle(initialData?.title || "");
+      setItemType(initialData?.type || null);
+      setBank(initialData?.bank || "");
+      setNumber(initialData?.number || "");
+      setAmount(initialData?.amount || "");
+      setCreditLimit(initialData?.creditLimit || "");
+      setPlatform(initialData?.platform || "");
+      setErrorMessage(null);
       setErrors({
         title: false,
         type: false,
@@ -97,47 +96,73 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
         amount: false,
         creditLimit: false,
         platform: false,
-      })
+      });
     }
-  }, [open])
+  }, [open, initialData]);
 
   const validate = () => {
     const newErrors = {
       title: title.trim() === "",
       type: itemType === null,
-      bank: type === "Cuentas" || type === "Tarjetas" ? bank.trim() === "" : false,
-      number: type === "Cuentas" || type === "Tarjetas" ? number.trim().length !== 4 || !/^\d{4}$/.test(number) : false,
+      bank: ((type === "Cuentas" && itemType !== "efectivo") || type === "Tarjetas") 
+            ? bank.trim() === "" 
+            : false,
+      number: ((type === "Cuentas" && itemType !== "efectivo") || type === "Tarjetas")
+              ? number.trim().length !== 4 || !/^\d{4}$/.test(number) 
+              : false,
       amount: amount === "" || typeof amount !== "number" || amount < 0,
       creditLimit:
         type === "Tarjetas" && itemType === "credito"
           ? creditLimit === "" || typeof creditLimit !== "number" || creditLimit <= 0
           : false,
       platform: type === "Inversiones" ? platform.trim() === "" : false,
-    }
-    setErrors(newErrors)
-    return !Object.values(newErrors).some(Boolean)
-  }
-
-  const handleAdd = () => {
-    if (!validate()) return
-
-    const finalItem = {
-      id: Date.now(),
-      title,
-      type: itemType!,
-      amount: typeof amount === "number" ? amount : 0,
-      ...(type === "Cuentas" || type === "Tarjetas" ? { bank, number } : {}),
-      ...(type === "Tarjetas" && itemType === "credito"
-        ? { creditLimit: typeof creditLimit === "number" ? creditLimit : 0 }
-        : {}),
-      ...(type === "Inversiones" ? { platform, investmentType: itemType ?? undefined } : {}),
-    }
+    };
     
-    onAdd(finalItem)
-    onClose()
-  }
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(Boolean);
+  };
 
-  if (!open) return null
+  const handleAdd = async () => {
+    if (!validate()) {
+      setErrorMessage("Por favor, completa todos los campos correctamente.");
+      return;
+    }
+
+    try {
+      const finalItem: Account = {
+        id: initialData?.id || Date.now(),
+        uniqueId: initialData?.uniqueId || `${type.toLowerCase()}-${Date.now()}`,
+        title,
+        type: itemType!,
+        amount: typeof amount === "number" ? amount : 0,
+        bank: itemType !== "efectivo" && (type === "Cuentas" || type === "Tarjetas") ? bank : undefined,
+        number: itemType !== "efectivo" && (type === "Cuentas" || type === "Tarjetas") ? number : undefined,
+        creditLimit: type === "Tarjetas" && itemType === "credito" ? (typeof creditLimit === "number" ? creditLimit : 0) : undefined,
+        platform: type === "Inversiones" ? platform : undefined,
+        investmentType: type === "Inversiones" ? itemType ?? undefined : undefined,
+        movements: initialData?.movements || [],
+        // Preservar campos adicionales si existen
+        freeAmount: initialData?.freeAmount,
+        occupiedAmount: initialData?.occupiedAmount,
+        currentValue: initialData?.currentValue,
+        startDate: initialData?.startDate,
+        originalType: initialData?.originalType || (
+          type === "Tarjetas" ? 'tarjeta' : 
+          type === "Inversiones" ? 'inversion' : 'cuenta'
+        ),
+      };
+
+      console.log("Guardando item:", finalItem);
+      await onAdd(finalItem);
+      setErrorMessage(null);
+      onClose();
+    } catch (error) {
+      setErrorMessage("Error al guardar el item. Por favor, intenta de nuevo.");
+      console.error("Error en handleAdd:", error);
+    }
+  };
+
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
@@ -150,14 +175,13 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
         <p className="text-sm text-gray-400 mt-1">{config.description}</p>
 
         <div className="space-y-4 mt-6">
-          {/* Nombre */}
           <div>
             <label htmlFor={nameInputId} className="block text-sm mb-1">
               {type === "Tarjetas"
                 ? "Nombre de la tarjeta"
                 : type === "Inversiones"
-                  ? "Nombre de la inversión"
-                  : "Nombre de la cuenta"}
+                ? "Nombre de la inversión"
+                : "Nombre de la cuenta"}
             </label>
             <input
               id={nameInputId}
@@ -166,11 +190,11 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
                 type === "Tarjetas"
                   ? "Ej: Tarjeta Visa Principal"
                   : type === "Inversiones"
-                    ? "Ej: Portafolio Diversificado"
-                    : "Ej: Cuenta Corriente Principal"
+                  ? "Ej: Portafolio Diversificado"
+                  : "Ej: Cuenta Corriente Principal"
               }
               value={title}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setTitle(e.target.value)}
               className={`w-full px-4 py-2 rounded-lg bg-[#020817] border text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 ${
                 errors.title ? "border-red-500" : "border-white/40"
               }`}
@@ -178,14 +202,13 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
             {errors.title && <p className="text-red-500 text-sm mt-1">Este campo es obligatorio.</p>}
           </div>
 
-          {/* Tipo */}
           <div>
             <label className="block text-sm mb-2">
               {type === "Tarjetas"
                 ? "Tipo de tarjeta"
                 : type === "Inversiones"
-                  ? "Tipo de inversión"
-                  : "Tipo de cuenta"}
+                ? "Tipo de inversión"
+                : "Tipo de cuenta"}
             </label>
             <div className="flex gap-2">
               {config.types.map(({ key, label, icon: Icon }) => (
@@ -205,8 +228,7 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
             {errors.type && <p className="text-red-500 text-sm mt-1">Selecciona un tipo.</p>}
           </div>
 
-          {/* Banco/Plataforma */}
-          {(type === "Cuentas" || type === "Tarjetas") && (
+          {(type === "Cuentas" || type === "Tarjetas") && itemType !== "efectivo" && (
             <div>
               <label className="block text-sm mb-1">Banco</label>
               <input
@@ -238,15 +260,14 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
             </div>
           )}
 
-          {/* Número de cuenta/tarjeta */}
-          {(type === "Cuentas" || type === "Tarjetas") && (
+          {(type === "Cuentas" || type === "Tarjetas") && itemType !== "efectivo" && (
             <div>
               <label className="block text-sm mb-1">
                 {type === "Tarjetas" ? "Número de tarjeta (últimos 4 dígitos)" : "Número de cuenta (últimos 4 dígitos)"}
               </label>
               <input
                 type="text"
-                placeholder="Ej: 1234"
+                placeholder="Ej: 7392"
                 value={number}
                 maxLength={4}
                 onChange={(e) => setNumber(e.target.value.replace(/\D/g, ""))}
@@ -258,7 +279,6 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
             </div>
           )}
 
-          {/* Límite de crédito para tarjetas de crédito */}
           {type === "Tarjetas" && itemType === "credito" && (
             <div>
               <label className="block text-sm mb-1">Límite de crédito</label>
@@ -275,8 +295,8 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
                   placeholder="0.00"
                   value={creditLimit}
                   onChange={(e) => {
-                    const value = e.target.value
-                    setCreditLimit(value === "" ? "" : Number.parseFloat(value))
+                    const value = e.target.value;
+                    setCreditLimit(value === "" ? "" : Number.parseFloat(value));
                   }}
                   className="bg-transparent outline-none w-full text-white placeholder-gray-500"
                 />
@@ -285,7 +305,6 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
             </div>
           )}
 
-          {/* Saldo/Valor inicial */}
           <div>
             <label className="block text-sm mb-1">
               {type === "Inversiones" ? "Valor inicial" : type === "Tarjetas" ? "Saldo actual" : "Saldo inicial"}
@@ -303,8 +322,8 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
                 placeholder="0.00"
                 value={amount}
                 onChange={(e) => {
-                  const value = e.target.value
-                  setBalance(value === "" ? "" : Number.parseFloat(value))
+                  const value = e.target.value;
+                  setAmount(value === "" ? "" : Number.parseFloat(value));
                 }}
                 className="bg-transparent outline-none w-full text-white placeholder-gray-500"
               />
@@ -312,7 +331,8 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
             {errors.amount && <p className="text-red-500 text-sm mt-1">Ingresa un monto válido.</p>}
           </div>
 
-          {/* Botones */}
+          {errorMessage && <p className="text-red-500 text-sm mt-2">{errorMessage}</p>}
+
           <div className="flex justify-end gap-2 pt-4">
             <button
               onClick={onClose}
@@ -330,5 +350,5 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
         </div>
       </div>
     </div>
-  )
+  );
 }
