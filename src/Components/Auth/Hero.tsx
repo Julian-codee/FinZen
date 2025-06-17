@@ -143,13 +143,18 @@ export const Hero = ({ onBack }: HeroProps) => {
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Si estamos en el último paso y pulsamos "Siguiente", redirigir
-      navigate("/Reporting");
-      console.log("¡Cuestionario completado!");
+      // Enviar los datos al backend
+      try {
+        await submitRegister(); // Llama a la función del contexto para enviar los dato
+        console.log("Registro exitoso");
+        navigate("/dashboard");
+      } catch (error) {
+        console.error("Error al enviar los datos:", error);
+      }
     }
   };
 

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
 import {
   X,
   ChevronDown,
@@ -25,84 +26,145 @@ import type { BudgetData } from "../types/budget-types"
 
 interface Account {
   id: string
+  nombre: string // Match backend Cuenta entity's field
+}
+
+interface Category {
+  id: number
+  ide: string
   name: string
+  icon: JSX.Element
+  bgColor: string
+  textColor: string
 }
 
 interface AddBudgetDialogProps {
   isOpen: boolean
   onClose: () => void
   onAddBudget: (budgetData: BudgetData & { accountId: string }) => void
-  accounts: Account[]
 }
 
-export default function AddBudgetDialog({ isOpen, onClose, onAddBudget, accounts }: AddBudgetDialogProps) {
+export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBudgetDialogProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set())
+  const [selectedCategory, setSelectedCategory] = useState<string>("") // Single category
   const [budgetName, setBudgetName] = useState("")
   const [amount, setAmount] = useState("")
-  const [period, setPeriod] = useState("Mensual")
+  const [period] = useState("Mensual") // Not used in backend, kept for potential future use
   const [selectedAccount, setSelectedAccount] = useState("")
+  const [accounts, setAccounts] = useState<Account[]>([])
+  const [error, setError] = useState<string | null>(null)
 
-  const categories = [
-    { id: "comida", name: "Comida", icon: <UtensilsCrossed className="w-4 h-4" />, bgColor: "bg-[#FED7AA]", textColor: "text-[#EA580C]" },
-    { id: "supermercado", name: "Supermercado", icon: <ShoppingCart className="w-4 h-4" />, bgColor: "bg-[#BBF7D0]", textColor: "text-[#059669]" },
-    { id: "vivienda", name: "Vivienda", icon: <Home className="w-4 h-4" />, bgColor: "bg-[#DBEAFE]", textColor: "text-[#2563EB]" },
-    { id: "transporte", name: "Transporte", icon: <Car className="w-4 h-4" />, bgColor: "bg-[#BFDBFE]", textColor: "text-[#3B82F6]" },
-    { id: "entretenimiento", name: "Entretenimiento", icon: <Gamepad2 className="w-4 h-4" />, bgColor: "bg-[#E9D5FF]", textColor: "text-[#9333EA]" },
-    { id: "servicios", name: "Servicios", icon: <Zap className="w-4 h-4" />, bgColor: "bg-[#FEF3C7]", textColor: "text-[#D97706]" },
-    { id: "cafe", name: "Café", icon: <Coffee className="w-4 h-4" />, bgColor: "bg-[#FED7AA]", textColor: "text-[#92400E]" },
-    { id: "salud", name: "Salud", icon: <Heart className="w-4 h-4" />, bgColor: "bg-[#FECACA]", textColor: "text-[#DC2626]" },
-    { id: "restaurante", name: "Restaurante", icon: <Pizza className="w-4 h-4" />, bgColor: "bg-[#FED7AA]", textColor: "text-[#EA580C]" },
-    { id: "internet", name: "Internet", icon: <Wifi className="w-4 h-4" />, bgColor: "bg-[#BFDBFE]", textColor: "text-[#3B82F6]" },
-    { id: "telefono", name: "Teléfono", icon: <Phone className="w-4 h-4" />, bgColor: "bg-[#E9D5FF]", textColor: "text-[#9333EA]" },
-    { id: "educacion", name: "Educación", icon: <GraduationCap className="w-4 h-4" />, bgColor: "bg-[#BBF7D0]", textColor: "text-[#059669]" },
-    { id: "ocio", name: "Ocio", icon: <PartyPopper className="w-4 h-4" />, bgColor: "bg-[#FECACA]", textColor: "text-[#DC2626]" },
-    { id: "musica", name: "Música", icon: <Music className="w-4 h-4" />, bgColor: "bg-[#E9D5FF]", textColor: "text-[#9333EA]" },
-    { id: "otros", name: "Otros", icon: <Plus className="w-4 h-4" />, bgColor: "bg-[#F3F4F6]", textColor: "text-[#6B7280]" },
+  // Hardcoded categories (replace with API call to /finzen/categorias)
+  const categories: Category[] = [
+    { id: 1, ide: "comida", name: "Comida", icon: <UtensilsCrossed className="w-4 h-4" />, bgColor: "bg-[#FED7AA]", textColor: "text-[#EA580C]" },
+    { id: 2, ide: "supermercado", name: "Supermercado", icon: <ShoppingCart className="w-4 h-4" />, bgColor: "bg-[#BBF7D0]", textColor: "text-[#059669]" },
+    { id: 3, ide: "vivienda", name: "Vivienda", icon: <Home className="w-4 h-4" />, bgColor: "bg-[#DBEAFE]", textColor: "text-[#2563EB]" },
+    { id: 4, ide: "transporte", name: "Transporte", icon: <Car className="w-4 h-4" />, bgColor: "bg-[#BFDBFE]", textColor: "text-[#3B82F6]" },
+    { id: 5, ide: "entretenimiento", name: "Entretenimiento", icon: <Gamepad2 className="w-4 h-4" />, bgColor: "bg-[#E9D5FF]", textColor: "text-[#9333EA]" },
+    { id: 6, ide: "servicios", name: "Servicios", icon: <Zap className="w-4 h-4" />, bgColor: "bg-[#FEF3C7]", textColor: "text-[#D97706]" },
+    { id: 7, ide: "cafe", name: "Café", icon: <Coffee className="w-4 h-4" />, bgColor: "bg-[#FED7AA]", textColor: "text-[#92400E]" },
+    { id: 8, ide: "salud", name: "Salud", icon: <Heart className="w-4 h-4" />, bgColor: "bg-[#FECACA]", textColor: "text-[#DC2626]" },
+    { id: 9, ide: "restaurante", name: "Restaurante", icon: <Pizza className="w-4 h-4" />, bgColor: "bg-[#FED7AA]", textColor: "text-[#EA580C]" },
+    { id: 10, ide: "internet", name: "Internet", icon: <Wifi className="w-4 h-4" />, bgColor: "bg-[#BFDBFE]", textColor: "text-[#3B82F6]" },
+    { id: 11, ide: "telefono", name: "Teléfono", icon: <Phone className="w-4 h-4" />, bgColor: "bg-[#E9D5FF]", textColor: "text-[#9333EA]" },
+    { id: 12, ide: "educacion", name: "Educación", icon: <GraduationCap className="w-4 h-4" />, bgColor: "bg-[#BBF7D0]", textColor: "text-[#059669]" },
+    { id: 13, ide: "ocio", name: "Ocio", icon: <PartyPopper className="w-4 h-4" />, bgColor: "bg-[#FECACA]", textColor: "text-[#DC2626]" },
+    { id: 14, ide: "musica", name: "Música", icon: <Music className="w-4 h-4" />, bgColor: "bg-[#E9D5FF]", textColor: "text-[#9333EA]" },
+    { id: 15, ide: "otros", name: "Otros", icon: <Plus className="w-4 h-4" />, bgColor: "bg-[#F3F4F6]", textColor: "text-[#6B7280]" },
   ]
 
-  const handleCategoryToggle = (categoryId: string) => {
-    const newSelected = new Set(selectedCategories)
-    if (newSelected.has(categoryId)) {
-      newSelected.delete(categoryId)
-    } else {
-      newSelected.add(categoryId)
+  // Fetch accounts on component mount
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/finzen/cuentas", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        setAccounts(response.data.map((cuenta: any) => ({
+          id: cuenta.idCuenta.toString(),
+          nombre: cuenta.nombre,
+        })))
+      } catch (err) {
+        setError("Error al cargar las cuentas")
+      }
     }
-    setSelectedCategories(newSelected)
+    fetchAccounts()
+  }, [])
+
+  // Optional: Fetch categories from backend
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     try {
+  //       const response = await axios.get("http://localhost:8080/finzen/categorias", {
+  //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  //       })
+  //       // Map response to Category interface
+  //       // setCategories(response.data.map(...))
+  //     } catch (err) {
+  //       setError("Error al cargar categorías")
+  //     }
+  //   }
+  //   fetchCategories()
+  // }, [])
+
+  const handleCategoryToggle = (categoryId: string) => {
+    setSelectedCategory(categoryId) // Select single category
   }
 
-  const handleSubmit = () => {
-    if (budgetName.trim() && amount && selectedCategories.size > 0 && selectedAccount) {
-      const selectedCategoryData = Array.from(selectedCategories).map((categoryId) => {
-        const category = categories.find((cat) => cat.id === categoryId)
-        return {
-          name: category?.name || "",
-          budget: 0,
-          categoryType: categoryId,
-          accountId: selectedAccount,
+  const handleSubmit = async () => {
+    if (budgetName.trim() && amount && selectedCategory && selectedAccount) {
+      try {
+        const category = categories.find((cat) => cat.ide === selectedCategory)
+        if (!category) throw new Error("Categoría no encontrada")
+
+        const payload = {
+          idCuenta: Number(selectedAccount),
+          nombre: budgetName.trim(),
+          montoAsignado: Number.parseFloat(amount),
+          idCategoriaPresupuesto: category.id,
         }
-      })
 
-      onAddBudget({
-        name: budgetName.trim(),
-        totalBudget: Number.parseFloat(amount),
-        categories: selectedCategoryData,
-        accountId: selectedAccount,
-      })
+        // Send request to backend
+        await axios.post("http://localhost:8080/finzen/presupuesto", payload, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
 
-      setBudgetName("")
-      setAmount("")
-      setSelectedCategories(new Set())
-      setSelectedAccount("")
-      onClose()
+        // Call onAddBudget for local state (if needed)
+        onAddBudget({
+          name: budgetName.trim(),
+          totalBudget: Number.parseFloat(amount),
+          categories: [{
+            name: category.name,
+            budget: 0,
+            categoryType: category.ide,
+            accountId: selectedAccount,
+          }],
+          accountId: selectedAccount,
+        })
+
+        // Reset form and close dialog
+        setBudgetName("")
+        setAmount("")
+        setSelectedCategory("")
+        setSelectedAccount("")
+        setError(null)
+        onClose()
+      } catch (err) {
+        setError("Error al crear el presupuesto. Por favor, intenta de nuevo.")
+      }
     }
   }
 
   const handleClose = () => {
     setBudgetName("")
     setAmount("")
-    setSelectedCategories(new Set())
+    setSelectedCategory("")
     setSelectedAccount("")
+    setError(null)
     onClose()
   }
 
@@ -121,6 +183,12 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget, accounts
           </button>
         </div>
 
+        {error && (
+          <div className="mb-4 p-2 bg-red-500/20 text-red-400 rounded-lg text-sm">
+            {error}
+          </div>
+        )}
+
         <div className="mb-4">
           <h3 className="text-base font-semibold text-white mb-2">Nombre del Presupuesto</h3>
           <div className="relative">
@@ -132,12 +200,12 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget, accounts
               className="w-full bg-[#020817] border border-[#475569] text-white pl-10 pr-3 py-2.5 rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="Ej: Presupuesto Enero 2024"
             />
+            {budgetName.trim() && (
+              <p className="text-xs text-gray-400 mt-1">
+                Este nombre te ayudará a identificar el presupuesto en el historial
+              </p>
+            )}
           </div>
-          {budgetName.trim() && (
-            <p className="text-xs text-gray-400 mt-1">
-              Este nombre te ayudará a identificar el presupuesto en el historial
-            </p>
-          )}
         </div>
 
         <div className="mb-4">
@@ -150,14 +218,14 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget, accounts
             <option value="">Selecciona una cuenta</option>
             {accounts.map((account) => (
               <option key={account.id} value={account.id}>
-                {account.name}
+                {account.nombre}
               </option>
             ))}
           </select>
         </div>
 
         <div className="mb-4">
-          <h3 className="text-base font-semibold text-white mb-3">Categorías</h3>
+          <h3 className="text-base font-semibold text-white mb-3">Categoría</h3>
           <div className="flex bg-[#334155] rounded-lg p-1 mb-3">
             <button
               onClick={() => setViewMode("grid")}
@@ -182,9 +250,9 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget, accounts
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => handleCategoryToggle(category.id)}
+                  onClick={() => handleCategoryToggle(category.ide)}
                   className={`${category.bgColor} rounded-lg p-2 flex flex-col items-center justify-center min-h-[50px] transition-all hover:scale-105 ${
-                    selectedCategories.has(category.id) ? "ring-2 ring-blue-500" : ""
+                    selectedCategory === category.ide ? "ring-2 ring-blue-500" : ""
                   }`}
                 >
                   <div className={`${category.textColor} mb-1`}>{category.icon}</div>
@@ -198,17 +266,17 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget, accounts
                 <li
                   key={category.id}
                   className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors ${
-                    selectedCategories.has(category.id)
+                    selectedCategory === category.ide
                       ? "bg-blue-800 text-white"
                       : "bg-[#1E293B] text-gray-300 hover:bg-[#334155]"
                   }`}
-                  onClick={() => handleCategoryToggle(category.id)}
+                  onClick={() => handleCategoryToggle(category.ide)}
                 >
                   <div className="flex items-center space-x-2">
                     <div className={`${category.textColor}`}>{category.icon}</div>
                     <span className="text-sm">{category.name}</span>
                   </div>
-                  {selectedCategories.has(category.id) && <span className="text-xs text-blue-400">Seleccionada</span>}
+                  {selectedCategory === category.ide && <span className="text-xs text-blue-400">Seleccionada</span>}
                 </li>
               ))}
             </ul>
@@ -230,7 +298,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget, accounts
         <button
           onClick={handleSubmit}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors disabled:opacity-50"
-          disabled={!budgetName.trim() || !amount || selectedCategories.size === 0 || !selectedAccount}
+          disabled={!budgetName.trim() || !amount || !selectedCategory || !selectedAccount}
         >
           Crear Presupuesto
         </button>
