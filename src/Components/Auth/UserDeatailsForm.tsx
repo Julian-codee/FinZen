@@ -85,7 +85,7 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
       });
       console.log("Updated registerData:", registerData);
       await submitRegister();
-      navigate("/home");
+      navigate("/");
     } catch (error: any) {
       console.error("Registration error:", error);
       showErrorAlert(error.message || "Error al registrar el usuario");
