@@ -42,11 +42,9 @@ export const Login = () => {
 
         // Redirigir al dashboard después de un pequeño delay para mostrar el mensaje
         setTimeout(() => {
-<<<<<<< HEAD
           navigate("/BudgetDashboard"); // <--- Cambia la ruta según tu aplicación
-=======
           navigate("/Reporting");
->>>>>>> front_sarchi
+
         }, 2000);
       } else {
         setError(data.message || "Credenciales inválidas");
