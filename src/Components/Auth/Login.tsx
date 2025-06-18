@@ -11,6 +11,10 @@ import { ClipLoader } from "react-spinners"; // <--- ¡Importación de react-spi
 export const Login = () => {
   const navigate = useNavigate();
 
+  const forgotPassword = () =>{
+    navigate('/Forgot')
+  }
+
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState("");
@@ -44,6 +48,7 @@ export const Login = () => {
         setError(data.message || "Credenciales inválidas");
         showErrorAlert(data.message || "Credenciales inválidas");
       }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setError("Error al iniciar sesion");
       showErrorAlert("No se pudo conectar con el servidor");
@@ -142,7 +147,7 @@ export const Login = () => {
                 <div>
                   <div className="flex justify-between text-sm">
                     <label className="text-sm text-white/50">Contraseña</label>
-                    <a href="#" className="text-blue-400 hover:underline">
+                    <a onClick={forgotPassword} className="text-blue-400 hover:underline">
                       ¿Olvidaste tu contraseña?
                     </a>
                   </div>

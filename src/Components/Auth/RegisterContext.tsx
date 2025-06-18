@@ -109,6 +109,7 @@ export const RegisterProvider: React.FC<{ children: React.ReactNode }> = ({
       } else {
         throw new Error(data.message || "Error al crear la cuenta");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error en la solicitud:", error);
       showErrorAlert(error.message || "No se pudo conectar con el servidor");

@@ -13,9 +13,11 @@ interface UserDetailsFormProps {
 }
 
 export default function UserDetailsForm({ userType, onBack }: UserDetailsFormProps) {
-  const [ingresos, setIngresos] = useState("")
-  const [meta, setMeta] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [ingresos, setIngresos] = useState(""); // Valor real
+  const [ingresosFormatted, setIngresosFormatted] = useState(""); // Valor formateado
+  const [meta, setMeta] = useState(""); // Valor real
+  const [metaFormatted, setMetaFormatted] = useState(""); // Valor formateado
+  const [Loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { updateRegisterData, submitRegister } = useRegister()
 
@@ -61,20 +63,22 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
       showErrorAlert("Por favor ingresa el monto de tu meta financiera")
       return
     }
+    const ingresoMensual = Number(ingresos);
+    const metaActual = Number(meta);
 
-    setIsLoading(true)
+    setLoading(true)
     try {
       updateRegisterData({
         tipoPersona: userType,
-        ingresoMensual: Number.parseFloat(ingresos.replace(/,/g, "")),
-        metaActual: Number.parseFloat(meta.replace(/,/g, "")),
+        ingresoMensual:ingresoMensual,
+        metaActual:metaActual,
       })
       await submitRegister()
       navigate("/Reporting")
     } catch (error: any) {
       showErrorAlert(error.message || "Error al registrar el usuario")
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
@@ -83,17 +87,56 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
     return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
   }
 
+  
+
   const handleIngresosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCurrency(e.target.value)
-    setIngresos(formatted)
-  }
+    const rawValue = e.target.value.replace(/,/g, ""); // Elimina las comas para obtener el valor real
+    setIngresos(rawValue); // Actualiza el valor real
+    setIngresosFormatted(formatCurrency(rawValue)); // Actualiza el valor formateado
+  };
 
   const handleMetaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCurrency(e.target.value)
-    setMeta(formatted)
-  }
+    const rawValue = e.target.value.replace(/,/g, ""); // Elimina las comas para obtener el valor real
+    setMeta(rawValue); // Actualiza el valor real
+    setMetaFormatted(formatCurrency(rawValue)); // Actualiza el valor formateado
+  };
+
+  
 
   return (
+    <>
+     {/* <--- CONTENEDOR DEL CARGADOR DE PANTALLA COMPLETA ---> */}
+      {Loading && (
+        //Loader de pantalla completa
+
+        <div className="fixed inset-0 bg-black/60 bg-opacity-70 flex flex-col items-center justify-center z-[9999]">
+          <div className="w-32 h-32 relative flex items-center justify-center">
+            <div className="absolute inset-0 rounded-xl bg-blue-500/20 blur-xl animate-pulse"></div>
+
+            <div className="w-full h-full relative flex items-center justify-center">
+              <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 animate-spin blur-sm"></div>
+
+              <div className="absolute inset-1 bg-gray-900 rounded-lg flex items-center justify-center overflow-hidden">
+                <div className="flex gap-1 items-center">
+                  <div className="w-1.5 h-12 bg-cyan-500 rounded-full animate-[bounce_1s_ease-in-out_infinite]"></div>
+                  <div className="w-1.5 h-12 bg-blue-500 rounded-full animate-[bounce_1s_ease-in-out_infinite_0.1s]"></div>
+                  <div className="w-1.5 h-12 bg-indigo-500 rounded-full animate-[bounce_1s_ease-in-out_infinite_0.2s]"></div>
+                  <div className="w-1.5 h-12 bg-purple-500 rounded-full animate-[bounce_1s_ease-in-out_infinite_0.3s]"></div>
+                </div>
+
+                <div className="absolute inset-0 bg-gradient-to-t from-transparent via-blue-500/10 to-transparent animate-pulse"></div>
+              </div>
+            </div>
+
+            <div className="absolute -top-1 -left-1 w-2 h-2 bg-blue-500 rounded-full animate-ping"></div>
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-purple-500 rounded-full animate-ping delay-100"></div>
+            <div className="absolute -bottom-1 -left-1 w-2 h-2 bg-cyan-500 rounded-full animate-ping delay-200"></div>
+            <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-blue-500 rounded-full animate-ping delay-300"></div>
+          </div>
+
+          <p className="mt-4 text-white text-lg -top-4">Iniciando sesión...</p>
+        </div>
+      )}
     <div className="min-h-screen bg-[#020817] text-white flex flex-col items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <button onClick={onBack} className="flex items-center text-gray-400 hover:text-white mb-8 transition-colors">
@@ -116,7 +159,7 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                value={ingresos}
+                value={ingresosFormatted}
                 onChange={handleIngresosChange}
                 placeholder="0"
                 className="w-full pl-10 pr-4 py-3 bg-[#1E2530] border border-slate-500/30 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
@@ -134,7 +177,7 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
               <Target className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                value={meta}
+                value={metaFormatted}
                 onChange={handleMetaChange}
                 placeholder="0"
                 className="w-full pl-10 pr-4 py-3 bg-[#1E2530] border border-slate-500/30 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
@@ -145,12 +188,12 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={Loading}
             className={`w-full bg-blue-500 hover:bg-blue-600 transition py-3 rounded-lg text-white font-semibold ${
-              isLoading ? "opacity-50 cursor-not-allowed" : ""
+              Loading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            {isLoading ? (
+            {Loading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin inline-block mr-2" />
                 Creando cuenta...
@@ -162,5 +205,6 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
         </form>
       </div>
     </div>
+    </>
   )
 }

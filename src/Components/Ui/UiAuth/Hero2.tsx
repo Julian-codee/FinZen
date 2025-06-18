@@ -10,6 +10,7 @@ interface Hero2Props {
     deudas: string;
   };
   onInputChange: (field: string, value: string) => void;
+  updateRegisterData: (data: { ingresoMensual: number }) => void; // Agregar esta prop
 }
 
 export const Hero2 = ({
@@ -17,6 +18,7 @@ export const Hero2 = ({
   onCheckboxChange,
   financialInputs,
   onInputChange,
+  updateRegisterData, 
 }: Hero2Props) => {
   const financialGoalsWithOther = [
     {
@@ -50,7 +52,13 @@ export const Hero2 = ({
           <input
             type="text"
             value={financialInputs[field as keyof typeof financialInputs]}
-            onChange={(e) => onInputChange(field, e.target.value)}
+            onChange={(e) => {
+              onInputChange(field, e.target.value); // Actualiza el estado local
+              if (field === "ingresos") {
+                // Aquí puedes enviar los ingresos al controlador o actualizar el estado global
+                updateRegisterData({ ingresoMensual: Number(e.target.value)}); // Asegúrate de tener esta función disponible
+              }
+            }}
             className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
             placeholder="$ 0.00"
           />

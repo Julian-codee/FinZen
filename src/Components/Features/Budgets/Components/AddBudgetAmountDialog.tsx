@@ -1,9 +1,8 @@
 "use client"
 
-import { use, useState } from "react";
+import { useState } from "react";
 import {X, DollarSign} from "lucide-react";
 import type { BudgetCategory } from "../types/budget-types";
-import { set } from "date-fns";
 
 interface AddBudgetAmountDialogProps {
     isOpen: boolean

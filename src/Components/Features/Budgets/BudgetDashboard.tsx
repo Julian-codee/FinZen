@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Share2 } from "lucide-react"
+import { Share2, Menu } from "lucide-react"
 import DateNavigation from "./Components/DateNavigation"
 import SummaryCards from "./Components/SummaryCards"
 import TabNavigation from "./Components/TabsNavigation"
@@ -10,14 +10,15 @@ import DistributionSection from "./Components/DistributionSection"
 import HistorySection from "./Components/HistorySection"
 import AddBudgetDialog from "./Components/AddBudgetDialog"
 import type { BudgetCategory } from "./types/budget-types"
+import { Sidebar } from "../../Ui/UiDashBoard/SideBar"
 
 export default function BudgetDashboard() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [activeTab, setActiveTab] = useState("categorias")
   const [categories, setCategories] = useState<BudgetCategory[]>([])
   const [isAddBudgetOpen, setIsAddBudgetOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  // Persistencia local
   useEffect(() => {
     const saved = localStorage.getItem("categories")
     if (saved) setCategories(JSON.parse(saved))
@@ -26,6 +27,10 @@ export default function BudgetDashboard() {
   useEffect(() => {
     localStorage.setItem("categories", JSON.stringify(categories))
   }, [categories])
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(prev => !prev)
+  }
 
   const navigateMonth = (dir: "prev" | "next") => {
     setCurrentDate(prev => {
@@ -36,17 +41,17 @@ export default function BudgetDashboard() {
   }
 
   const handleAddCategory = (newCat: Omit<BudgetCategory, "id" | "spent">) => {
-    setCategories([...categories, { ...newCat, id: Date.now().toString(), spent: 0 }])
+    setCategories(prev => [...prev, { ...newCat, id: Date.now().toString(), spent: 0 }])
   }
 
   const handleDeleteCategory = (id: string) =>
-    setCategories(categories.filter(c => c.id !== id))
+    setCategories(prev => prev.filter(c => c.id !== id))
 
   const handleUpdateBudget = (id: string, budget: number) =>
-    setCategories(categories.map(c => c.id === id ? { ...c, budget } : c))
+    setCategories(prev => prev.map(c => c.id === id ? { ...c, budget } : c))
 
   const handleRegisterExpense = (id: string, amt: number) =>
-    setCategories(categories.map(c => c.id === id ? { ...c, spent: c.spent + amt } : c))
+    setCategories(prev => prev.map(c => c.id === id ? { ...c, spent: c.spent + amt } : c))
 
   const handleAddBudget = (data: {
     totalBudget: number
@@ -54,38 +59,45 @@ export default function BudgetDashboard() {
   }) => {
     const count = data.categories.length
     const perCat = count > 0 ? data.totalBudget / count : 0
-    const newCats: BudgetCategory[] = data.categories.map((c, i) => ({
-      id: (Date.now() + i).toString(),
+    const newCats = data.categories.map((c, i) => ({
+      id: Date.now().toString() + "-" + i,
       name: c.name,
       categoryType: c.categoryType,
       budget: perCat,
       spent: 0,
     }))
-    const filtered = newCats.filter(nc =>
-      !categories.some(ec =>
-        ec.name.toLowerCase() === nc.name.toLowerCase() &&
-        ec.categoryType === nc.categoryType
-      ))
-    setCategories([...categories, ...filtered])
+    setCategories(prev =>
+      [...prev, ...newCats].filter((nc, i, arr) =>
+        arr.findIndex(x =>
+          x.name.toLowerCase() === nc.name.toLowerCase() &&
+          x.categoryType === nc.categoryType) === i)
+    )
   }
 
-  const renderTab = () => {
+  const renderTabContent = () => {
     if (activeTab === "categorias")
-      return <CategoriesSection categories={categories} onAddCategory={handleAddCategory}
-        onDeleteCategory={handleDeleteCategory}
-        onUpdateBudget={handleUpdateBudget}
-        onRegisterExpense={handleRegisterExpense} />
+      return (
+        <CategoriesSection
+          categories={categories}
+          onAddCategory={handleAddCategory}
+          onDeleteCategory={handleDeleteCategory}
+          onUpdateBudget={handleUpdateBudget}
+          onRegisterExpense={handleRegisterExpense}
+        />
+      )
     if (activeTab === "distribucion") return <DistributionSection categories={categories} />
     if (activeTab === "historial") return <HistorySection categories={categories} />
     return null
   }
 
-  const emptyState = (
+  const renderEmptyState = (
     <div className="text-center py-16 bg-[#020817] border border-[#2A3441] rounded-xl">
       <h3 className="text-xl font-semibold mb-2">No hay presupuestos creados</h3>
       <p className="text-gray-400 mb-6">Comienza creando tu primer presupuesto</p>
-      <button onClick={() => setIsAddBudgetOpen(true)}
-        className="bg-[#3B82F6] hover:bg-[#2563EB] px-6 py-2 rounded-lg">
+      <button
+        onClick={() => setIsAddBudgetOpen(true)}
+        className="bg-[#3B82F6] hover:bg-[#2563EB] px-6 py-2 rounded-lg transition-colors"
+      >
         Crear Presupuesto
       </button>
     </div>
@@ -93,28 +105,58 @@ export default function BudgetDashboard() {
 
   return (
     <div className="flex min-h-screen bg-[#020817] text-white">
-      <div className="flex-1 p-6">
+      {/* Sidebar */}
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
+      {/* Contenido principal */}
+      <div className={`flex-1 p-6 transition-all duration-300 ease-in-out ${
+        isSidebarOpen ? "ml-64" : "ml-20"
+      }`}>
         <div className="max-w-7xl mx-auto">
+          {/* Header */}
           <div className="flex justify-between items-start mb-8">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">Presupuesto</h1>
-              <p className="text-gray-400 text-lg">Gestiona tus presupuestos mensuales y controla tus gastos por categoría.</p>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={toggleSidebar}
+                className="p-2 rounded-md border border-gray-600 hover:bg-gray-800 transition-colors"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+              <div>
+                <h1 className="text-3xl font-bold mb-2">Presupuesto</h1>
+                <p className="text-gray-400 text-lg">
+                  Gestiona tus presupuestos mensuales y controla tus gastos por categoría.
+                </p>
+              </div>
             </div>
-            <button className="bg-transparent border border-gray-600 hover:bg-gray-800 p-2 rounded-lg">
+
+            <button className="bg-transparent border border-gray-600 hover:bg-gray-800 p-2 rounded-lg transition-colors">
               <Share2 className="w-5 h-5" />
             </button>
           </div>
 
-          <DateNavigation currentDate={currentDate} onNavigate={navigateMonth}
-            onNewBudget={() => setIsAddBudgetOpen(true)} />
+          {/* Navegación por mes */}
+          <DateNavigation
+            currentDate={currentDate}
+            onNavigate={navigateMonth}
+            onNewBudget={() => setIsAddBudgetOpen(true)}
+          />
 
+          {/* Resumen y Tabs */}
           {categories.length > 0 && <SummaryCards categories={categories} />}
           {categories.length > 0 && <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />}
 
-          {categories.length === 0 ? emptyState : renderTab()}
+          {/* Contenido principal */}
+          {categories.length === 0 ? renderEmptyState : renderTabContent()}
 
-          <AddBudgetDialog isOpen={isAddBudgetOpen} onClose={() => setIsAddBudgetOpen(false)}
-            onAddBudget={handleAddBudget} accounts={[]} />
+          {/* Diálogo para nuevo presupuesto */}
+          {/* Si luego necesitas cuentas, pásalas aquí */}
+          <AddBudgetDialog
+            isOpen={isAddBudgetOpen}
+            onClose={() => setIsAddBudgetOpen(false)}
+            onAddBudget={handleAddBudget}
+            accounts={[]}
+          />
         </div>
       </div>
     </div>
