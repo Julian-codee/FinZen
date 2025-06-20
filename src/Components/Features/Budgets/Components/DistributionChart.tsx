@@ -39,7 +39,7 @@ export default function DistributionChart({ categories }: DistributionChartProps
       const endAngle = startAngle + slice * 2 * Math.PI
 
       // Find category config
-      const categoryConfig = categoryList.find((c) => c.id === category.categoryType)
+      const categoryConfig = categoryList.find((c) => String(c.id) === String(category.categoryType))
 
       // Get color from category config or use default
       let color = "#3B82F6"
@@ -86,7 +86,7 @@ export default function DistributionChart({ categories }: DistributionChartProps
           .filter((cat) => cat.budget > 0)
           .map((category) => {
             const categoryConfig =
-              categoryList.find((c) => c.id === category.categoryType) || categoryList[categoryList.length - 1]
+              categoryList.find((c) => String(c.id) === String(category.categoryType)) || categoryList[categoryList.length - 1]
             const percentage =
               categories.reduce((sum, cat) => sum + cat.budget, 0) > 0
                 ? ((category.budget / categories.reduce((sum, cat) => sum + cat.budget, 0)) * 100).toFixed(1)

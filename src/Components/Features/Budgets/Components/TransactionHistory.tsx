@@ -77,7 +77,7 @@ export default function TransactionHistory({ transactions, categories }: Transac
           {filteredTransactions.map((transaction) => {
             const category = categories.find((c) => c.id === transaction.categoryId)
             const categoryConfig = category
-              ? categoryList.find((c) => c.id === category.categoryType) || categoryList[categoryList.length - 1]
+              ? categoryList.find((c) => c.id === Number(category.categoryType)) || categoryList[categoryList.length - 1]
               : categoryList[categoryList.length - 1]
 
             return (
@@ -94,7 +94,7 @@ export default function TransactionHistory({ transactions, categories }: Transac
                     <span>{category?.name || "Sin categoría"}</span>
                     <span className="mx-2">•</span>
                     <Calendar className="w-3 h-3 mr-1" />
-                    <span>{formatDate(transaction.date)}</span>
+                    <span>{formatDate(new Date(transaction.date))}</span>
                   </div>
                 </div>
                 <div className="text-right">

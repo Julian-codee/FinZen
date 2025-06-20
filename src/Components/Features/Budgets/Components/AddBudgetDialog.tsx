@@ -1,10 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, ReactElement } from "react"
 import axios from "axios"
 import {
   X,
-  ChevronDown,
   UtensilsCrossed,
   ShoppingCart,
   Home,
@@ -33,7 +32,7 @@ interface Category {
   id: number
   ide: string
   name: string
-  icon: JSX.Element
+  icon: ReactElement
   bgColor: string
   textColor: string
 }
@@ -49,7 +48,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
   const [selectedCategory, setSelectedCategory] = useState<string>("") // Single category
   const [budgetName, setBudgetName] = useState("")
   const [amount, setAmount] = useState("")
-  const [period] = useState("Mensual") // Not used in backend, kept for potential future use
+  // const [period] = useState("Mensual") // Not used in backend, kept for potential future use
   const [selectedAccount, setSelectedAccount] = useState("")
   const [accounts, setAccounts] = useState<Account[]>([])
   const [error, setError] = useState<string | null>(null)

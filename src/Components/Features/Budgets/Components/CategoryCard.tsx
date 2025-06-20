@@ -53,7 +53,7 @@ export default function CategoryCard({
   }
 
   const categoryConfig =
-    categoryList.find((c) => c.id === category.categoryType) ||
+    categoryList.find((c) => c.id === Number(category.categoryType)) ||
     categoryList[categoryList.length - 1]
 
   return (

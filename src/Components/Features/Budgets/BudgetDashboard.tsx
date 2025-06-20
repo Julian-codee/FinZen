@@ -155,7 +155,6 @@ export default function BudgetDashboard() {
             isOpen={isAddBudgetOpen}
             onClose={() => setIsAddBudgetOpen(false)}
             onAddBudget={handleAddBudget}
-            accounts={[]}
           />
         </div>
       </div>

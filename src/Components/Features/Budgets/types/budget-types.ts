@@ -39,6 +39,7 @@ export interface MonthlyBudget {
 }
 
 export interface Transaction {
+  description: any
   id: string
   amount: number
   categoryId: string
