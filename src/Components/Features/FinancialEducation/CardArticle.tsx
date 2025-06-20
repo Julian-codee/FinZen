@@ -1,10 +1,7 @@
 // src/components/WallStreetArticles.tsx
-import { useEffect, useState } from 'react';
-// Importamos los iconos de Lucide React necesarios
-import { ArrowRight, ImageOff } from 'lucide-react'; // Añadido ImageOff
-
-// Asegúrate de que la ruta sea correcta a tu archivo ArticleAPI.ts
-import { fetchWSJArticles, Article } from "../../../Apis/ArticleAPI"; 
+import { useEffect, useState } from "react";
+import { ArrowRight, ImageOff } from "lucide-react";
+import { fetchWSJArticles, Article } from "../../../Apis/ArticleAPI";
 
 export const WallStreetArticles = () => {
   const [articles, setArticles] = useState<Article[]>([]);
@@ -15,15 +12,14 @@ export const WallStreetArticles = () => {
     const getArticles = async () => {
       try {
         setLoading(true);
-        setError(null); 
-        
-        const data = await fetchWSJArticles(); 
+        setError(null);
+        const data = await fetchWSJArticles();
         setArticles(data);
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
         } else {
-          setError('Ocurrió un error desconocido al cargar los artículos.');
+          setError("Ocurrió un error desconocido al cargar los artículos.");
         }
       } finally {
         setLoading(false);
@@ -31,12 +27,12 @@ export const WallStreetArticles = () => {
     };
 
     getArticles();
-  }, []); 
+  }, []);
 
   if (loading) {
     return (
-      <div className="text-center text-lg mt-8 p-4 text-white">
-        Cargando artículos...
+      <div className="flex justify-center items-center py-20">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -67,26 +63,27 @@ export const WallStreetArticles = () => {
         {articles.map((article) => (
           <div
             key={article.url}
-            className="relative bg-gray-900 rounded-lg shadow-xl overflow-hidden
-                       hover:shadow-2xl hover:scale-[1.01] transition-all duration-300"
+            className="relative bg-gray-900 rounded-lg shadow-xl overflow-hidden hover:shadow-2xl hover:scale-[1.01] transition-all duration-300"
           >
             <div className="w-full h-48 bg-gray-800 flex items-center justify-center">
-              {article.image ? ( 
+              {article.image ? (
                 <img
                   src={article.image}
-                  alt={article.title || 'Imagen del artículo'}
+                  alt={article.title || "Imagen del artículo"}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               ) : (
-                // ¡Reemplazado el SVG del placeholder por ImageOff de Lucide!
-                <ImageOff className="h-16 w-16 text-gray-600" /> 
+                <ImageOff className="h-16 w-16 text-gray-600" />
               )}
             </div>
 
             <div className="p-4 flex flex-col justify-between">
-              <div className="flex justify-end items-center mb-3"> 
+              <div className="flex justify-end items-center mb-3">
                 <span className="text-gray-400 text-sm">
-                  {article.content ? Math.ceil(article.content.split(' ').length / 200) : 5} min 
+                  {article.content
+                    ? Math.ceil(article.content.split(" ").length / 200)
+                    : 5}{" "}
+                  min
                 </span>
               </div>
 
@@ -95,18 +92,17 @@ export const WallStreetArticles = () => {
               </h2>
 
               <p className="text-gray-400 text-sm mb-4 line-clamp-3">
-                {article.description || 'No hay descripción disponible para este artículo.'}
+                {article.description ||
+                  "No hay descripción disponible para este artículo."}
               </p>
 
               <a
                 href={article.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-4 py-2 mt-4 text-base font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                className="inline-flex items-center justify-center px-4 py-2 mt-4 text-base font-medium rounded-md text-white bg-gradient-to-r from-indigo-500 to-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 hover:brightness-130 hover:saturate-130 cursor-pointer transition-all duration-200"
               >
-                Leer artículo
-                {/* Icono de Lucide React (ya lo tenías, solo confirmación) */}
-                <ArrowRight className="ml-2 h-5 w-5" /> 
+                Leer artículo <ArrowRight className="ml-2 h-5 w-5" />
               </a>
             </div>
           </div>
