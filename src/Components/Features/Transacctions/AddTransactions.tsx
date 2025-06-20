@@ -1,6 +1,6 @@
 // src/components/AgregarTransaccion.tsx
 import { format } from "date-fns";
-import { es, id } from "date-fns/locale";
+import { es } from "date-fns/locale";
 import {
   CalendarDays,
   ShoppingCart,
@@ -397,12 +397,12 @@ export const AddTransaction: React.FC = () => {
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => setCategoriaSeleccionada(category.id)}
+                  onClick={() => setCategoriaSeleccionada(String(category.id))}
                   className={`${
                     category.bgColor
                   } rounded-lg p-2 flex flex-col items-center justify-center min-h-[60px] transition-all hover:scale-105
                     ${
-                      categoriaSeleccionada === category.id
+                      categoriaSeleccionada === String(category.id)
                         ? "ring-2 ring-blue-500" // Estilo de selección, compatible con tu estética
                         : ""
                     }
