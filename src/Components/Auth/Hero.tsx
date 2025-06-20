@@ -143,6 +143,12 @@ export const Hero = ({ onBack }: HeroProps) => {
     }));
   };
 
+  // Dummy submitRegister function, replace with your actual implementation or import
+  const submitRegister = async () => {
+    // TODO: Implement registration logic here
+    return Promise.resolve();
+  };
+
   const handleNext = async () => {
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
