@@ -55,8 +55,12 @@ interface Card {
 export const AddTransaction: React.FC = () => {
   const [monto, setMonto] = useState<string>("0");
   const [displayMonto, setDisplayMonto] = useState<string>("0,00");
-  const [tipoTransaccion, setTipoTransaccion] = useState<"gasto" | "ingreso">("gasto");
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null);
+  const [tipoTransaccion, setTipoTransaccion] = useState<"gasto" | "ingreso">(
+    "gasto"
+  );
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<
+    string | null
+  >(null);
   const [nota, setNota] = useState<string>("");
   const [nombreTransaccion, setNombreTransaccion] = useState<string>("");
   // Estado para presupuesto solo será relevante para gastos

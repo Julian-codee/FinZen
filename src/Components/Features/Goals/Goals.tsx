@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
 import FinancialGoals from "./FinancialGoals";
+import { AddNewGoal } from "./AddNewGoal";
 
 export const Goals = () => {
   // Sidebar
@@ -29,6 +30,8 @@ export const Goals = () => {
           </div>
 
           <FinancialGoals />
+
+          <AddNewGoal />
         </div>
       </div>
     </>
