@@ -12,7 +12,7 @@ export const Goals = () => {
 
   return (
     <>
-      <div className="flex h-screen bg-[#020817] text-white">
+      <div className="flex min-h-screen bg-[#020817] text-white">
         <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
         <div
