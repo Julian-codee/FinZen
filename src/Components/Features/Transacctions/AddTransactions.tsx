@@ -32,6 +32,8 @@ export const AddTransaction: React.FC = () => {
   const [tipoTransaccion, setTipoTransaccion] = useState<"gasto" | "ingreso">(
     "gasto"
   );
+
+  //categoría
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<
     string | null
   >(null);
