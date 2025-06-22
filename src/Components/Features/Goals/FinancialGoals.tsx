@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Download } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Download, X } from "lucide-react";
+import { AddNewGoal } from "./AddNewGoal";
 
 const goals = {
   active: [
@@ -58,6 +59,41 @@ export default function FinancialGoals() {
     "active"
   );
 
+  //Constante del modal
+
+  const [ShowModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (ShowModal) {
+      // Bloquear scroll
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.top = "0";
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
+    } else {
+      // Restaurar valores originales
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+    };
+  }, [ShowModal]);
+
+  //Renderizar metas según la vista seleccionada
+
   const renderGoals = () => {
     switch (view) {
       case "active":
@@ -82,7 +118,10 @@ export default function FinancialGoals() {
           <span className="text-white"> por ahorrar</span>
         </div>
         <div className="flex items-center space-x-2">
-          <button className="bg-blue-600 text-white font-semibold rounded px-4 py-2 hover:bg-blue-500">
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-blue-600 text-white font-semibold rounded px-4 py-2 hover:bg-blue-500"
+          >
             + Nueva Meta
           </button>
           <button className="border border-gray-500 px-3 py-2 rounded hover:bg-gray-700">
@@ -90,6 +129,24 @@ export default function FinancialGoals() {
           </button>
         </div>
       </div>
+
+      {/*Modal Para agregar Nueva Meta*/}
+
+      {ShowModal && (
+        <div className="fixed inset-0 bg-black/70 bg-opacity-10 flex items-center justify-center z-50 p-4">
+          <div className="relative bg-[#0f172a] rounded-lg max-w-2xl w-full overflow-y-auto max-h-[90vh] shadow-lg border border-white/10">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-white"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="p-4">
+              <AddNewGoal />
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
         <Card
