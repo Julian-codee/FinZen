@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download } from "lucide-react"; // <-- Import Lucide icon
+import { Download } from "lucide-react";
 
 const goals = {
   active: [
@@ -116,31 +116,22 @@ export default function FinancialGoals() {
         <div></div>
       </div>
 
-      <div className="mb-4">
-        <button
-          onClick={() => setView("active")}
-          className={`px-4 py-2 rounded mr-2 ${
-            view === "active" ? "bg-blue-700" : "bg-gray-800"
-          }`}
-        >
-          Activas
-        </button>
-        <button
-          onClick={() => setView("completed")}
-          className={`px-4 py-2 rounded mr-2 ${
-            view === "completed" ? "bg-blue-700" : "bg-gray-800"
-          }`}
-        >
-          Completadas
-        </button>
-        <button
-          onClick={() => setView("upcoming")}
-          className={`px-4 py-2 rounded ${
-            view === "upcoming" ? "bg-blue-700" : "bg-gray-800"
-          }`}
-        >
-          Próximas
-        </button>
+      <div className="mb-4 bg-gray-800 w-fit p-1 rounded-lg flex space-x-2">
+        {["active", "completed", "upcoming"].map((type) => (
+          <button
+            key={type}
+            onClick={() => setView(type as any)}
+            className={`px-4 p-1 rounded mr-2 ${
+              view === type ? "bg-blue-700" : "bg-gray-800"
+            }`}
+          >
+            {type === "active"
+              ? "Activas"
+              : type === "completed"
+              ? "Completadas"
+              : "Próximas"}
+          </button>
+        ))}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -148,7 +139,7 @@ export default function FinancialGoals() {
           renderGoals().map((goal, i) => (
             <div
               key={i}
-              className="bg-[#1e293b] rounded-md p-4 shadow-lg border border-indigo-600/60"
+              className="bg-[#1e293b] rounded-md p-4 shadow-md border border-indigo-500 will-change-transform transition-all"
             >
               <div className="flex justify-between items-center mb-2">
                 <span className="text-xl">
@@ -199,7 +190,7 @@ function Card({
   progress?: boolean;
 }) {
   return (
-    <div className="bg-[#1e293b] p-4 rounded-md shadow-lg border border-gray-700">
+    <div className="bg-[#1e293b] p-4 rounded-md shadow-md border border-gray-600 will-change-transform">
       <h3 className="text-sm text-gray-400 mb-1">{title}</h3>
       <div className="text-2xl font-bold">{value}</div>
       {progress ? (
