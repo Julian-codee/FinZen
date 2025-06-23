@@ -39,26 +39,45 @@ export interface Account {
   originalType?: 'cuenta' | 'tarjeta' | 'inversion';
 }
 
-// Agrupa cuentas por categoría
+// Agrupa cuentas por categoría basada en el tipo
 const groupAccountsByCategory = (accounts: Account[]) => {
-  const categories: { [key: string]: Account[] } = {};
+  const categories: { [key: string]: Account[] } = {
+    Corriente: [],
+    Ahorros: [],
+    Efectivo: [],
+    Otros: [],
+  };
 
   accounts.forEach((account) => {
-    const t = account.title.toLowerCase();
-    let category = "Otros";
+    const normalizedType = account.type?.toLowerCase();
+    let category: string;
 
-    if (t.includes("corriente")) category = "Corriente";
-    else if (t.includes("ahorros")) category = "Ahorros";
-    else if (t.includes("efectivo")) category = "Efectivo";
-    else if (t.includes("banco")) category = "Banco";
-
-    if (!categories[category]) {
-      categories[category] = [];
+    switch (normalizedType) {
+      case "corriente":
+      case "cuenta corriente":
+        category = "Corriente";
+        break;
+      case "ahorros":
+      case "ahorro":
+      case "savings":
+        category = "Ahorros";
+        break;
+      case "efectivo":
+      case "cash":
+        category = "Efectivo";
+        break;
+      default:
+        category = "Otros";
+        break;
     }
+
     categories[category].push(account);
   });
 
-  return categories;
+  // Filtra categorías vacías
+  return Object.fromEntries(
+    Object.entries(categories).filter(([_, accounts]) => accounts.length > 0)
+  );
 };
 
 const Account = () => {
@@ -77,12 +96,9 @@ const Account = () => {
 
   // Función para determinar el tipo de cuenta basado en sus propiedades
   const determineAccountType = (account: Account): 'cuenta' | 'tarjeta' | 'inversion' => {
-    // Si ya tiene el tipo original guardado, usarlo
     if (account.originalType) {
       return account.originalType;
     }
-    
-    // Determinar basándose en las propiedades específicas
     if (account.creditLimit !== undefined || account.number) {
       return 'tarjeta';
     }
@@ -112,20 +128,35 @@ const Account = () => {
 
         if (cuentasResponse.ok) {
           const cuentasData = await cuentasResponse.json();
-          const mappedCuentas: Account[] = cuentasData.map((cuenta: any) => ({
-            id: cuenta.idCuenta,
-            uniqueId: `cuenta-${cuenta.idCuenta}`,
-            title: cuenta.nombre,
-            bank: cuenta.banco,
-            amount: parseFloat(cuenta.monto) || 0,
-            type: "cuenta",
-            movements: [],
-            number: cuenta.numeroUltimosDigitos, 
-            freeAmount: parseFloat(cuenta.montoLibre) || 0,
-            occupiedAmount: parseFloat(cuenta.montoOcupado) || 0,
-            originalType: 'cuenta',
-          }));
+          console.log("Fetched cuentas:", cuentasData);
+          const typeMap: { [key: string]: string } = {
+            savings: "ahorros",
+            cash: "efectivo",
+            corriente: "corriente",
+            ahorros: "ahorros",
+            efectivo: "efectivo",
+          };
+          const mappedCuentas: Account[] = cuentasData.map((cuenta: any) => {
+            const tipo = cuenta.tipo?.toLowerCase().trim();
+            const validType = typeMap[tipo] ||  "corriente"  || "efectivo" || "ahorro";
+            console.log(`Cuenta ID: ${cuenta.idCuenta}, tipo: ${cuenta.tipo}, mapped to: ${validType}`);
+            return {
+              id: cuenta.idCuenta,
+              uniqueId: `cuenta-${cuenta.idCuenta}`,
+              title: cuenta.nombre,
+              bank: cuenta.banco || "",
+              amount: parseFloat(cuenta.monto) || 0,
+              type: validType,
+              movements: [],
+              number: cuenta.numeroUltimosDigitos || "",
+              freeAmount: parseFloat(cuenta.montoLibre) || 0,
+              occupiedAmount: parseFloat(cuenta.montoOcupado) || 0,
+              originalType: 'cuenta',
+            };
+          });
           allAccounts = [...allAccounts, ...mappedCuentas];
+        } else {
+          console.error("Failed to fetch cuentas:", cuentasResponse.status, await cuentasResponse.text());
         }
 
         // Fetch Tarjetas
@@ -134,9 +165,10 @@ const Account = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        
+
         if (tarjetasResponse.ok) {
           const tarjetasData = await tarjetasResponse.json();
+          console.log("Fetched tarjetas:", tarjetasData);
           const mappedTarjetas: Account[] = tarjetasData.map((tarjeta: any) => ({
             id: tarjeta.idTarjeta,
             uniqueId: `tarjeta-${tarjeta.idTarjeta}`,
@@ -150,6 +182,8 @@ const Account = () => {
             originalType: 'tarjeta',
           }));
           allAccounts = [...allAccounts, ...mappedTarjetas];
+        } else {
+          console.error("Failed to fetch tarjetas:", tarjetasResponse.status, await tarjetasResponse.text());
         }
 
         // Fetch Inversiones
@@ -158,9 +192,10 @@ const Account = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        
+
         if (inversionesResponse.ok) {
           const inversionesData = await inversionesResponse.json();
+          console.log("Fetched inversiones:", inversionesData);
           const mappedInversiones: Account[] = inversionesData.map((inversion: any) => ({
             id: inversion.idInversion,
             uniqueId: `inversion-${inversion.idInversion}`,
@@ -177,15 +212,18 @@ const Account = () => {
             originalType: 'inversion',
           }));
           allAccounts = [...allAccounts, ...mappedInversiones];
+        } else {
+          console.error("Failed to fetch inversiones:", inversionesResponse.status, await inversionesResponse.text());
         }
 
         const validAccounts = allAccounts.filter((account) => account.id);
+        console.log("Mapped accounts:", validAccounts);
         setAccounts(validAccounts);
       } catch (error) {
         console.error("Error fetching accounts:", error);
       }
     };
-    
+
     fetchAccounts();
   }, []);
 
@@ -203,18 +241,23 @@ const Account = () => {
       let endpoint = "";
       let payload: any = {};
 
+      const normalizedType = newAccount.type?.toLowerCase();
+      const validType = ["corriente", "ahorros", "efectivo"].includes(normalizedType)
+        ? normalizedType
+        : "corriente"
+
       if (tab === "Tarjetas") {
         endpoint = "http://localhost:8080/finzen/tarjetas";
         payload = {
           nombre: newAccount.title || "",
-          tipo: (newAccount.type?.toUpperCase() === "DEBITO" || newAccount.type?.toUpperCase() === "CREDITO") 
-                ? newAccount.type.toUpperCase() 
+          tipo: (newAccount.type?.toUpperCase() === "DEBITO" || newAccount.type?.toUpperCase() === "CREDITO")
+                ? newAccount.type.toUpperCase()
                 : "CREDITO",
           banco: newAccount.bank || "",
           numeroUltimosDigitos: newAccount.number || "",
           saldoActual: parseFloat(newAccount.amount?.toString() || "0") || 0,
           limiteCredito: parseFloat(newAccount.creditLimit?.toString() || "0") || 0,
-        };  
+        };
       } else if (tab === "Inversiones") {
         endpoint = "http://localhost:8080/finzen/inversiones";
         payload = {
@@ -234,8 +277,11 @@ const Account = () => {
           numeroUltimosDigitos: newAccount.number || "",
           montoLibre: parseFloat(newAccount.amount?.toString() || "0") || 0,
           montoOcupado: 0,
+          tipo: validType.toUpperCase(),
         };
       }
+
+      console.log("Creating account with payload:", payload);
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -248,7 +294,8 @@ const Account = () => {
 
       if (response.ok) {
         const createdAccount = await response.json();
-        
+        console.log("Backend response:", createdAccount);
+
         let mappedAccount: Account;
 
         if (tab === "Tarjetas") {
@@ -285,11 +332,11 @@ const Account = () => {
             id: createdAccount.idCuenta || Date.now(),
             uniqueId: `cuenta-${createdAccount.idCuenta || Date.now()}`,
             title: createdAccount.nombre || newAccount.title,
-            bank: "",
+            bank: createdAccount.banco || newAccount.bank || "",
             amount: parseFloat(createdAccount.monto) || parseFloat(newAccount.amount?.toString() || "0") || 0,
-            type: "cuenta",
+            type: validType,
             movements: [],
-            number: "",
+            number: createdAccount.numeroUltimosDigitos || newAccount.number || "",
             freeAmount: parseFloat(createdAccount.montoLibre) || parseFloat(newAccount.amount?.toString() || "0") || 0,
             occupiedAmount: parseFloat(createdAccount.montoOcupado) || 0,
             originalType: 'cuenta',
@@ -300,6 +347,7 @@ const Account = () => {
       } else {
         const errorText = await response.text();
         console.error("Failed to create account:", response.status, errorText);
+        throw new Error(`Failed to create account: ${response.status} - ${errorText}`);
       }
     } catch (error) {
       console.error("Error creating account:", error);
@@ -308,21 +356,24 @@ const Account = () => {
 
   const handleEditAccount = async (updatedAccount: Account) => {
     if (!editAccount) return;
-    
+
     try {
       const token = localStorage.getItem("token");
       let endpoint = "";
       let payload: any = {};
 
-      // Determinar el tipo real de la cuenta que se está editando
       const accountType = determineAccountType(editAccount);
+      const normalizedType = updatedAccount.type?.toLowerCase();
+      const validType = ["corriente", "ahorros", "efectivo"].includes(normalizedType)
+        ? normalizedType
+        : "corriente";
 
       if (accountType === 'tarjeta') {
         endpoint = `http://localhost:8080/finzen/tarjetas/${editAccount.id}`;
         payload = {
           nombre: updatedAccount.title,
-          tipo: (updatedAccount.type?.toUpperCase() === "DEBITO" || updatedAccount.type?.toUpperCase() === "CREDITO") 
-                ? updatedAccount.type.toUpperCase() 
+          tipo: (updatedAccount.type?.toUpperCase() === "DEBITO" || updatedAccount.type?.toUpperCase() === "CREDITO")
+                ? updatedAccount.type.toUpperCase()
                 : "CREDITO",
           banco: updatedAccount.bank || "",
           numeroUltimosDigitos: updatedAccount.number || "",
@@ -337,17 +388,20 @@ const Account = () => {
           plataforma: updatedAccount.platform || "",
           valorActual: parseFloat(updatedAccount.amount?.toString() || "0") || 0,
         };
-      } else { // cuenta
+      } else {
         endpoint = `http://localhost:8080/finzen/cuentas/${editAccount.id}`;
         payload = {
           nombre: updatedAccount.title,
           banco: updatedAccount.bank || "",
-          number: updatedAccount.number || "",
+          numeroUltimosDigitos: updatedAccount.number || "",
           monto: parseFloat(updatedAccount.amount?.toString() || "0") || 0,
           montoLibre: parseFloat(updatedAccount.freeAmount?.toString() || updatedAccount.amount?.toString() || "0") || 0,
           montoOcupado: parseFloat(updatedAccount.occupiedAmount?.toString() || "0") || 0,
+          tipo: validType.toUpperCase(),
         };
       }
+
+      console.log("Updating account with payload:", payload);
 
       const response = await fetch(endpoint, {
         method: "PUT",
@@ -361,13 +415,13 @@ const Account = () => {
       if (response.ok) {
         setAccounts((prev) =>
           prev.map((acc) =>
-            acc.id === editAccount.id ? { ...acc, ...updatedAccount, originalType: acc.originalType } : acc
+            acc.id === editAccount.id ? { ...acc, ...updatedAccount, type: validType, originalType: acc.originalType } : acc
           )
         );
         setEditModalOpen(false);
         setEditAccount(null);
       } else {
-        console.error("Failed to update account");
+        console.error("Failed to update account:", response.status, await response.text());
       }
     } catch (error) {
       console.error("Error updating account:", error);
@@ -387,7 +441,6 @@ const Account = () => {
         return;
       }
 
-      // Encontrar la cuenta para determinar su tipo real
       const accountToDelete = accounts.find(acc => acc.id === id);
       if (!accountToDelete) {
         console.error("Cuenta no encontrada en el estado local");
@@ -421,7 +474,7 @@ const Account = () => {
         } else if (response.status === 404) {
           console.error("Cuenta no encontrada");
         } else {
-          console.error("Error al eliminar cuenta:", response.status, response.statusText);
+          console.error("Error al eliminar cuenta:", response.status, await response.text());
         }
       }
     } catch (error) {
@@ -434,7 +487,6 @@ const Account = () => {
     setModalOpen(true);
   };
 
-  // Función para obtener el tipo de pestaña apropiado para el modal de edición
   const getEditModalType = (account: Account): string => {
     const accountType = determineAccountType(account);
     switch (accountType) {
@@ -480,6 +532,11 @@ const Account = () => {
           {Object.entries(grouped).map(([title, group]) => (
             <AccountCategoryCard key={title} title={title} account={group} />
           ))}
+          {grouped["Otros"] && grouped["Otros"].length > 0 && (
+            <p className="text-yellow-500">
+              Algunas cuentas no tienen un tipo válido y se han clasificado como "Otros".
+            </p>
+          )}
         </div>
 
         <h2 className="text-xl font-semibold mb-4">Tus Cuentas</h2>
@@ -525,4 +582,4 @@ const Account = () => {
   );
 };
 
-export default Account; 
+export default Account;
