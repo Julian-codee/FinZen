@@ -38,7 +38,6 @@ export default function FinanceAssistantChat() {
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-  // Scroll al fondo cuando se agregue un mensaje
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -59,18 +58,18 @@ export default function FinanceAssistantChat() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-[#020817] text-white overflow-hidden shadow-[0_0_20px_4px_rgba(99,102,241,0.4)] border border-indigo-600/60 rounded-md m-5 mt-10">
+    <div className="h-screen w-full max-w-full flex flex-col bg-[#020817] text-white shadow-[0_0_20px_4px_rgba(99,102,241,0.4)] border border-indigo-600/60 rounded-md m-2 sm:m-5 mt-10 ml-1 overflow-hidden md:ml-0">
       {/* Encabezado */}
-      <div className="p-4 border-b border-slate-700 flex items-center gap-2">
-        <Sparkles className="text-blue-400" />
-        <h1 className="text-lg font-semibold">Asistente Financiero IA</h1>
+      <div className="p-3 sm:p-4 border-b border-slate-700 flex items-center gap-2">
+        <Sparkles className="text-blue-400 w-5 h-5 sm:w-6 sm:h-6" />
+        <h1 className="text-base sm:text-lg font-semibold">Asistente Financiero IA</h1>
         <span className="ml-auto text-xs bg-blue-600 px-2 py-0.5 rounded-full">
           Premium
         </span>
       </div>
 
-      {/* Mensajes con scroll libre */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* Mensajes */}
+      <div className="flex-1 overflow-y-auto p-3 sm:px-4 py-5 space-y-4 mr-2">
         {messages.map((msg, i) => (
           <div
             key={i}
@@ -79,18 +78,18 @@ export default function FinanceAssistantChat() {
             }`}
           >
             <div
-              className={`w-10 h-10 flex items-center justify-center rounded-full ${
+              className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full ${
                 msg.from === "bot" ? "bg-gray-400" : "bg-blue-600"
               }`}
             >
               {msg.from === "bot" ? (
-                <Bot className="text-black" />
+                <Bot className="text-black w-4 h-4 sm:w-5 sm:h-5" />
               ) : (
-                <User className="text-white" />
+                <User className="text-white w-4 h-4 sm:w-5 sm:h-5" />
               )}
             </div>
             <div
-              className={`p-3 rounded-lg max-w-xs ${
+              className={`p-3 rounded-lg max-w-[85%] sm:max-w-xs break-words ${
                 msg.from === "bot"
                   ? "bg-slate-700 text-white"
                   : "bg-blue-600 text-white"
@@ -100,12 +99,11 @@ export default function FinanceAssistantChat() {
             </div>
           </div>
         ))}
-        {/* Ancla para el scroll automático */}
         <div ref={messagesEndRef} />
       </div>
 
       {/* Opciones rápidas */}
-      <div className="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 bg-slate-800 border-t border-slate-700">
+      <div className="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 bg-slate-800 border-t border-slate-700">
         {quickOptions.map((option, i) => (
           <button
             key={i}
@@ -118,11 +116,11 @@ export default function FinanceAssistantChat() {
       </div>
 
       {/* Campo de entrada */}
-      <div className="p-4 bg-slate-900 border-t border-slate-700 flex items-center gap-2">
+      <div className="p-3 sm:p-4 bg-slate-900 border-t border-slate-700 flex items-center gap-2">
         <input
           type="text"
           placeholder="Escribe tu pregunta financiera..."
-          className="flex-1 p-3 bg-slate-800 text-white rounded-lg outline-none"
+          className="flex-1 p-2 sm:p-3 bg-slate-800 text-white rounded-lg outline-none text-sm"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
@@ -133,10 +131,10 @@ export default function FinanceAssistantChat() {
           }}
         />
         <button
-          className="bg-blue-600 hover:bg-blue-700 p-3 rounded-lg"
+          className="bg-blue-600 hover:bg-blue-700 p-2 sm:p-3 rounded-lg"
           onClick={() => handleSend(input)}
         >
-          <Send className="w-5 h-5 text-white" />
+          <Send className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
         </button>
       </div>
     </div>
