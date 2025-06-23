@@ -7,7 +7,6 @@ import { RegisterProvider } from './Components/Auth/RegisterContext';
 import { AuthPage } from './Components/Auth/AuthPage';
 import Accounts from './Components/Features/Accounts/Accounts'
 import BudgetDashboard from './Components/Features/Budgets/BudgetDashboard';
-import { DashBoardPrincipal } from './Components/Features/DashBoard/DashBoardPrincipal';
 import ForgotPassword from './Components/Auth/ForgotPassword';
 import { Sidebar } from './Components/Ui/UiDashBoard/SideBar';
 import Transactions from './Components/Features/TransactionsDashboard/TransactionsDash';
@@ -17,6 +16,8 @@ import { Assistant } from './Components/Features/AssistantAI/Assistant';
 import { Goals } from './Components/Features/Goals/Goals';
 import { Configuration } from './Components/Features/Configuration/Configuration';
 import { AddTransaction } from './Components/Features/Transacctions/AddTransactions';
+import FinZenHome from './Components/Features/DashBoard/FinZenHome';
+
 
 
 export default function App() {
@@ -25,7 +26,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<AuthPage />} />
-          <Route path="/Home" element={<DashBoardPrincipal />} />
+         <Route path="/FinZenHome" element={<FinZenHome />}></Route>
           <Route path="/register" element={<AuthPage />} /> {/* Asumiendo que AuthPage contiene Register */}
           <Route path="/custom-profile" element={<CustomProfile />} /> {/* Ruta corregida */}
           <Route path="/Reporting" element={<DashboardReporting />} />

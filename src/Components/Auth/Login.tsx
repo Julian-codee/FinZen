@@ -153,7 +153,7 @@ export const Login = () => {
                   </div>
                   <input
                     type="password"
-                    value={contrasena}
+                     value={contrasena}
                     onChange={(e) => setContrasena(e.target.value)}
                     required
                     placeholder="••••••••"

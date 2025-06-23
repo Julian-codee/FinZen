@@ -54,7 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       </div>
 
       <ul className="flex-grow">
-        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/Home")}>
+        <li className={`flex items-center px-4 py-3 cursor-pointer hover:bg-[#313149] ${!isOpen ? 'justify-center' : ''}`} onClick={() => Navigate("/FinZenHome")}>
           <Home className={`w-5 h-6 ${isOpen ? 'mr-4' : ''}`} />
           {isOpen && <span className="whitespace-nowrap overflow-hidden" >Inicio</span>}
         </li>

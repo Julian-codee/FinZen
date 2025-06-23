@@ -110,7 +110,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget, accounts
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-[#020817] border border-white/40 rounded-xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div className="bg-[#020817] border border-white/40 rounded-xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto custom-scroll-modal">
         <div className="flex justify-between items-start mb-4">
           <div>
             <h2 className="text-lg font-bold text-white mb-1">Crear Nuevo Presupuesto</h2>
