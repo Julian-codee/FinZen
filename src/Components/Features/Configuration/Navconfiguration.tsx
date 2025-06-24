@@ -18,6 +18,9 @@ import { FrecuencyNots } from "./Components/FrecuencyNots";
 import { Security } from "./Components/Security";
 import { SecurityConfig } from "./Components/SecurtityConfig";
 import { SecurityDevices } from "./Components/SecurityDevices";
+import { Integrations } from "./Components/IntegrationsBanks";
+import { IntegrationsInvertions } from "./Components/IntegrationsInvertions";
+import { IntegrationsServices } from "./Components/IntegrationsServices";
 
 type Option =
   | "Perfil"
@@ -86,7 +89,16 @@ export const Navconfiguration = () => {
         );
       case "Integraciones":
         return (
-          <p>Conecta tu cuenta con otras plataformas o servicios externos.</p>
+          <>
+
+          <Integrations />
+
+          <IntegrationsInvertions />
+
+          <IntegrationsServices />
+        
+          </>
+
         );
       case "Exportar Datos":
         return <p>Descarga toda tu información en formato JSON o CSV.</p>;
