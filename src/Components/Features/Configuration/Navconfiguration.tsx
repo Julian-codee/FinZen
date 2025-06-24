@@ -8,6 +8,7 @@ import {
   Download,
   HelpCircle,
 } from "lucide-react";
+import { UserProfileConfig } from "./Components/UserProfileConfig";
 
 type Option =
   | "Perfil"
@@ -31,13 +32,15 @@ const options: { name: Option; icon: React.ReactNode }[] = [
 export const Navconfiguration = () => {
   const [selected, setSelected] = useState<Option>("Perfil");
 
+  // Función para renderizar el contenido según la opción seleccionada
+
   const renderContent = () => {
     switch (selected) {
       case "Perfil":
         return (
-          <p>
-            Aquí puedes editar tu información personal, nombre, correo y foto.
-          </p>
+          <>
+            <UserProfileConfig />
+          </>
         );
       case "Apariencia":
         return (
@@ -88,8 +91,7 @@ export const Navconfiguration = () => {
       </div>
 
       {/* Contenido derecho */}
-      <div className="w-[70%] p-8 border border-white/10">
-        <h2 className="text-xl font-semibold mb-4">{selected}</h2>
+      <div className="w-[70%] p-4">
         <div className="text-sm text-white/80">{renderContent()}</div>
       </div>
     </div>
