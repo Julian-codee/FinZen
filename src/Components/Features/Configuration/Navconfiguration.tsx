@@ -12,6 +12,9 @@ import { UserProfileConfig } from "./Components/UserProfileConfig";
 import { UserProfileTax } from "./Components/UserProfileTax";
 import { AppereanceConfig } from "./Components/AppereanceConfig";
 import { ApperInterface } from "./Components/ApperInterface";
+import { Notifications } from "./Components/Notifications";
+import { NotificationsPush } from "./Components/NotificartionsPush";
+import { FrecuencyNots } from "./Components/FrecuencyNots";
 
 type Option =
   | "Perfil"
@@ -57,7 +60,15 @@ export const Navconfiguration = () => {
         );
       case "Notificaciones":
         return (
-          <p>Activa o desactiva las notificaciones por correo o en la app.</p>
+          <>
+
+          <Notifications />
+
+          <NotificationsPush />
+
+          <FrecuencyNots />
+          
+          </>
         );
       case "Seguridad":
         return (
