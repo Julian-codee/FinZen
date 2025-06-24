@@ -138,7 +138,7 @@ const Account = () => {
           };
           const mappedCuentas: Account[] = cuentasData.map((cuenta: any) => {
             const tipo = cuenta.tipo?.toLowerCase().trim();
-            const validType = typeMap[tipo] ||  "corriente"  || "efectivo" || "ahorro";
+            const validType = typeMap[tipo] || "corriente";
             console.log(`Cuenta ID: ${cuenta.idCuenta}, tipo: ${cuenta.tipo}, mapped to: ${validType}`);
             return {
               id: cuenta.idCuenta,
