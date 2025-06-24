@@ -15,7 +15,7 @@ export const UserProfileConfig = () => {
     <div className="p-6 text-white border border-white/10 rounded-lg bg-[#020817]">
       <div className="mb-6">
         <h2 className="text-2xl font-semibold">Información de Perfil</h2>
-        <p className="text-gray-400">
+        <p className="text-white/70 mt-1">
           Actualiza tu información personal y preferencias de cuenta.
         </p>
       </div>
@@ -123,7 +123,7 @@ export const UserProfileConfig = () => {
       </div>
 
       {/* Btn Guardar */}
-      <div className="mt-6">
+      <div className="mt-6 flex justify-end">
         <button className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded">
           Guardar cambios
         </button>

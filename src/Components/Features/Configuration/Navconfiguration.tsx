@@ -9,6 +9,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { UserProfileConfig } from "./Components/UserProfileConfig";
+import { UserProfileTax } from "./Components/UserProfileTax";
 
 type Option =
   | "Perfil"
@@ -40,6 +41,8 @@ export const Navconfiguration = () => {
         return (
           <>
             <UserProfileConfig />
+
+            <UserProfileTax />
           </>
         );
       case "Apariencia":
