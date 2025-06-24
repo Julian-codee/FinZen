@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { UserProfileConfig } from "./Components/UserProfileConfig";
 import { UserProfileTax } from "./Components/UserProfileTax";
+import { AppereanceConfig } from "./Components/AppereanceConfig";
+import { ApperInterface } from "./Components/ApperInterface";
 
 type Option =
   | "Perfil"
@@ -47,7 +49,11 @@ export const Navconfiguration = () => {
         );
       case "Apariencia":
         return (
-          <p>Configura el tema oscuro, colores y fuentes de la aplicación.</p>
+          <>
+            <AppereanceConfig />
+
+            <ApperInterface />
+          </>
         );
       case "Notificaciones":
         return (
@@ -73,7 +79,7 @@ export const Navconfiguration = () => {
   };
 
   return (
-    <div className="flex h-screen w-full text-white">
+    <div className="flex min-h-screen w-full text-white">
       {/* Sidebar */}
       <div className="w-[30%] p-4 space-y-2">
         {options.map((opt) => (

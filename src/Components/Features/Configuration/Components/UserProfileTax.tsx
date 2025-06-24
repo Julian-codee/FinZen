@@ -10,8 +10,7 @@ export const UserProfileTax = () => {
 
       <div className="flex gap-6 flex-wrap pt-5">
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-
-             {/* Documento */}
+          {/* Documento */}
           <div>
             <label className="block text-sm mb-1">Tipo de Documento</label>
             <select
@@ -58,6 +57,12 @@ export const UserProfileTax = () => {
             />
           </div>
         </div>
+      </div>
+
+      <div className="mt-8 text-right">
+        <button className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded text-white text-sm">
+          Guardar Informe fiscal
+        </button>
       </div>
     </div>
   );
