@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calendar, X, MoreVertical, Edit2, Trash2 } from "lucide-react";
 
 import MovementsModal from "./Components/MovementsModal";
 import AccountTabs from "./Components/AccountTabs";

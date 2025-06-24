@@ -1,13 +1,18 @@
-import React from 'react';
+import { Gauge } from "lucide-react";
+import React from "react";
 
 export const TaxSummary: React.FC = () => {
   return (
-    <div className="bg-gray-800 p-6 rounded-lg mt-8">
+    <div className="bg-[#111827] border border-white/60 p-6 rounded-lg mt-8 text-white">
       <div className="flex items-center text-gray-400 mb-4">
-        <svg className="w-6 h-6 mr-2 text-indigo-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-        <h2 className="text-xl font-semibold">Resumen de Impuestos</h2>
+        <Gauge className="m-2 text-indigo-400"/>
+        <h2 className="text-xl font-semibold text-white">
+          Resumen de Impuestos
+        </h2>
       </div>
-      <p className="text-gray-400 mb-6">Cálculo preliminar basado en la información proporcionada</p>
+      <p className="text-gray-400 mb-6">
+        Cálculo preliminar basado en la información proporcionada
+      </p>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>

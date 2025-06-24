@@ -4,6 +4,7 @@ export interface BudgetCategory {
   spent: number
   budget: number
   categoryType: string
+  accountId?: string // <-- Añadido para asociar cuenta
 }
 
 export interface NewCategoryForm {
@@ -12,6 +13,23 @@ export interface NewCategoryForm {
   categoryType: string
 }
 
+export interface Budget {
+  id: string
+  name: string
+  totalBudget: number
+  createdDate: string
+  categories: BudgetCategory[]
+  status: "active" | "completed" | "paused"
+}
+
+export interface BudgetData {
+  name: string
+  totalBudget: number
+  categories: Array<{ name: string; budget: number; categoryType: string; accountId?: string }>
+  accountId?: string
+}
+
+// Para MonthlyBudget y Transaction, asume que también pueden tener accountId si lo necesitas
 export interface MonthlyBudget {
   id: string
   month: number
@@ -21,9 +39,10 @@ export interface MonthlyBudget {
 }
 
 export interface Transaction {
+  description: any
   id: string
-  categoryId: string
   amount: number
-  description: string
-  date: Date
+  categoryId: string
+  date: string
+  accountId?: string
 }

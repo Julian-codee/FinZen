@@ -18,6 +18,7 @@ import { Goals } from './Components/Features/Goals/Goals';
 import { Configuration } from './Components/Features/Configuration/Configuration';
 import { AddTransaction } from './Components/Features/Transacctions/AddTransactions';
 
+
 export default function App() {
   return (
     <RegisterProvider>
@@ -30,8 +31,9 @@ export default function App() {
           <Route path="/Reporting" element={<DashboardReporting />} />
           <Route path="/Accounts" element={<Accounts />} />
           <Route path="/BudgetDashboard" element={<BudgetDashboard />} />
-          <Route path="/dashboard" element={<Hero />} />
+          <Route path="/dashboard" element={<DashBoardPrincipal />} />
           <Route path="/Hero" element={<Hero />} />
+
           <Route path="/Forgot" element={<ForgotPassword />} />
           <Route path="/Transactions" element={<Transactions />} />
           <Route path="/Accounts" element={<Accounts />} />
@@ -50,6 +52,9 @@ export default function App() {
               />
             }
           />
+
+          <Route path="/Transactions" element={<Transactions />} />
+
           {/* Eliminar /Profile si no es necesario, o aclarar su propósito */}
         </Routes>
       </BrowserRouter>

@@ -41,6 +41,8 @@ export const Hero2 = ({
     },
   ];
 
+ 
+  
   return (
     <div className="grid grid-cols-2 md:grid-cols-2 gap-8 mt-6">
       {["ingresos", "gastos", "ahorros", "deudas"].map((field) => (
@@ -55,8 +57,13 @@ export const Hero2 = ({
             onChange={(e) => {
               onInputChange(field, e.target.value); // Actualiza el estado local
               if (field === "ingresos") {
-                // Aquí puedes enviar los ingresos al controlador o actualizar el estado global
-                updateRegisterData({ ingresoMensual: Number(e.target.value)}); // Asegúrate de tener esta función disponible
+                const ingresoMensual = Number(e.target.value);
+
+                
+               console.log(ingresoMensual);
+               
+                  updateRegisterData({ ingresoMensual }); // Actualiza el estado global
+                
               }
             }}
             className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
