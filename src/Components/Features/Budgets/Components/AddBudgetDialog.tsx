@@ -21,16 +21,28 @@ import {
   Plus,
   Calendar,
 } from "lucide-react"
-import type { BudgetData } from "../types/budget-types"
+import type { BudgetData } from "../types/budget-types" // Asegúrate de que esta ruta sea correcta
 
+// Definiciones de tipos para las entidades
+// Asumimos que el backend devuelve idCuenta, idInversion, idTarjeta como números.
 interface Account {
-  id: string
-  nombre: string // Match backend Cuenta entity's field
+  idCuenta: number
+  nombre: string
+}
+
+interface Investment {
+  idInversion: number
+  nombre: string
+}
+
+interface Card {
+  idTarjeta: number
+  nombre: string
 }
 
 interface Category {
   id: number
-  ide: string
+  ide: string // Identificador en string, por ejemplo "comida"
   name: string
   icon: ReactElement
   bgColor: string
@@ -40,20 +52,23 @@ interface Category {
 interface AddBudgetDialogProps {
   isOpen: boolean
   onClose: () => void
-  onAddBudget: (budgetData: BudgetData & { accountId: string }) => void
+  onAddBudget: (budgetData: BudgetData & { entityId: string; entityType: 'cuenta' | 'tarjeta' | 'inversion' }) => void
 }
 
 export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBudgetDialogProps) {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
-  const [selectedCategory, setSelectedCategory] = useState<string>("") // Single category
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null) // Almacena el ID numérico de la categoría
   const [budgetName, setBudgetName] = useState("")
   const [amount, setAmount] = useState("")
-  // const [period] = useState("Mensual") // Not used in backend, kept for potential future use
-  const [selectedAccount, setSelectedAccount] = useState("")
+  const [selectedEntityType, setSelectedEntityType] = useState<"cuenta" | "tarjeta" | "inversion" | "">("") // Tipo de entidad (cuenta, tarjeta, inversion)
+  const [selectedEntityId, setSelectedEntityId] = useState("") // ID de la entidad específica seleccionada
   const [accounts, setAccounts] = useState<Account[]>([])
+  const [investments, setInvestments] = useState<Investment[]>([])
+  const [cards, setCards] = useState<Card[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  // Hardcoded categories (replace with API call to /finzen/categorias)
+  // Hardcoded categories (consider fetching from API if they are dynamic)
   const categories: Category[] = [
     { id: 1, ide: "comida", name: "Comida", icon: <UtensilsCrossed className="w-4 h-4" />, bgColor: "bg-[#FED7AA]", textColor: "text-[#EA580C]" },
     { id: 2, ide: "supermercado", name: "Supermercado", icon: <ShoppingCart className="w-4 h-4" />, bgColor: "bg-[#BBF7D0]", textColor: "text-[#059669]" },
@@ -72,99 +87,184 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
     { id: 15, ide: "otros", name: "Otros", icon: <Plus className="w-4 h-4" />, bgColor: "bg-[#F3F4F6]", textColor: "text-[#6B7280]" },
   ]
 
-  // Fetch accounts on component mount
+  // Fetch all entity types on component mount
   useEffect(() => {
-    const fetchAccounts = async () => {
+    const fetchEntities = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        const response = await axios.get("http://localhost:8080/finzen/cuentas", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        })
-        setAccounts(response.data.map((cuenta: any) => ({
-          id: cuenta.idCuenta.toString(),
-          nombre: cuenta.nombre,
-        })))
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setError("Sesión no encontrada. Por favor, inicia sesión.");
+          return;
+        }
+        const config = { headers: { Authorization: `Bearer ${token}` } };
+
+        // Realiza todas las llamadas en paralelo
+        const [cuentasResponse, inversionesResponse, tarjetasResponse] = await Promise.all([
+          axios.get<Account[]>("http://localhost:8080/finzen/cuentas", config),
+          axios.get<Investment[]>("http://localhost:8080/finzen/inversiones", config),
+          axios.get<Card[]>("http://localhost:8080/finzen/tarjetas", config),
+        ]);
+
+        console.log("Cuentas cargadas:", cuentasResponse.data); // Log para depuración
+        console.log("Inversiones cargadas:", inversionesResponse.data); // Log para depuración
+        console.log("Tarjetas cargadas:", tarjetasResponse.data); // Log para depuración
+
+        setAccounts(cuentasResponse.data);
+        setInvestments(inversionesResponse.data);
+        setCards(tarjetasResponse.data);
+
       } catch (err) {
-        setError("Error al cargar las cuentas")
+        console.error("Error al cargar las entidades:", err);
+        setError("Error al cargar cuentas, inversiones o tarjetas. Verifica tu conexión y que tengas entidades creadas.");
+      } finally {
+        setIsLoading(false);
       }
-    }
-    fetchAccounts()
-  }, [])
+    };
+    fetchEntities();
+  }, []); // El array de dependencias vacío asegura que se ejecuta solo al montar
 
-  // Optional: Fetch categories from backend
-  // useEffect(() => {
-  //   const fetchCategories = async () => {
-  //     try {
-  //       const response = await axios.get("http://localhost:8080/finzen/categorias", {
-  //         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-  //       })
-  //       // Map response to Category interface
-  //       // setCategories(response.data.map(...))
-  //     } catch (err) {
-  //       setError("Error al cargar categorías")
-  //     }
-  //   }
-  //   fetchCategories()
-  // }, [])
-
-  const handleCategoryToggle = (categoryId: string) => {
-    setSelectedCategory(categoryId) // Select single category
+  const handleCategoryToggle = (categoryId: number) => { // Ahora acepta el ID numérico
+    setSelectedCategory(categoryId)
   }
 
   const handleSubmit = async () => {
-    if (budgetName.trim() && amount && selectedCategory && selectedAccount) {
-      try {
-        const category = categories.find((cat) => cat.ide === selectedCategory)
-        if (!category) throw new Error("Categoría no encontrada")
+    setIsLoading(true);
+    setError(null);
 
-        const payload = {
-          idCuenta: Number(selectedAccount),
-          nombre: budgetName.trim(),
-          montoAsignado: Number.parseFloat(amount),
-          idCategoriaPresupuesto: category.id,
-        }
-
-        // Send request to backend
-        await axios.post("http://localhost:8080/finzen/presupuesto", payload, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        })
-
-        // Call onAddBudget for local state (if needed)
-        onAddBudget({
-          name: budgetName.trim(),
-          totalBudget: Number.parseFloat(amount),
-          categories: [{
-            name: category.name,
-            budget: 0,
-            categoryType: category.ide,
-            accountId: selectedAccount,
-          }],
-          accountId: selectedAccount,
-        })
-
-        // Reset form and close dialog
-        setBudgetName("")
-        setAmount("")
-        setSelectedCategory("")
-        setSelectedAccount("")
-        setError(null)
-        onClose()
-      } catch (err) {
-        setError("Error al crear el presupuesto. Por favor, intenta de nuevo.")
-      }
+    // Validaciones de campos
+    if (!budgetName.trim()) {
+      setError("Por favor, ingresa el nombre del presupuesto.");
+      setIsLoading(false);
+      return;
     }
-  }
+    const parsedAmount = Number.parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      setError("Por favor, ingresa un monto válido mayor que 0.");
+      setIsLoading(false);
+      return;
+    }
+    if (selectedCategory === null) {
+      setError("Por favor, selecciona una categoría.");
+      setIsLoading(false);
+      return;
+    }
+    if (!selectedEntityType) {
+      setError("Por favor, selecciona el tipo de entidad (Cuenta, Tarjeta o Inversión).");
+      setIsLoading(false);
+      return;
+    }
+    if (!selectedEntityId) {
+      setError("Por favor, selecciona una entidad específica.");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const category = categories.find((cat) => cat.id === selectedCategory);
+      if (!category) {
+        throw new Error("Categoría seleccionada no encontrada.");
+      }
+
+      let payload: any = {
+        nombre: budgetName.trim(),
+        montoAsignado: parsedAmount,
+        idCategoriaPresupuesto: category.id,
+      };
+
+      // Adjuntar el ID de la entidad basado en el tipo seleccionado
+      const parsedEntityId = Number(selectedEntityId);
+      if (isNaN(parsedEntityId)) {
+        setError("ID de entidad no válido. Esto no debería ocurrir."); // Lógica de fallback
+        setIsLoading(false);
+        return;
+      }
+
+      // Añadimos la propiedad de ID correcta al payload según el tipo de entidad
+      if (selectedEntityType === "cuenta") {
+        payload.idCuenta = parsedEntityId;
+      } else if (selectedEntityType === "inversion") {
+        payload.idInversion = parsedEntityId;
+      } else if (selectedEntityType === "tarjeta") {
+        payload.idTarjeta = parsedEntityId;
+      }
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Sesión no encontrada. Por favor, inicia sesión.");
+        setIsLoading(false);
+        return;
+      }
+
+      // El endpoint para crear un presupuesto es único: /finzen/presupuesto
+      // El backend determinará a qué entidad asociarlo por la presencia de idCuenta, idInversion o idTarjeta en el payload.
+      await axios.post("http://localhost:8080/finzen/presupuesto", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Llamada a onAddBudget para actualizar el estado local de la lista de presupuestos
+      onAddBudget({
+        name: budgetName.trim(),
+        totalBudget: parsedAmount,
+        categories: [{
+          name: category.name,
+          budget: parsedAmount, // Aquí puedes ajustar si tu BudgetData tiene un presupuesto por categoría
+          categoryType: category.ide,
+        }],
+        entityId: selectedEntityId, // Pasar el ID de la entidad al padre
+        entityType: selectedEntityType as 'cuenta' | 'tarjeta' | 'inversion', // Pasar el tipo de entidad al padre
+      });
+
+      // Reset form and close dialog
+      setBudgetName("");
+      setAmount("");
+      setSelectedCategory(null);
+      setSelectedEntityType("");
+      setSelectedEntityId("");
+      setError(null);
+      onClose();
+
+    } catch (err) {
+      console.error("Error al crear el presupuesto:", err);
+      if (axios.isAxiosError(err) && err.response) {
+        // Mensaje de error más detallado desde el backend
+        setError(`Error al crear el presupuesto: ${err.response.data.message || err.response.statusText || JSON.stringify(err.response.data)}`);
+      } else {
+        setError("Error al crear el presupuesto. Por favor, intenta de nuevo. (Error de red o desconocido).");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleClose = () => {
     setBudgetName("")
     setAmount("")
-    setSelectedCategory("")
-    setSelectedAccount("")
+    setSelectedCategory(null)
+    setSelectedEntityType("")
+    setSelectedEntityId("")
     setError(null)
+    setIsLoading(false);
     onClose()
+  }
+
+  // Función para determinar qué lista de entidades mostrar en el select
+  const getEntitiesToShow = () => {
+    if (selectedEntityType === "cuenta") return accounts;
+    if (selectedEntityType === "inversion") return investments;
+    if (selectedEntityType === "tarjeta") return cards;
+    return [];
+  };
+
+  // Función para obtener el nombre del campo ID para el tipo de entidad
+  const getIdFieldName = () => {
+    if (selectedEntityType === "cuenta") return "idCuenta";
+    if (selectedEntityType === "inversion") return "idInversion";
+    if (selectedEntityType === "tarjeta") return "idTarjeta";
+    return ""; // Esto no debería pasar si selectedEntityType está bien validado
   }
 
   if (!isOpen) return null
@@ -177,16 +277,22 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
             <h2 className="text-lg font-bold text-white mb-1">Crear Nuevo Presupuesto</h2>
             <p className="text-gray-400 text-sm">Establece un presupuesto para controlar tus gastos por categoría.</p>
           </div>
-          <button onClick={handleClose} className="text-gray-400 hover:text-white">
+          <button onClick={handleClose} className="text-gray-400 hover:text-white" disabled={isLoading}>
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {/* Mensajes de error y carga */}
         {error && (
           <div className="mb-4 p-2 bg-red-500/20 text-red-400 rounded-lg text-sm">
             {error}
           </div>
         )}
+        {isLoading && (
+            <div className="mb-4 p-2 bg-blue-500/20 text-blue-400 rounded-md">
+              Cargando...
+            </div>
+          )}
 
         <div className="mb-4">
           <h3 className="text-base font-semibold text-white mb-2">Nombre del Presupuesto</h3>
@@ -198,6 +304,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
               onChange={(e) => setBudgetName(e.target.value)}
               className="w-full bg-[#020817] border border-[#475569] text-white pl-10 pr-3 py-2.5 rounded-lg focus:outline-none focus:border-blue-500"
               placeholder="Ej: Presupuesto Enero 2024"
+              disabled={isLoading}
             />
             {budgetName.trim() && (
               <p className="text-xs text-gray-400 mt-1">
@@ -207,21 +314,54 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
           </div>
         </div>
 
+        {/* Selección de Tipo de Entidad */}
         <div className="mb-4">
-          <h3 className="text-base font-semibold text-white mb-2">Cuenta</h3>
+          <h3 className="text-base font-semibold text-white mb-2">Asociar a</h3>
           <select
-            value={selectedAccount}
-            onChange={(e) => setSelectedAccount(e.target.value)}
+            value={selectedEntityType}
+            onChange={(e) => {
+              setSelectedEntityType(e.target.value as "cuenta" | "tarjeta" | "inversion" | "");
+              setSelectedEntityId(""); // Reset entity ID when type changes
+            }}
             className="w-full bg-[#020817] border border-[#475569] text-white px-3 py-2.5 rounded-lg focus:outline-none focus:border-blue-500 appearance-none"
+            disabled={isLoading}
           >
-            <option value="">Selecciona una cuenta</option>
-            {accounts.map((account) => (
-              <option key={account.id} value={account.id}>
-                {account.nombre}
-              </option>
-            ))}
+            <option value="" disabled>Selecciona un tipo de entidad</option>
+            <option value="cuenta">Cuenta</option>
+            <option value="tarjeta">Tarjeta</option>
+            <option value="inversion">Inversión</option>
           </select>
         </div>
+
+        {/* Selección de Entidad Específica (condicional) */}
+        {selectedEntityType && (
+          <div className="mb-4">
+            <h3 className="text-base font-semibold text-white mb-2">
+              Selecciona {selectedEntityType.charAt(0).toUpperCase() + selectedEntityType.slice(1)}
+            </h3>
+            <select
+              value={selectedEntityId}
+              onChange={(e) => setSelectedEntityId(e.target.value)}
+              className="w-full bg-[#020817] border border-[#475569] text-white px-3 py-2.5 rounded-lg focus:outline-none focus:border-blue-500 appearance-none"
+              disabled={isLoading || getEntitiesToShow().length === 0}
+            >
+              <option value="" disabled>Selecciona una {selectedEntityType}</option>
+              {getEntitiesToShow().length > 0 ? (
+                getEntitiesToShow().map((entity: any) => {
+                  const idField = getIdFieldName();
+                  console.log(`Renderizando opción ${selectedEntityType}: ID=${entity[idField]}, Nombre=${entity.nombre}`); // Log para depuración
+                  return (
+                    <option key={entity[idField]} value={entity[idField]}>
+                      {entity.nombre}
+                    </option>
+                  );
+                })
+              ) : (
+                <option value="" disabled>No hay {selectedEntityType}s disponibles</option>
+              )}
+            </select>
+          </div>
+        )}
 
         <div className="mb-4">
           <h3 className="text-base font-semibold text-white mb-3">Categoría</h3>
@@ -231,6 +371,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
               className={`flex-1 py-1.5 px-3 rounded-md text-sm font-medium transition-colors ${
                 viewMode === "grid" ? "bg-[#020817] text-white" : "text-gray-400 hover:text-white"
               }`}
+              disabled={isLoading}
             >
               Vista Grid
             </button>
@@ -239,6 +380,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
               className={`flex-1 py-1.5 px-3 rounded-md text-sm font-medium transition-colors ${
                 viewMode === "list" ? "bg-[#020817] text-white" : "text-gray-400 hover:text-white"
               }`}
+              disabled={isLoading}
             >
               Lista
             </button>
@@ -249,10 +391,11 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
               {categories.map((category) => (
                 <button
                   key={category.id}
-                  onClick={() => handleCategoryToggle(category.ide)}
+                  onClick={() => handleCategoryToggle(category.id)}
                   className={`${category.bgColor} rounded-lg p-2 flex flex-col items-center justify-center min-h-[50px] transition-all hover:scale-105 ${
-                    selectedCategory === category.ide ? "ring-2 ring-blue-500" : ""
+                    selectedCategory === category.id ? "ring-2 ring-blue-500" : ""
                   }`}
+                  disabled={isLoading}
                 >
                   <div className={`${category.textColor} mb-1`}>{category.icon}</div>
                   <span className="text-xs text-black font-medium">{category.name}</span>
@@ -265,17 +408,20 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
                 <li
                   key={category.id}
                   className={`flex items-center justify-between p-2 rounded-md cursor-pointer transition-colors ${
-                    selectedCategory === category.ide
+                    selectedCategory === category.id
                       ? "bg-blue-800 text-white"
                       : "bg-[#1E293B] text-gray-300 hover:bg-[#334155]"
                   }`}
-                  onClick={() => handleCategoryToggle(category.ide)}
+                  onClick={() => handleCategoryToggle(category.id)}
+                  // No se puede deshabilitar un `li` directamente para eventos de click
+                  // Si necesitas deshabilitar, podrías envolver el contenido en un div y deshabilitarlo.
+                  // O manejarlo internamente en el handler.
                 >
                   <div className="flex items-center space-x-2">
                     <div className={`${category.textColor}`}>{category.icon}</div>
                     <span className="text-sm">{category.name}</span>
                   </div>
-                  {selectedCategory === category.ide && <span className="text-xs text-blue-400">Seleccionada</span>}
+                  {selectedCategory === category.id && <span className="text-xs text-blue-400">Seleccionada</span>}
                 </li>
               ))}
             </ul>
@@ -291,15 +437,16 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
             className="w-full bg-[#020817] border border-[#475569] text-white px-3 py-2.5 rounded-lg focus:outline-none focus:border-blue-500"
             placeholder="Ej: 500000"
             min="0"
+            disabled={isLoading}
           />
         </div>
 
         <button
           onClick={handleSubmit}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition-colors disabled:opacity-50"
-          disabled={!budgetName.trim() || !amount || !selectedCategory || !selectedAccount}
+          disabled={isLoading || !budgetName.trim() || !amount || selectedCategory === null || !selectedEntityType || !selectedEntityId}
         >
-          Crear Presupuesto
+          {isLoading ? "Creando..." : "Crear Presupuesto"}
         </button>
       </div>
     </div>
