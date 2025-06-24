@@ -15,6 +15,9 @@ import { ApperInterface } from "./Components/ApperInterface";
 import { Notifications } from "./Components/Notifications";
 import { NotificationsPush } from "./Components/NotificartionsPush";
 import { FrecuencyNots } from "./Components/FrecuencyNots";
+import { Security } from "./Components/Security";
+import { SecurityConfig } from "./Components/SecurtityConfig";
+import { SecurityDevices } from "./Components/SecurityDevices";
 
 type Option =
   | "Perfil"
@@ -72,7 +75,14 @@ export const Navconfiguration = () => {
         );
       case "Seguridad":
         return (
-          <p>Cambia tu contraseña, activa verificación en dos pasos, y más.</p>
+          <>
+
+          <Security />
+
+          <SecurityConfig/>
+
+          <SecurityDevices/>
+          </>
         );
       case "Integraciones":
         return (
