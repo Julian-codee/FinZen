@@ -59,8 +59,10 @@ export const AddTransaction: React.FC = () => {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null);
   const [nota, setNota] = useState<string>("");
   const [nombreTransaccion, setNombreTransaccion] = useState<string>("");
+  // Estado para presupuesto solo será relevante para gastos
   const [presupuestoSeleccionado, setPresupuestoSeleccionado] = useState<string>("");
   const [presupuestos, setPresupuestos] = useState<Budget[]>([]);
+  // Tipo de entidad y entidadId siempre estarán disponibles para selección
   const [tipoEntidad, setTipoEntidad] = useState<"cuenta" | "inversion" | "tarjeta" | "">("");
   const [entidadId, setEntidadId] = useState<string>("");
   const [cuentas, setCuentas] = useState<Account[]>([]);
@@ -91,6 +93,7 @@ export const AddTransaction: React.FC = () => {
     { id: 15, ide: "otros", name: "Otros", icon: <Plus className="w-4 h-4" />, bgColor: "bg-[#F3F4F6]", textColor: "text-[#6B7280]" },
   ];
 
+  // Obtener cuentas, inversiones y tarjetas al cargar el componente
   useEffect(() => {
     const fetchEntidades = async () => {
       setIsLoading(true);
@@ -109,6 +112,7 @@ export const AddTransaction: React.FC = () => {
           axios.get<Card[]>("http://localhost:8080/finzen/tarjetas", config),
         ]);
 
+        // Mapear los IDs para asegurar que sean números y consistentes
         const mappedCuentas = cuentasResponse.data.map(item => ({ ...item, id: Number(item.idCuenta) }));
         setCuentas(mappedCuentas);
 
@@ -132,8 +136,10 @@ export const AddTransaction: React.FC = () => {
     fetchEntidades();
   }, []);
 
+  // Obtener presupuestos cuando se selecciona una entidad (solo para gastos)
   useEffect(() => {
     const fetchPresupuestos = async () => {
+      // Only fetch budgets if it's a 'gasto' and an entity is selected
       if (tipoTransaccion === "ingreso" || !tipoEntidad || !entidadId) {
         setPresupuestos([]);
         setPresupuestoSeleccionado("");
@@ -159,12 +165,13 @@ export const AddTransaction: React.FC = () => {
         const config = { headers: { Authorization: `Bearer ${token}` } };
         let endpoint = "";
 
+        // Assuming your backend has these specific endpoints for budgets by entity type
         if (tipoEntidad === "cuenta") {
           endpoint = `http://localhost:8080/finzen/presupuesto/getCuenta/${parsedEntidadId}`;
         } else if (tipoEntidad === "inversion") {
           endpoint = `http://localhost:8080/finzen/presupuesto/getInversiones/${parsedEntidadId}`;
         } else if (tipoEntidad === "tarjeta") {
-          endpoint = `http://localhost:8080/finzen/presupuesto/getTarjeta/${parsedEntidadId}`;
+          endpoint = `http://localhost:8080/finzen/presupuesto/getTajeta/${parsedEntidadId}`;
         } else {
           setErrorMessage("Tipo de entidad no reconocido para obtener presupuestos.");
           setIsLoading(false);
@@ -194,10 +201,10 @@ export const AddTransaction: React.FC = () => {
       }
     };
 
-    if (tipoTransaccion === "gasto") {
+    if (tipoTransaccion === "gasto") { // Only fetch budgets if transaction is a 'gasto'
       fetchPresupuestos();
     }
-  }, [tipoEntidad, entidadId, tipoTransaccion]);
+  }, [tipoEntidad, entidadId, tipoTransaccion]); // Add tipoTransaccion to dependency array
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
   const toggleCalendar = () => setShowCalendar(!showCalendar);
@@ -328,10 +335,9 @@ export const AddTransaction: React.FC = () => {
     let transactionData: any;
     let endpoint: string;
 
-    const formattedDate = format(selectedDate, "yyyy-MM-dd");
+    const formattedDate = format(selectedDate, "yyyy-MM-dd"); // Format date as "YYYY-MM-DD" for backend
 
     if (tipoTransaccion === "gasto") {
-      // Validar y obtener el id numérico de la categoría solo si es un gasto
       if (!categoriaSeleccionada) {
         setErrorMessage("Por favor, selecciona una categoría para el gasto.");
         return;
@@ -341,7 +347,6 @@ export const AddTransaction: React.FC = () => {
         setErrorMessage("Categoría seleccionada no válida. (Error interno)");
         return;
       }
-
       const parsedPresupuestoId = Number(presupuestoSeleccionado);
       if (isNaN(parsedPresupuestoId) || parsedPresupuestoId <= 0) {
         setErrorMessage("Por favor, selecciona un presupuesto válido para el gasto.");
@@ -350,7 +355,7 @@ export const AddTransaction: React.FC = () => {
 
       transactionData = {
         nombre: nombreTransaccion.trim(),
-        idCategoria: categoriaObj.id, // <-- Aseguramos que se envía el ID numérico
+        idCategoria: categoriaObj.id,
         fecha: formattedDate,
         descripcion: nota,
         monto: parsedMonto,
@@ -361,14 +366,15 @@ export const AddTransaction: React.FC = () => {
     } else { // tipoTransaccion === "ingreso"
       transactionData = {
         nombre: nombreTransaccion.trim(),
-        descripcion: nota || "Ingreso General",
+        descripcion: nota || "Ingreso General", // 'fuente' in DTO is 'descripcion' in entity
         fecha: formattedDate,
         monto: parsedMonto,
+        // No idPresupuesto for incomes as per backend DTO
       };
       endpoint = "http://localhost:8080/finzen/ingreso";
     }
 
-    // Añade el ID de la entidad seleccionada al objeto de datos de la transacción
+    // Add the selected entity ID to the transaction data for both types
     if (tipoEntidad === "cuenta") {
       transactionData.idCuenta = parsedEntidadIdNumber;
     } else if (tipoEntidad === "inversion") {
@@ -393,7 +399,7 @@ export const AddTransaction: React.FC = () => {
 
       // Reiniciar estados después de un éxito
       setMonto("0");
-      setTipoTransaccion("gasto");
+      setTipoTransaccion("gasto"); // Default back to gasto
       setCategoriaSeleccionada(null);
       setSelectedDate(new Date());
       setNota("");
@@ -406,8 +412,7 @@ export const AddTransaction: React.FC = () => {
     } catch (error) {
       console.error("Error al guardar la transacción:", error);
       if (axios.isAxiosError(error) && error.response) {
-        // Mejorar el mensaje de error para dar más detalles del backend
-        setErrorMessage(`Error al guardar la transacción: ${error.response.data.message || error.response.statusText || JSON.stringify(error.response.data)}`);
+        setErrorMessage(`Error: ${error.response.data.message || error.response.statusText || "Hubo un problema con la solicitud."}`);
       } else {
         setErrorMessage("Error al guardar la transacción. Por favor, intenta de nuevo. Error de red o desconocido.");
       }
@@ -512,40 +517,32 @@ export const AddTransaction: React.FC = () => {
             </div>
           </div>
 
-
-          {/* Sección de Categoría */}
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold mb-2">Categoría</h2>
-            <div className="grid grid-cols-4 gap-1.5">
-              {" "}
-              {/* Ajustado a gap-1.5 para consistencia */}
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setCategoriaSeleccionada(category.id)}
-                  className={`${
-                    category.bgColor
-                  } rounded-lg p-2 flex flex-col items-center justify-center min-h-[60px] transition-all hover:scale-105
-                    ${
-                      categoriaSeleccionada === category.id
-                        ? "ring-2 ring-blue-500" // Estilo de selección, compatible con tu estética
-                        : ""
-                    }
-                  `}
-                >
-                  <div className={`${category.textColor} mb-1`}>
-                    {category.icon}
-                  </div>
-                  <span
-                    className={`${category.textColor} text-xs font-medium text-center leading-tight`}
+          {/* La sección de categoría solo se muestra para gastos */}
+          {tipoTransaccion === "gasto" && (
+            <div className="mb-4">
+              <h2 className="text-lg font-semibold mb-2">Categoría</h2>
+              <div className="grid grid-cols-4 gap-1.5">
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => setCategoriaSeleccionada(category.ide)}
+                    className={`${
+                      category.bgColor
+                    } rounded-lg p-2 flex flex-col items-center justify-center min-h-[60px] transition-all hover:scale-105 ${
+                      categoriaSeleccionada === category.ide ? "ring-2 ring-blue-500" : ""
+                    } disabled:opacity-50`}
+                    disabled={isLoading}
+                    aria-label={`Seleccionar categoría ${category.name}`}
                   >
-                    {category.name}
-                  </span>
-                </button>
-              ))}
+                    <div className={`${category.textColor} mb-1`}>{category.icon}</div>
+                    <span className={`${category.textColor} text-xs font-medium text-center leading-tight`}>
+                      {category.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-
+          )}
 
           <div className="relative inline-block w-full mb-6">
             <button
@@ -582,8 +579,8 @@ export const AddTransaction: React.FC = () => {
               onChange={(e) => {
                 setTipoEntidad(e.target.value as "cuenta" | "inversion" | "tarjeta" | "");
                 setEntidadId("");
-                setPresupuestoSeleccionado("");
-                setPresupuestos([]);
+                setPresupuestoSeleccionado(""); // Clear budget if entity type changes
+                setPresupuestos([]); // Clear budgets if entity type changes
               }}
               className="w-full p-2.5 rounded-md bg-[#020817] border border-white/40 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               disabled={isLoading}
@@ -607,6 +604,7 @@ export const AddTransaction: React.FC = () => {
               value={entidadId}
               onChange={(e) => {
                 setEntidadId(e.target.value);
+                // Only clear budget if it's a gasto, otherwise it's already cleared
                 if (tipoTransaccion === "gasto") {
                   setPresupuestoSeleccionado("");
                 }
@@ -618,6 +616,7 @@ export const AddTransaction: React.FC = () => {
               <option value="" disabled>
                 Selecciona una {tipoEntidad || "entidad"}
               </option>
+              {/* Renderizado condicional de opciones de cuenta, inversión o tarjeta */}
               {tipoEntidad === "cuenta" && Array.isArray(cuentas) && (
                 cuentas.length > 0 ? (
                   cuentas.map((cuenta, index) => (
@@ -668,7 +667,7 @@ export const AddTransaction: React.FC = () => {
                 value={presupuestoSeleccionado}
                 onChange={(e) => setPresupuestoSeleccionado(e.target.value)}
                 className="w-full p-2.5 rounded-md bg-[#020817] border border-white/40 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                disabled={!entidadId || isLoading || presupuestos.length === 0}
+                disabled={!entidadId || isLoading || presupuestos.length === 0} // Disable if no entity selected or no budgets available
                 aria-label="Seleccionar presupuesto"
               >
                 <option value="" disabled>
