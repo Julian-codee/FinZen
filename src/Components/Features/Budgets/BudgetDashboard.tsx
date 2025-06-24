@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Share2, Menu } from "lucide-react"
+import { Share2 } from "lucide-react"
 import DateNavigation from "./Components/DateNavigation"
 import SummaryCards from "./Components/SummaryCards"
 import TabNavigation from "./Components/TabsNavigation"
@@ -115,16 +115,11 @@ export default function BudgetDashboard() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex justify-between items-start mb-8">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={toggleSidebar}
-                className="p-2 rounded-md border border-gray-600 hover:bg-gray-800 transition-colors"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
+            <div className="flex items-center gap-4 px-4 pt-8">
+          
               <div>
-                <h1 className="text-3xl font-bold mb-2">Presupuesto</h1>
-                <p className="text-gray-400 text-lg">
+                <h1 className="text-4xl font-bold mb-2">Presupuesto</h1>
+                <p className="mb-12 text-white/70 text-lg">
                   Gestiona tus presupuestos mensuales y controla tus gastos por categoría.
                 </p>
               </div>
