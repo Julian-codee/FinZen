@@ -1,9 +1,10 @@
-import { useState } from "react"; // Necesitamos useState aquí
+import { useState } from "react";
 import * as XLSX from "xlsx";
 import DateRangeSelector from "./DateRangeSelector";
 import Filters from "./Filters";
 import DashboardTabs from "./DashboardTabs";
-import {Sidebar} from "../../../Ui/UiDashBoard/SideBar"; // Asegúrate de que la ruta sea correcta
+import { Sidebar } from "../../../Ui/UiDashBoard/SideBar";
+import { Menu } from "lucide-react"; // Import the Menu icon
 
 const FinancialDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Estado del sidebar gestionado aquí
@@ -41,27 +42,33 @@ const FinancialDashboard = () => {
 
   return (
     // Contenedor principal que gestiona el layout del sidebar y el contenido
-    <div className="flex min-h-screen"> {/* Contenedor flex para el layout */}
+    <div className="flex min-h-screen bg-[#020817] text-white"> {/* Contenedor flex para el layout */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} /> {/* Sidebar dentro del dashboard */}
 
       {/*
         El contenido principal del dashboard ajusta su margen izquierdo dinámicamente
         basado en el estado del sidebar que ahora gestiona este mismo componente.
       */}
-      <div
+      <main
         className={`
-          flex-grow p-6 bg-[#020817] text-white
+          flex-grow p-4 sm:p-6 lg:p-8 // Added responsive padding
           transition-all duration-300 ease-in-out
-          ${isSidebarOpen ? 'ml-64' : 'ml-20'} // Ajusta el margen según el ancho del sidebar
+          ${isSidebarOpen ? 'lg:ml-64' : 'lg:ml-20'} // Ajusta el margen según el ancho del sidebar
+          ml-0 // Default margin for small screens
         `}
       >
-        <div>
-          <h1 className="text-3xl font-bold">Informes</h1>
-          <p className="mt-2 text-gray-400">
-            Analiza tus finanzas con informes detallados y visualizaciones
-            personalizables.
-          </p>
+        <div className="flex justify-between items-center mb-6 lg:hidden">
+          <button onClick={toggleSidebar} className="p-2 rounded-md border border-gray-600 hover:bg-gray-800" aria-label="Abrir menú de navegación">
+            <Menu className="w-5 h-5" />
+          </button>
+          <h1 className="text-2xl font-bold text-center flex-grow">Informes</h1>
         </div>
+
+        <h1 className="hidden lg:block text-3xl font-bold text-white">Informes</h1>
+        <p className="mt-2 text-gray-400">
+          Analiza tus finanzas con informes detallados y visualizaciones
+          personalizables.
+        </p>
 
         <div className="flex justify-between items-center my-6">
           <DateRangeSelector />
@@ -78,7 +85,7 @@ const FinancialDashboard = () => {
           financialData={financialData}
           categoryData={categoryData}
         />
-      </div>
+      </main>
     </div>
   );
 };

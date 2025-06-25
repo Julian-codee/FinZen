@@ -69,7 +69,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
               <span className="truncate">{dateRange}</span>
             </button>
             {showDateRangeDropdown && (
-              <div className="absolute top-full left-0 mt-2 bg-[#0F1525] border border-gray-700 rounded-md shadow-lg z-10 w-full sm:w-48">
+              <div className="absolute top-full left-0 mt-2 bg-[#0F1525] border border-gray-700 rounded-md shadow-lg z-10 w-full sm:w-48"> {/* w-full for small screens */}
                 {dateRanges.map((range) => (
                   <button
                     key={range}
@@ -89,7 +89,7 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
           {/* Filters Button (puedes añadir un modal aquí) */}
           <button
             type="button"
-            className="inline-flex items-center justify-center border border-gray-700 rounded-md px-4 py-2 text-sm text-white bg-[#121827] hover:bg-[#1e2533] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 w-full sm:w-auto"
+            className="inline-flex items-center justify-center border border-gray-700 rounded-md px-4 py-2 text-sm text-white bg-[#121827] hover:bg-[#1e2533] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 w-full sm:w-auto" // w-full for small screens
             aria-label="Abrir filtros avanzados"
             onClick={onOpenAdvancedFilters} // Llama a la función del padre para abrir un modal, por ejemplo
           >
@@ -99,12 +99,12 @@ const TransactionFilters: React.FC<TransactionFiltersProps> = ({
         </div>
 
         {/* Sort Select */}
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-2 w-full sm:w-auto"> {/* w-full for small screens */}
           <label htmlFor="sort-transactions" className="sr-only">Ordenar transacciones</label>
           <ArrowDownWideNarrow className="w-4 h-4 text-gray-400 flex-shrink-0" aria-hidden="true" />
           <select
             id="sort-transactions"
-            className="bg-[#0D1119] border border-gray-700 text-white py-2 px-3 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 w-full"
+            className="bg-[#0D1119] border border-gray-700 text-white py-2 px-3 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-blue-500 w-full" // w-full for small screens
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value as 'Más recientes' | 'Más antiguos' | 'Mayor importe' | 'Menor importe')} // Casteamos el tipo
           >

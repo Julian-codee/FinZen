@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Share2, Menu } from "lucide-react"
+import { Share2, Menu } from "lucide-react" // Import Menu icon
 import DateNavigation from "./Components/DateNavigation"
 import SummaryCards from "./Components/SummaryCards"
 import TabNavigation from "./Components/TabsNavigation"
@@ -17,7 +17,7 @@ export default function BudgetDashboard() {
   const [activeTab, setActiveTab] = useState("categorias")
   const [categories, setCategories] = useState<BudgetCategory[]>([])
   const [isAddBudgetOpen, setIsAddBudgetOpen] = useState(false)
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false) // State for sidebar
 
   useEffect(() => {
     const saved = localStorage.getItem("categories")
@@ -28,6 +28,7 @@ export default function BudgetDashboard() {
     localStorage.setItem("categories", JSON.stringify(categories))
   }, [categories])
 
+  // Function to toggle sidebar, similar to FinZenHome
   const toggleSidebar = () => {
     setIsSidebarOpen(prev => !prev)
   }
@@ -109,21 +110,24 @@ export default function BudgetDashboard() {
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       {/* Contenido principal */}
-      <div className={`flex-1 p-6 transition-all duration-300 ease-in-out ${
-        isSidebarOpen ? "ml-64" : "ml-20"
-      }`}>
+      <main className={`flex-1 p-4 sm:p-6 lg:p-8 transition-all duration-300 ease-in-out ${ // Added sm:p-6 and lg:p-8 for consistent padding
+        isSidebarOpen ? "lg:ml-64" : "lg:ml-20" // Responsive margin-left
+      } ml-0`}> {/* Set ml-0 for small screens by default */}
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="flex justify-between items-start mb-8">
             <div className="flex items-center gap-4">
+              {/* Button to toggle sidebar, visible on smaller screens */}
               <button
                 onClick={toggleSidebar}
-                className="p-2 rounded-md border border-gray-600 hover:bg-gray-800 transition-colors"
+                className="p-2 rounded-md border border-gray-600 hover:bg-gray-800 transition-colors lg:hidden" // Only visible on lg screens and below
+                aria-label="Abrir menú de navegación"
               >
                 <Menu className="w-5 h-5" />
               </button>
               <div>
-                <h1 className="text-3xl font-bold mb-2">Presupuesto</h1>
+                <h1 className="hidden lg:block text-3xl font-bold text-white mb-2">Presupuesto</h1> {/* Hidden on small screens, shown on lg */}
+                <h1 className="lg:hidden text-2xl font-bold text-center flex-grow">Presupuesto</h1> {/* Shown on small screens, hidden on lg */}
                 <p className="text-gray-400 text-lg">
                   Gestiona tus presupuestos mensuales y controla tus gastos por categoría.
                 </p>
@@ -158,7 +162,7 @@ export default function BudgetDashboard() {
             accounts={[]}
           />
         </div>
-      </div>
+      </main>
     </div>
   )
 }

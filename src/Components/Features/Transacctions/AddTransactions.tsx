@@ -5,12 +5,78 @@ import { es } from "date-fns/locale";
 import {
   CalendarDays, ShoppingCart, Home, Coffee, Gamepad2, Music, Plus, Delete,
   TrendingDown, TrendingUp, UtensilsCrossed, Zap, Heart, Pizza, Wifi, Phone,
-  GraduationCap, PartyPopper, Car
+  GraduationCap, PartyPopper, Car, CheckCircle, XCircle, Menu // Import Menu icon
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react"; // Import useCallback
 import { DayPicker } from "react-day-picker";
-// Asegúrate de que la ruta a Sidebar sea correcta en tu proyecto
-import { Sidebar } from "../../Ui/UiDashBoard/SideBar"; 
+import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
+import toast, { Toaster } from 'react-hot-toast';
+
+// Componente Toast personalizado para éxito
+const CustomSuccessToast: React.FC<{ t: any; message: string }> = ({ t, message }) => (
+  <div
+    className={`${
+      t.visible ? 'animate-enter' : 'animate-leave'
+    } max-w-md w-full bg-neutral-800 shadow-xl rounded-xl pointer-events-auto flex`}
+  >
+    <div className="flex-1 w-0 p-4">
+      <div className="flex items-start">
+        <div className="flex-shrink-0 pt-0.5">
+          <CheckCircle className="h-6 w-6 text-green-500" />
+        </div>
+        <div className="ml-3 flex-1">
+          <p className="text-sm font-semibold text-white">
+            ¡Transacción Exitosa!
+          </p>
+          <p className="mt-1 text-sm text-gray-300">
+            {message}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div className="flex border-l border-green-600/30">
+      <button
+        onClick={() => toast.dismiss(t.id)}
+        className="w-full border border-transparent rounded-none rounded-r-xl p-4 flex items-center justify-center text-sm font-medium text-green-400 hover:text-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+);
+
+// Componente Toast personalizado para error
+const CustomErrorToast: React.FC<{ t: any; message: string }> = ({ t, message }) => (
+  <div
+    className={`${
+      t.visible ? 'animate-enter' : 'animate-leave'
+    } max-w-md w-full bg-neutral-800 shadow-xl rounded-xl pointer-events-auto flex`}
+  >
+    <div className="flex-1 w-0 p-4">
+      <div className="flex items-start">
+        <div className="flex-shrink-0 pt-0.5">
+          <XCircle className="h-6 w-6 text-red-500" />
+        </div>
+        <div className="ml-3 flex-1">
+          <p className="text-sm font-semibold text-white">
+            Error al Guardar
+          </p>
+          <p className="mt-1 text-sm text-gray-300">
+            {message}
+          </p>
+        </div>
+      </div>
+    </div>
+    <div className="flex border-l border-red-600/30">
+      <button
+        onClick={() => toast.dismiss(t.id)}
+        className="w-full border border-transparent rounded-none rounded-r-xl p-4 flex items-center justify-center text-sm font-medium text-red-400 hover:text-red-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+      >
+        Cerrar
+      </button>
+    </div>
+  </div>
+);
 
 export const AddTransaction: React.FC = () => {
   const [monto, setMonto] = useState<string>("0");
@@ -20,8 +86,11 @@ export const AddTransaction: React.FC = () => {
   const [nota, setNota] = useState<string>("");
   const [cuentaSeleccionada, setCuentaSeleccionada] = useState<string>("");
 
+  // Estado y función para controlar el sidebar
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const toggleSidebar = useCallback(() => { // Use useCallback for toggleSidebar
+    setIsSidebarOpen((prev) => !prev);
+  }, []);
 
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
@@ -95,34 +164,71 @@ export const AddTransaction: React.FC = () => {
   };
 
   const handleGuardarTransaccion = () => {
+    // Validaciones básicas antes de guardar
+    if (parseFloat(monto.replace(",", ".")) <= 0) {
+        toast.custom((t) => (
+            <CustomErrorToast t={t} message="El monto debe ser mayor a 0." />
+        ));
+        return;
+    }
+    if (!categoriaSeleccionada) {
+        toast.custom((t) => (
+            <CustomErrorToast t={t} message="Por favor, selecciona una categoría." />
+        ));
+        return;
+    }
+    if (!selectedDate) {
+        toast.custom((t) => (
+            <CustomErrorToast t={t} message="Por favor, selecciona una fecha." />
+        ));
+        return;
+    }
+    if (!cuentaSeleccionada) {
+        toast.custom((t) => (
+            <CustomErrorToast t={t} message="Por favor, selecciona un presupuesto." />
+        ));
+        return;
+    }
+
     const id = Date.now().toString(); // Genera un ID único basado en la marca de tiempo
 
     const nuevaTransaccion = {
-      id, // Asigna el ID único
-      amount: parseFloat(monto.replace(",", ".")), // Asegúrate de parsear el monto correctamente
+      id,
+      amount: parseFloat(monto.replace(",", ".")),
       type: tipoTransaccion === "gasto" ? "expense" : "income",
-      category: categoriaSeleccionada || "otros", // Valor por defecto si no se selecciona
-      date: selectedDate ? selectedDate.toISOString().split("T")[0] : "", // Formato YYYY-MM-DD
-      description: nota || "Sin descripción", // Nota como descripción
-      subtitle: "", // Si tienes un subtítulo, agrégalo aquí
-      account: cuentaSeleccionada || "No especificado", // Cuenta seleccionada
-      method: cuentaSeleccionada || "No especificado", // Método (puede ser el mismo que la cuenta o diferente)
-      status: "Completada", // Estado de la transacción
+      category: categoriaSeleccionada, // Ya se valida que no sea null
+      date: selectedDate ? format(selectedDate, "yyyy-MM-dd") : "", // Formato `YYYY-MM-DD`
+      description: nota || `Transacción de ${categoriaSeleccionada}`, // Usar nota o una descripción por defecto
+      notes: nota || `Transacción de ${categoriaSeleccionada}`, // Asumiendo que `notes` es lo que se muestra
+      time: format(new Date(), "HH:mm"), // Añadir la hora actual
+      account: cuentaSeleccionada,
+      paymentMethod: cuentaSeleccionada, // Asumiendo que paymentMethod es igual a account
+      status: "Completada",
     };
 
     const STORAGE_KEY = "finzen_transactions";
     const almacenadas = localStorage.getItem(STORAGE_KEY);
-    const transaccionesPrevias = almacenadas ? JSON.parse(almacenadas) : [];
+    let transaccionesPrevias = [];
+    if (almacenadas) {
+        try {
+            transaccionesPrevias = JSON.parse(almacenadas);
+        } catch (e) {
+            console.error("Error al parsear transacciones de localStorage:", e);
+        }
+    }
 
     const nuevasTransacciones = [...transaccionesPrevias, nuevaTransaccion];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(nuevasTransacciones));
 
     // Emitir evento personalizado
     window.dispatchEvent(new CustomEvent("transaction-added", {
-      detail: nuevaTransaccion, // Opcional, el otro componente solo necesita saber que hubo un cambio
+      detail: nuevaTransaccion,
     }));
 
-    alert("✅ Transacción guardada");
+    // Mostrar notificación de éxito con el custom toast
+    toast.custom((t) => (
+        <CustomSuccessToast t={t} message="Tu transacción ha sido guardada." />
+    ));
 
     // Resetear el formulario
     setMonto("0");
@@ -152,10 +258,27 @@ export const AddTransaction: React.FC = () => {
   ];
 
   return (
-    <>
+    <div className="flex min-h-screen bg-[#020817] text-gray-100">
+      {/* Sidebar component */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      <div className="min-h-screen bg-[#020817] text-white flex flex-col items-center justify-center py-4 px-2">
-        <div className="w-full max-w-lg bg-[#020817] rounded-lg shadow-lg p-4">
+
+      {/* Toaster ahora posicionado en la parte inferior derecha */}
+      <Toaster position="bottom-right" reverseOrder={false} />
+
+      <main
+        className={`flex-1 p-4 sm:p-6 lg:p-8 transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
+        } ml-0`}
+      >
+        <div className="flex justify-between items-center mb-6 lg:hidden">
+          <button onClick={toggleSidebar} className="p-2 rounded-md border border-gray-600 hover:bg-gray-800" aria-label="Abrir menú de navegación">
+            <Menu className="w-5 h-5" />
+          </button>
+         
+        </div>
+
+
+        <div className="w-full max-w-lg bg-[#020817] rounded-lg shadow-lg p-4 mx-auto"> {/* Added mx-auto for centering */}
           <h1 className="text-xl font-bold mb-1">Agregar Transacción</h1>
           <p className="text-gray-400 text-sm mb-4">Registra tus gastos e ingresos de manera rápida y sencilla.</p>
 
@@ -265,7 +388,7 @@ export const AddTransaction: React.FC = () => {
             Guardar Transacción
           </button>
         </div>
-      </div>
-    </>
+      </main>
+    </div>
   );
 };

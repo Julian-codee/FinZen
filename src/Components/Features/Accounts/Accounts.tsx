@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Menu } from "lucide-react"; // Import the Menu icon
 
 import MovementsModal from "./Components/MovementsModal";
 import AccountTabs from "./Components/AccountTabs";
@@ -6,7 +7,7 @@ import TotalBalance from "./Components/TotalBalance";
 import BalanceToggle from "./Components/BalanceToggle";
 import AccountCategoryCard from "./Components/AccountCategoryCard";
 import AccountList from "./Components/AccountList";
-import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
+import { Sidebar } from "../../Ui/UiDashBoard/SideBar"; // Ensure the path is correct
 
 interface Movement {
   id: number;
@@ -145,18 +146,27 @@ const Account = () => {
   };
 
   return (
-    <>
+    <div className="flex min-h-screen bg-[#020817] text-white"> {/* Main container for sidebar layout */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-      <div
+      <main
         className={`
-          flex-1 p-6 transition-all duration-300 ease-in-out text-white
-          ${
-            isSidebarOpen ? "ml-64" : "ml-20"
-          } /* Ajusta 'ml-20' si tu sidebar cerrada es de otro ancho */
+          flex-1 p-4 sm:p-6 lg:p-8 // Responsive padding
+          transition-all duration-300 ease-in-out
+          ${isSidebarOpen ? "lg:ml-64" : "lg:ml-20"} // Adjust margin based on sidebar state
+          ml-0 // Default margin for small screens
         `}
       >
-        <h1 className="text-3xl font-bold mb-2">Cuentas</h1>
+        {/* Mobile header with sidebar toggle */}
+        <div className="flex justify-between items-center mb-6 lg:hidden">
+          <button onClick={toggleSidebar} className="p-2 rounded-md border border-gray-600 hover:bg-gray-800" aria-label="Abrir menú de navegación">
+            <Menu className="w-5 h-5" />
+          </button>
+          <h1 className="text-2xl font-bold text-center flex-grow">Cuentas</h1>
+        </div>
+
+        {/* Desktop header */}
+        <h1 className="hidden lg:block text-3xl font-bold mb-2">Cuentas</h1>
         <p className="text-gray-400 mb-4">
           Gestiona tus cuentas bancarias, tarjetas y otros activos financieros.
         </p>
@@ -202,8 +212,8 @@ const Account = () => {
           onClose={() => setModalOpen(false)}
           account={selectedAccount}
         />
-      </div>
-    </>
+      </main>
+    </div>
   );
 };
 

@@ -57,7 +57,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions, cardDa
     valueColorClass?: string;
     detailColorClass?: string;
   }> = ({ title, value, detail, icon, valueColorClass, detailColorClass }) => (
-    <div className="bg-[#0d1119] rounded-lg p-5 border border-[#1f2937]">
+    <div className="bg-[#121827] rounded-lg p-5 border border-[#1f2937]">
       <div className="flex justify-between items-start mb-3">
         <h3 className="text-gray-400 text-sm">{title}</h3>
         {icon}

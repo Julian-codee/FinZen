@@ -28,7 +28,7 @@ export const UpcomingPayments: React.FC<UpcomingPaymentsProps> = ({
   title = "Próximos Pagos",
 }) => {
   return (
-    <div className="bg-[#0d1119] rounded-lg p-5 border border-[#1f2937] flex-1 min-w-[300px]">
+    <div className=" rounded-lg p-5 border border-[#1f2937] flex-1 min-w-[300px]">
       <h2 className="text-white text-lg font-semibold mb-2">{title}</h2>
       
       {payments.length > 0 ? (

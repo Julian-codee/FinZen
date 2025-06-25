@@ -1,9 +1,10 @@
 // Components/TransactionRow.tsx
 import React from 'react';
 import {
-  ShoppingCart, Home, Coffee, Gamepad2, Music, Plus, Delete,
-  TrendingDown, TrendingUp, UtensilsCrossed, Zap, Heart, Pizza, Wifi, Phone,
-  GraduationCap, PartyPopper, Car
+  ShoppingCart, Home, Coffee, Gamepad2, Music, Plus,
+  UtensilsCrossed, Zap, Heart, Pizza, Wifi, Phone,
+  GraduationCap, PartyPopper, Car,
+  Pencil, Trash2 // Importar los íconos de editar y eliminar
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -40,51 +41,67 @@ const getCategoryDetails = (categoryId: string) => {
 
 const TransactionRow: React.FC<TransactionRowProps> = ({ transaction, onEdit, onDelete }) => {
   const categoryDetails = getCategoryDetails(transaction.category);
-  const transactionDate = new Date(transaction.date + 'T00:00:00'); // Añade 'T00:00:00' para evitar problemas de zona horaria
+  // Añade 'T00:00:00' para evitar problemas de zona horaria con fechas ISO 8601
+  const transactionDate = new Date(transaction.date + 'T00:00:00'); 
 
   const formattedAmount = new Intl.NumberFormat("es-CO", {
     style: "currency",
-    currency: "COP", // O la moneda que uses
-    minimumFractionDigits: 0, // Generalmente se usa 0 o 2 para COP, ajusta si es necesario
-    maximumFractionDigits: 0, // Generalmente se usa 0 o 2 para COP, ajusta si es necesario
+    currency: "COP", 
+    minimumFractionDigits: 0, 
+    maximumFractionDigits: 0, 
   }).format(transaction.amount);
 
   const amountColorClass = transaction.type === 'expense' ? 'text-red-500' : 'text-green-500';
 
   return (
     <tr className="border-b border-gray-800 last:border-b-0 hover:bg-gray-800/50 transition-colors">
-      <td className="py-3 px-4 w-[120px] sm:w-[150px]">
+      {/* Columna de Categoría y Cuenta (Visible siempre, ancho controlado) */}
+      <td className="py-3 px-4 w-[120px] sm:w-[150px] md:w-[180px] lg:w-[200px]">
         <div className="flex items-center gap-3">
           <div className={`${categoryDetails.bgColor} p-2 rounded-lg`}>
             <div className={`${categoryDetails.textColor}`}>{categoryDetails.icon}</div>
           </div>
           <div>
             <p className="text-sm font-medium text-white">{categoryDetails.name}</p>
-            <p className="text-xs text-gray-400">{transaction.account}</p> {/* Muestra la cuenta/presupuesto */}
+            <p className="text-xs text-gray-400 hidden sm:block">{transaction.account}</p> {/* Oculta la cuenta en pantallas muy pequeñas */}
           </div>
         </div>
       </td>
-      <td className="py-3 px-4 w-[200px] sm:w-[300px]">
-        <p className="text-sm text-gray-300 font-semibold">{transaction.description}</p> {/* Usa 'description' */}
-        {transaction.subtitle && <p className="text-xs text-gray-500">{transaction.subtitle}</p>}
+
+      {/* Columna de Descripción y Subtítulo (Siempre visible, ancho adaptable) */}
+      <td className="py-3 px-4 w-[180px] sm:w-[250px] lg:w-[350px]">
+        <p className="text-sm text-gray-300 font-semibold truncate">{transaction.description}</p> {/* Truncate para descripciones largas */}
+        {transaction.subtitle && <p className="text-xs text-gray-500 truncate hidden md:block">{transaction.subtitle}</p>} {/* Oculta subtítulo en sm y lo truncado en md+ */}
       </td>
-      <td className="py-3 px-4 w-[100px] text-sm text-gray-400 hidden sm:table-cell">
-        {format(transactionDate, "dd MMM yyyy", { locale: es })} {/* Usa 'date' */}
+
+      {/* Columna de Fecha (Oculta en móviles, visible a partir de sm) */}
+      <td className="py-3 px-4 w-[100px] text-sm text-gray-400 hidden sm:table-cell lg:w-[120px]">
+        {format(transactionDate, "dd MMM yyyy", { locale: es })}
       </td>
+
+      {/* Columna de Monto (Siempre visible, ancho fijo) */}
       <td className="py-3 px-4 w-[120px] text-right">
         <span className={`text-sm font-semibold ${amountColorClass}`}>
           {transaction.type === 'expense' ? '- ' : '+ '}{formattedAmount}
         </span>
       </td>
-      <td className="py-3 px-4 w-[100px] text-right">
-        <div className="flex justify-end gap-2">
-          <button onClick={onEdit} className="text-blue-400 hover:text-blue-300">
-            {/* Icono de editar, si tienes uno (ej. Pencil de lucide-react) */}
-            Editar
+
+      {/* Columna de Acciones (Siempre visible, ancho fijo para los botones) */}
+      <td className="py-3 px-4 w-[80px] text-right"> {/* Ancho reducido para los botones */}
+        <div className="flex justify-end gap-1 sm:gap-2"> {/* Espacio entre botones adaptable */}
+          <button
+            onClick={onEdit}
+            className="p-1 rounded-md text-blue-400 hover:text-blue-300 hover:bg-neutral-700 transition-colors"
+            aria-label="Editar transacción"
+          >
+            <Pencil size={18} />
           </button>
-          <button onClick={onDelete} className="text-red-400 hover:text-red-300">
-            {/* Icono de eliminar (ej. Trash2 de lucide-react) */}
-            Eliminar
+          <button
+            onClick={onDelete}
+            className="p-1 rounded-md text-red-400 hover:text-red-300 hover:bg-neutral-700 transition-colors"
+            aria-label="Eliminar transacción"
+          >
+            <Trash2 size={18} />
           </button>
         </div>
       </td>

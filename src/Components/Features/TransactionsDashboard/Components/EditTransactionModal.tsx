@@ -38,9 +38,6 @@ const categories = [
   { id: "otros", name: "Otros", icon: <Plus className="w-4 h-4" />, bgColor: "bg-[#F3F4F6]", textColor: "text-[#6B7280]" },
 ];
 
-const getCategoryDetails = (categoryId: string) => {
-  return categories.find(cat => cat.id === categoryId) || categories.find(cat => cat.id === "otros")!;
-};
 
 const EditTransactionModal: React.FC<Props> = ({ transaction, onClose, onSave }) => {
   const [formData, setFormData] = useState<Transaction>({ ...transaction });
