@@ -3,7 +3,7 @@ import * as XLSX from "xlsx";
 import DateRangeSelector from "./DateRangeSelector";
 import Filters from "./Filters";
 import DashboardTabs from "./DashboardTabs";
-import {Sidebar} from "../../../Ui/UiDashBoard/SideBar"; // Asegúrate de que la ruta sea correcta
+import { Sidebar } from "../../../Ui/UiDashBoard/SideBar"; // Asegúrate de que la ruta sea correcta
 
 const FinancialDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Estado del sidebar gestionado aquí
@@ -41,9 +41,11 @@ const FinancialDashboard = () => {
 
   return (
     // Contenedor principal que gestiona el layout del sidebar y el contenido
-    <div className="flex min-h-screen"> {/* Contenedor flex para el layout */}
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} /> {/* Sidebar dentro del dashboard */}
-
+    <div className="flex min-h-screen">
+      {" "}
+      {/* Contenedor flex para el layout */}
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />{" "}
+      {/* Sidebar dentro del dashboard */}
       {/*
         El contenido principal del dashboard ajusta su margen izquierdo dinámicamente
         basado en el estado del sidebar que ahora gestiona este mismo componente.
@@ -52,15 +54,19 @@ const FinancialDashboard = () => {
         className={`
           flex-grow p-6 bg-[#020817] text-white
           transition-all duration-300 ease-in-out
-          ${isSidebarOpen ? 'ml-64' : 'ml-20'} // Ajusta el margen según el ancho del sidebar
+          ${
+            isSidebarOpen ? "ml-64" : "ml-20"
+          } // Ajusta el margen según el ancho del sidebar
         `}
       >
-        <div>
-          <h1 className="text-3xl font-bold">Informes</h1>
-          <p className="mt-2 text-gray-400">
-            Analiza tus finanzas con informes detallados y visualizaciones
-            personalizables.
-          </p>
+        <div className="flex items-center gap-4 px-4 pt-8">
+          <div>
+            <h1 className="text-4xl font-bold mb-2">Informes</h1>
+            <p className="mb-12 text-white/70 text-lg">
+              Analiza tus finanzas con informes detallados y visualizaciones
+              personalizables.
+            </p>
+          </div>
         </div>
 
         <div className="flex justify-between items-center my-6">
