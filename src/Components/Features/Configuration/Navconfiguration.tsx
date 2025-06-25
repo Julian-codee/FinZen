@@ -21,6 +21,9 @@ import { SecurityDevices } from "./Components/SecurityDevices";
 import { Integrations } from "./Components/IntegrationsBanks";
 import { IntegrationsInvertions } from "./Components/IntegrationsInvertions";
 import { IntegrationsServices } from "./Components/IntegrationsServices";
+import { Export } from "./Components/Export";
+import { BackUp } from "./Components/BackUp";
+import { DeleteData } from "./Components/DeleteData";
 
 type Option =
   | "Perfil"
@@ -67,41 +70,43 @@ export const Navconfiguration = () => {
       case "Notificaciones":
         return (
           <>
+            <Notifications />
 
-          <Notifications />
+            <NotificationsPush />
 
-          <NotificationsPush />
-
-          <FrecuencyNots />
-          
+            <FrecuencyNots />
           </>
         );
       case "Seguridad":
         return (
           <>
+            <Security />
 
-          <Security />
+            <SecurityConfig />
 
-          <SecurityConfig/>
-
-          <SecurityDevices/>
+            <SecurityDevices />
           </>
         );
       case "Integraciones":
         return (
           <>
+            <Integrations />
 
-          <Integrations />
+            <IntegrationsInvertions />
 
-          <IntegrationsInvertions />
-
-          <IntegrationsServices />
-        
+            <IntegrationsServices />
           </>
-
         );
       case "Exportar Datos":
-        return <p>Descarga toda tu información en formato JSON o CSV.</p>;
+        return <>
+
+        <Export />
+
+        <BackUp/>
+
+        <DeleteData/>
+        
+        </>;
       case "Soporte y Ayuda":
         return (
           <p>Consulta la documentación, tutoriales o contacta con soporte.</p>
