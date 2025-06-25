@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Share2, Menu } from "lucide-react"
+import { useState, useEffect, useCallback } from "react"
+import { Share2 } from "lucide-react"
 import DateNavigation from "./Components/DateNavigation"
 import SummaryCards from "./Components/SummaryCards"
 import TabNavigation from "./Components/TabsNavigation"
