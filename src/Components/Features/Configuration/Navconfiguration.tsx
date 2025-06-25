@@ -24,6 +24,9 @@ import { IntegrationsServices } from "./Components/IntegrationsServices";
 import { Export } from "./Components/Export";
 import { BackUp } from "./Components/BackUp";
 import { DeleteData } from "./Components/DeleteData";
+import { FAQS } from "./Components/FAQS";
+import { FAQsSupport } from "./Components/FAQsSupport";
+import { FAQsContact } from "./Components/FAQsContact";
 
 type Option =
   | "Perfil"
@@ -98,18 +101,24 @@ export const Navconfiguration = () => {
           </>
         );
       case "Exportar Datos":
-        return <>
+        return (
+          <>
+            <Export />
 
-        <Export />
+            <BackUp />
 
-        <BackUp/>
-
-        <DeleteData/>
-        
-        </>;
+            <DeleteData />
+          </>
+        );
       case "Soporte y Ayuda":
         return (
-          <p>Consulta la documentación, tutoriales o contacta con soporte.</p>
+          <>
+            <FAQS />
+
+            <FAQsSupport />
+
+            <FAQsContact />
+          </>
         );
       default:
         return null;
