@@ -1,8 +1,14 @@
+import { User } from "lucide-react";
+
 export const UserProfileTax = () => {
   return (
     <div className="p-6 text-white border border-white/10 rounded-lg bg-[#020817] mt-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold">Información Fiscal</h2>
+        <div className="flex items-center space-x-2 mb-4">
+          <User className="text-blue-400"/>
+          <h2 className="text-2xl font-semibold">Información Fiscal</h2>
+        </div>
+
         <p className="text-white/70 mt-1">
           Datos utilizados para la generación de informes fiscales.
         </p>

@@ -1,4 +1,4 @@
-import { Upload } from "lucide-react";
+import { Upload, UserCog } from "lucide-react";
 import { useState, ChangeEvent } from "react";
 
 export const UserProfileConfig = () => {
@@ -14,7 +14,11 @@ export const UserProfileConfig = () => {
   return (
     <div className="p-6 text-white border border-white/10 rounded-lg bg-[#020817]">
       <div className="mb-6">
-        <h2 className="text-2xl font-semibold">Información de Perfil</h2>
+        <div className="flex items-center space-x-2 mb-4">
+          <UserCog className="text-blue-400"/>
+    <h2 className="text-2xl font-semibold">Información de Perfil</h2>
+        </div>
+        
         <p className="text-white/70 mt-1">
           Actualiza tu información personal y preferencias de cuenta.
         </p>

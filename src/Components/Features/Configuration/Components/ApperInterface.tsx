@@ -1,3 +1,4 @@
+import { Palette } from "lucide-react";
 import { useState } from "react";
 
 export const ApperInterface = () => {
@@ -24,9 +25,15 @@ export const ApperInterface = () => {
   return (
     <div className="text-white p-6 border border-white/10 rounded-lg mt-6">
       <div>
-        <h2 className="text-2xl font-semibold">Personalización de la Interfaz</h2>
+        <div className="flex items-center space-x-2 mb-4">
+          <Palette className="text-indigo-600" />
+          <h2 className="text-2xl font-semibold">
+            Personalización de la Interfaz
+          </h2>
+        </div>
+
         <p className="text-gray-400 mb-6">
-         Configura qué elementos se muestran en tu panel principal.
+          Configura qué elementos se muestran en tu panel principal.
         </p>
         {/* Switches */}
         <div className="space-y-4">
@@ -80,11 +87,9 @@ export const ApperInterface = () => {
             {renderSwitch(IA, setIA)}
           </div>
         </div>
-
-        
       </div>
 
-        <div className="mt-8 text-right">
+      <div className="mt-8 text-right">
         <button className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded text-white text-sm">
           Guardar Personalización
         </button>

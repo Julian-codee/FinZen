@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Monitor, Moon, Sun, SunMoon } from "lucide-react";
 
 export const AppereanceConfig = () => {
   const [theme, setTheme] = useState<"light" | "dark" | "system">("dark");
@@ -25,7 +25,11 @@ export const AppereanceConfig = () => {
 
   return (
     <div className="text-white p-6 border border-white/10 rounded-lg">
-      <h2 className="text-2xl font-semibold">Tema</h2>
+      <div className="flex items-center space-x-2 mb-4">
+        <SunMoon className="text-indigo-600" />
+        <h2 className="text-2xl font-semibold">Tema</h2>
+      </div>
+
       <p className="text-gray-400 mb-6">
         Personaliza el aspecto visual de la aplicación.
       </p>
