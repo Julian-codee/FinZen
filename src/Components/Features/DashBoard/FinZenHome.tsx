@@ -12,7 +12,7 @@ import TransactionTable from "../TransactionsDashboard/Components/TransactionTab
 
 import { Transaction, BudgetCategory, CardSummary } from "./Types/home";
 
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 const MOCK_CARD_DATA: CardSummary[] = [
   { id: "c1", name: "Débito Principal", active: true, blocked: false },
@@ -113,7 +113,7 @@ export default function FinZenHome() {
           <h1 className="text-2xl font-bold text-center flex-grow">Dashboard</h1>
         </div>
 
-        <h1 className="hidden lg:block text-3xl font-bold text-white mb-6">Dashboard</h1>
+        <h1 className="hidden lg:block text-4xl font-bold text-white mb-6">Dashboard</h1>
 
         <SummaryCards transactions={transactions} cardData={cardData} />
 

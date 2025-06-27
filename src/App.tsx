@@ -9,7 +9,7 @@ import Accounts from './Components/Features/Accounts/Accounts'
 import BudgetDashboard from './Components/Features/Budgets/BudgetDashboard';
 import ForgotPassword from './Components/Auth/ForgotPassword';
 import { Sidebar } from './Components/Ui/UiDashBoard/SideBar';
-import Transactions from './Components/Features/TransactionsDashboard/TransactionsDash';
+import {Transactions} from './Components/Features/TransactionsDashboard/TransactionsDash';
 import { TaxReport } from './Components/Features/TaxReport/TaxReport';
 import { Education } from './Components/Features/FinancialEducation/Education';
 import { Assistant } from './Components/Features/AssistantAI/Assistant';
@@ -36,7 +36,7 @@ export default function App() {
           <Route path="/Hero" element={<Hero />} />
 
           <Route path="/Forgot" element={<ForgotPassword />} />
-          <Route path="/TransactionsDash" element={<Transactions />} />
+          <Route path="/Transactions" element={<Transactions />} />
           <Route path="/Accounts" element={<Accounts />} />
           <Route path="/TaxReport" element={<TaxReport />} />
           <Route path="/FinancialEducation" element={<Education />} />
