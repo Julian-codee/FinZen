@@ -53,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       <div
         className={`
           fixed top-0 left-0 h-screen z-30 hidden lg:flex flex-col justify-between
-          bg-[#020817] border-r border-white/40 text-white py-5 shadow-lg
+          bg-[#020817] border-r border-white/10 text-white py-5 shadow-lg
           transition-all duration-300 ease-in-out
           ${isOpen ? "w-64" : "w-20"}
         `}
@@ -162,7 +162,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
           }}
           className="mt-6 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-lg py-2 w-full text-center font-medium flex items-center justify-center"
         >
-          <Plus className="w-5 h-5 mr-2" />
+          <Plus className="w-5 h-5 mr-2 cursor-pointer" />
           Nueva Transacción
         </button>
       </div>
