@@ -1,28 +1,26 @@
+// src/components/FinZenHome.tsx
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Menu } from "lucide-react";
-import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
 
-import { SummaryCards } from "./Components/SummaryCards";
-import { RecentTransactions } from "./Components/RecentTransactions";
-import { MonthlyBudget } from "./Components/MonthlyBudget";
-import { UpcomingPayments } from "./Components/UpcomingPayments";
-import TransactionTable from "../TransactionsDashboard/Components/TransactionTable";
+// Asegúrate de que las rutas son correctas
+import { Sidebar } from "../../Ui/UiDashBoard/SideBar"; 
+import { SummaryCards } from "./Components/SummaryCards"; 
+import { RecentTransactions } from "./Components/RecentTransactions"; 
+import { MonthlyBudget } from "./Components/MonthlyBudget"; 
+import { UpcomingPayments } from "./Components/UpcomingPayments"; 
 
-import { Transaction, BudgetCategory, CardSummary } from "./Types/home";
+import { Transaction, BudgetCategory, CardSummary } from "./Types/home"; 
 
-import toast, { Toaster } from "react-hot-toast";
-
+// Datos mock si no vienen de otro lugar
 const MOCK_CARD_DATA: CardSummary[] = [
   { id: "c1", name: "Débito Principal", active: true, blocked: false },
   { id: "c2", name: "Crédito Visa", active: true, blocked: false },
   { id: "c3", name: "Crédito Mastercard", active: false, blocked: true },
 ];
 
-const MOCK_UPCOMING_PAYMENTS: UpcomingPayment[] = [];
-
-const STORAGE_KEY = "finzen_transactions";
+const MOCK_UPCOMING_PAYMENTS: UpcomingPayment[] = []; 
 
 interface UpcomingPayment {
   id: string;
@@ -31,8 +29,14 @@ interface UpcomingPayment {
   dueDate: string;
 }
 
-export default function FinZenHome() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+// Nueva interfaz para las props de FinZenHome
+interface FinZenHomeProps {
+  // Aseguramos que allTransactions sea un array de Transaction,
+  // y le damos un valor por defecto de array vacío si no se proporciona.
+  allTransactions?: Transaction[]; // Hacemos la prop opcional
+}
+
+const FinZenHome: React.FC<FinZenHomeProps> = ({ allTransactions = [] }) => { // <--- CAMBIO AQUÍ: valor por defecto
   const [budgetData] = useState<BudgetCategory[]>([]);
   const [cardData, setCardData] = useState<CardSummary[]>([]);
   const [upcomingPayments, setUpcomingPayments] = useState<UpcomingPayment[]>([]);
@@ -42,60 +46,31 @@ export default function FinZenHome() {
     setIsSidebarOpen((prev) => !prev);
   }, []);
 
-  const updateTransactions = useCallback((newTransactions: Transaction[]) => {
-    setTransactions(newTransactions);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(newTransactions));
-  }, []);
-
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        setTransactions(JSON.parse(stored));
-      } catch {
-        setTransactions([]);
-      }
-    }
-
-    window.addEventListener("transaction-added", () => {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        try {
-          setTransactions(JSON.parse(stored));
-        } catch {
-          setTransactions([]);
-        }
-      }
-    });
-
-    return () => {
-      window.removeEventListener("transaction-added", () => {});
-    };
-  }, []);
-
   useEffect(() => {
     setCardData(MOCK_CARD_DATA);
     setUpcomingPayments(MOCK_UPCOMING_PAYMENTS);
   }, []);
 
-  const transactionsForRecentTable = transactions
-    .filter((t) => {
-      const transactionDate = new Date(t.date);
-      const today = new Date();
-      return (
-        transactionDate.getMonth() === today.getMonth() &&
-        transactionDate.getFullYear() === today.getFullYear()
-      );
-    })
-    .sort((a, b) => {
-      const dateA = new Date(`${a.date}T${a.time || "00:00"}`).getTime();
-      const dateB = new Date(`${b.date}T${b.time || "00:00"}`).getTime();
-      return dateB - dateA;
-    });
+  const transactionsForRecentTable = useMemo(() => {
+    // Ya no es necesario el chequeo 'allTransactions &&' porque ya le dimos un valor por defecto
+    return allTransactions
+      .filter((t) => {
+        const transactionDate = new Date(t.date);
+        const today = new Date();
+        return (
+          transactionDate.getMonth() === today.getMonth() &&
+          transactionDate.getFullYear() === today.getFullYear()
+        );
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return dateB - dateA;
+      });
+  }, [allTransactions]);
 
   return (
     <div className="flex min-h-screen bg-[#020817] text-gray-100">
-      <Toaster position="bottom-right" reverseOrder={false} />
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <main
         className={`flex-1 p-4 sm:p-6 lg:p-8 transition-all duration-300 ease-in-out ${
@@ -115,10 +90,7 @@ export default function FinZenHome() {
 
         <h1 className="hidden lg:block text-3xl font-bold text-white mb-6">Dashboard</h1>
 
-        <SummaryCards transactions={transactions} cardData={cardData} />
-
-    
-        
+        <SummaryCards transactions={allTransactions} cardData={cardData} />
 
         <div className="flex flex-col lg:flex-row gap-6">
           <RecentTransactions transactions={transactionsForRecentTable} />
@@ -130,4 +102,6 @@ export default function FinZenHome() {
       </main>
     </div>
   );
-}
+};
+
+export default FinZenHome;
