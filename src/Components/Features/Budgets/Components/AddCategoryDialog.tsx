@@ -2,7 +2,13 @@
 
 import { useState } from "react"
 import { X } from "lucide-react"
-import type { BudgetCategory, NewCategoryForm } from "../types/budget-types"
+import type { BudgetCategory } from "../types/budget-types"
+
+type NewCategoryForm = {
+  name: string
+  budget: string
+  categoryType: string
+}
 import { categoryIcons } from "../utils/category-config"
 
 interface AddCategoryDialogProps {

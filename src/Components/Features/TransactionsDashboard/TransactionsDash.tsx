@@ -17,53 +17,26 @@ import TransactionFilters from "./Components/TransactionFilters"
 import TransactionTable from "./Components/TransactionTable"
 import { Transaction } from "./Types/types"
 
-const STORAGE_KEY = "finzen_transactions"
-
 const Transactions: React.FC = () => {
-  // --- Estado global del componente ---
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
   const [activeTab, setActiveTab] = useState<'Todas' | 'Gastos' | 'Ingresos'>('Todas')
   const [dateRange, setDateRange] = useState<'Hoy' | 'Últimos 7 días' | 'Últimos 30 días' | 'Este mes' | 'Personalizado'>('Este mes')
   const [sortBy, setSortBy] = useState<'Más recientes' | 'Más antiguos' | 'Mayor importe' | 'Menor importe'>('Más recientes')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
-  // --- Función para alternar el sidebar ---
   const toggleSidebar = useCallback(() => {
     setIsSidebarOpen(prev => !prev)
   }, [])
 
-  // --- Cargar transacciones desde localStorage ---
-  useEffect(() => {
-    if (typeof window === "undefined") return
-
-    const loadTransactions = () => {
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY)
-        setAllTransactions(stored ? JSON.parse(stored) : [])
-      } catch (error) {
-        console.error("Error al cargar transacciones:", error)
-        setAllTransactions([])
-      }
-    }
-
-    loadTransactions()
-    window.addEventListener("transaction-added", loadTransactions)
-
-    return () => window.removeEventListener("transaction-added", loadTransactions)
-  }, [])
-
-  // --- Filtrado y ordenamiento de transacciones ---
   const filteredAndSortedTransactions = useMemo(() => {
     let filtered = [...allTransactions]
 
-    // Filtrar por tipo
     if (activeTab === 'Gastos') {
       filtered = filtered.filter(t => t.type === 'expense')
     } else if (activeTab === 'Ingresos') {
       filtered = filtered.filter(t => t.type === 'income')
     }
 
-    // Filtrar por fecha
     const today = new Date()
     let startDate: Date | null = null
     let endDate: Date | null = null
@@ -96,7 +69,6 @@ const Transactions: React.FC = () => {
       )
     }
 
-    // Ordenar
     filtered.sort((a, b) => {
       const dateA = parseISO(a.date).getTime()
       const dateB = parseISO(b.date).getTime()
@@ -113,20 +85,15 @@ const Transactions: React.FC = () => {
     return filtered
   }, [allTransactions, activeTab, dateRange, sortBy])
 
-  // --- Render ---
   return (
     <div className="flex min-h-screen bg-[#020817] text-gray-100">
-      {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-      {/* Main content */}
-      <div
-        className={`flex-1 transition-all duration-300 ease-in-out
-          p-4 sm:p-6 lg:p-8
-          ml-0 lg:ml-20 ${isSidebarOpen ? "lg:ml-64" : ""}
-        `}
-      >
-        {/* Header en móvil (menú y título) */}
+      <div className={`flex-1 transition-all duration-300 ease-in-out
+        p-4 sm:p-6 lg:p-8
+        ml-0 lg:ml-20 ${isSidebarOpen ? "lg:ml-64" : ""}`}>
+        
+        {/* Header móvil */}
         <div className="flex justify-between items-center mb-6 lg:hidden">
           <button
             onClick={toggleSidebar}
@@ -138,12 +105,10 @@ const Transactions: React.FC = () => {
           <h1 className="text-2xl font-bold text-center flex-grow">Transacciones</h1>
         </div>
 
-       
-
-        {/* Encabezado con botones */}
+        {/* Encabezado */}
         <TransactionsHeader />
 
-        {/* Resumen de tarjetas */}
+        {/* Tarjetas resumen */}
         <SummaryCards transactions={filteredAndSortedTransactions} />
 
         {/* Filtros */}
@@ -158,8 +123,8 @@ const Transactions: React.FC = () => {
 
         {/* Tabla */}
         <TransactionTable
-          data={filteredAndSortedTransactions}
           activeTab={activeTab}
+          onTransactionsUpdate={setAllTransactions} // 👈 importante
         />
       </div>
     </div>

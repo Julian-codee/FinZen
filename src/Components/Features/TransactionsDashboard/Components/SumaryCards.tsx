@@ -9,11 +9,11 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
   const summary = useMemo(() => {
     const incomeTotal = transactions
       .filter((t) => t.type === 'income')
-      .reduce((acc, t) => acc + t.amount, 0);
+      .reduce((acc, t) => acc + Number(t.amount), 0);
 
     const expenseTotal = transactions
       .filter((t) => t.type === 'expense')
-      .reduce((acc, t) => acc + t.amount, 0);
+      .reduce((acc, t) => acc + Number(t.amount), 0);
 
     const balance = incomeTotal - expenseTotal;
 
@@ -24,7 +24,6 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
         minimumFractionDigits: 0,
       }).format(value);
 
-    // Simulación de cambio porcentual (a futuro podrías comparar con otro período)
     const fakePercentage = (value: number): string => {
       if (value === 0) return '0%';
       return `${(Math.random() * 20).toFixed(1)}%`;
@@ -107,7 +106,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d={item.isPositive ? 'M7 11l5-5m0 0l5 5m-5-5v12' : 'M17 13l-5 5m0 0l-5-5m5 5V6'}
+                d={item.isPositive ? 'M7 11l5-5m0 0l5 5m5-5v12' : 'M17 13l-5 5m0 0l-5-5m5 5V6'}
               />
             </svg>
             <span className={`${item.isPositive ? 'text-green-500' : 'text-red-500'} font-semibold`}>

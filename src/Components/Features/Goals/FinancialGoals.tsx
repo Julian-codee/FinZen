@@ -1,0 +1,267 @@
+import { useEffect, useState } from "react";
+import { Download, X } from "lucide-react";
+import { AddNewGoal } from "./AddNewGoal";
+
+const goals = {
+  active: [
+    {
+      title: "Fondo de emergencia",
+      goal: 6000,
+      saved: 5100,
+      deadline: "Mayo 2024",
+      monthly: 300,
+      progress: 85,
+      icon: "🏦",
+    },
+    {
+      title: "Vacaciones en Europa",
+      goal: 8000,
+      saved: 3200,
+      deadline: "Diciembre 2024",
+      monthly: 500,
+      progress: 40,
+      icon: "✈️",
+    },
+    {
+      title: "Entrada para vivienda",
+      goal: 25000,
+      saved: 12500,
+      deadline: "Junio 2025",
+      monthly: 1000,
+      progress: 50,
+      icon: "🏡",
+    },
+    {
+      title: "Nuevo vehículo",
+      goal: 15000,
+      saved: 3700,
+      deadline: "Marzo 2025",
+      monthly: 800,
+      progress: 25,
+      icon: "🚗",
+    },
+    {
+      title: "Maestría en finanzas",
+      goal: 12000,
+      saved: 0,
+      deadline: "Septiembre 2025",
+      monthly: 600,
+      progress: 0,
+      icon: "🎓",
+    },
+  ],
+  completed: [],
+  upcoming: [],
+};
+
+export default function FinancialGoals() {
+  const [view, setView] = useState<"active" | "completed" | "upcoming">(
+    "active"
+  );
+
+  //Constante del modal
+
+  const [ShowModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (ShowModal) {
+      // Bloquear scroll
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed";
+      document.body.style.top = "0";
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
+    } else {
+      // Restaurar valores originales
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+    };
+  }, [ShowModal]);
+
+  //Renderizar metas según la vista seleccionada
+
+  const renderGoals = () => {
+    switch (view) {
+      case "active":
+        return goals.active;
+      case "completed":
+        return goals.completed;
+      case "upcoming":
+        return goals.upcoming;
+      default:
+        return [];
+    }
+  };
+
+  return (
+    <>
+      <div className="flex justify-between items-center mb-4">
+        <div className="text-lg font-semibold">
+          <span className="text-white">5 metas </span>
+          <span className="text-[#38bdf8]">activas</span>
+          <span className="text-white"> con un total de </span>
+          <span className="text-[#38bdf8]">$66,800</span>
+          <span className="text-white"> por ahorrar</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-blue-600 text-white font-semibold rounded px-4 py-2 hover:bg-blue-500"
+          >
+            + Nueva Meta
+          </button>
+          <button className="border border-gray-500 px-3 py-2 rounded hover:bg-gray-700">
+            <Download className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      {/*Modal Para agregar Nueva Meta*/}
+
+      {ShowModal && (
+        <div className="fixed inset-0 bg-black/70 bg-opacity-10 flex items-center justify-center z-50 p-4">
+          <div className="relative bg-[#0f172a] rounded-lg max-w-2xl w-full overflow-y-auto max-h-[90vh] shadow-lg border border-white/10">
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-white"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="p-4">
+              <AddNewGoal />
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+        <Card
+          title="Metas Activas"
+          value="5"
+          subtitle="Total de metas en progreso"
+        />
+        <Card
+          title="Progreso General"
+          value="45%"
+          subtitle="$30,500 de $66,800"
+          progress
+        />
+        <Card
+          title="Metas Completadas"
+          value="2"
+          subtitle="En los últimos 6 meses"
+        />
+        <Card
+          title="Próximas Metas"
+          value="2"
+          subtitle="Programadas para iniciar"
+        />
+        <div></div>
+      </div>
+
+      <div className="mb-4 bg-gray-800 w-fit p-1 rounded-lg flex space-x-2">
+        {["active", "completed", "upcoming"].map((type) => (
+          <button
+            key={type}
+            onClick={() => setView(type as any)}
+            className={`px-4 p-1 rounded mr-2 ${
+              view === type ? "bg-blue-700" : "bg-gray-800"
+            }`}
+          >
+            {type === "active"
+              ? "Activas"
+              : type === "completed"
+              ? "Completadas"
+              : "Próximas"}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {renderGoals().length > 0 ? (
+          renderGoals().map((goal, i) => (
+            <div
+              key={i}
+              className="bg-[#1e293b] rounded-md p-4 shadow-md border border-indigo-500 will-change-transform transition-all"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xl">
+                  {goal.icon} {goal.title}
+                </span>
+                <span className="text-gray-400 text-sm">
+                  Meta: ${goal.goal.toLocaleString()}
+                </span>
+              </div>
+              <div className="text-2xl font-bold">
+                ${goal.saved.toLocaleString()}
+              </div>
+              <div className="text-sm text-gray-400 mb-2">
+                Progreso {goal.progress}%
+              </div>
+              <div className="w-full bg-gray-700 h-2 rounded">
+                <div
+                  className="bg-blue-500 h-2 rounded"
+                  style={{ width: `${goal.progress}%` }}
+                ></div>
+              </div>
+              <div className="flex justify-between items-center text-sm text-gray-400 mt-2">
+                <span>Fecha límite: {goal.deadline}</span>
+                <span>${goal.monthly}/mes</span>
+              </div>
+              <button className="w-full mt-3 py-1 bg-gray-800 rounded text-sm hover:bg-gray-700">
+                Actualizar progreso
+              </button>
+            </div>
+          ))
+        ) : (
+          <div className="text-gray-400">No hay metas para mostrar.</div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function Card({
+  title,
+  value,
+  subtitle,
+  progress,
+}: {
+  title: string;
+  value: string;
+  subtitle: string;
+  progress?: boolean;
+}) {
+  return (
+    <div className="bg-[#1e293b] p-4 rounded-md shadow-md border border-gray-600 will-change-transform">
+      <h3 className="text-sm text-gray-400 mb-1">{title}</h3>
+      <div className="text-2xl font-bold">{value}</div>
+      {progress ? (
+        <div className="mt-2">
+          <div className="w-full bg-gray-700 h-2 rounded">
+            <div
+              className="bg-yellow-400 h-2 rounded"
+              style={{ width: value }}
+            ></div>
+          </div>
+        </div>
+      ) : (
+        <div className="text-sm text-gray-400 mt-1">{subtitle}</div>
+      )}
+    </div>
+  );
+}

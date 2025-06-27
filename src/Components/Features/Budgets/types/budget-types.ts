@@ -1,47 +1,98 @@
-export interface BudgetCategory {
-  id: string
-  name: string
-  spent: number
-  budget: number
-  categoryType: string
-  accountId?: string // <-- Añadido para asociar cuenta
+export interface PresupuestoResponseDto {
+  idPresupuesto: number;
+  nombre: string;
+  montoAsignado: number;
+  montoGastado: number;
+  categoria?: {
+      idCategoria: number;
+      nombre: string;
+  };
+  cuenta?: {
+      idCuenta: number;
+      nombre: string;
+  };
+  tarjeta?: {
+      idTarjeta: number;
+      nombre: string;
+  };
+  inversion?: {
+      idInversion: number;
+      nombre: string;
+  };
 }
 
-export interface NewCategoryForm {
-  name: string
-  budget: string
-  categoryType: string
+export interface PresupuestoRequestDto {
+  nombre: string;
+  montoAsignado: number;
+  idCategoriaPresupuesto: number;
+  idCuenta?: number;
+  idTarjeta?: number;
+  idInversion?: number;
 }
 
-export interface Budget {
-  id: string
-  name: string
-  totalBudget: number
-  createdDate: string
-  categories: BudgetCategory[]
-  status: "active" | "completed" | "paused"
+export interface GastoRequestDto {
+  monto: number;
+  descripcion: string;
+  idPresupuesto: number;
+  fecha: string;
+  nombre?: string;
+  IdCategoria?: number;
 }
 
-export interface BudgetData {
-  name: string
-  totalBudget: number
-  categories: Array<{ name: string; budget: number; categoryType: string; accountId?: string }>
-  accountId?: string
+export interface GastosResponseDto {
+  idGasto: number;
+  nombre: string;
+  monto: number;
+  descripcion: string;
+  fecha: string;
+  idCategoria: number;
+  nombreCategoria: string;
+  idPresupuesto?: number;
+  nombrePresupuesto?: string;
 }
 
-// Para MonthlyBudget y Transaction, asume que también pueden tener accountId si lo necesitas
-export interface MonthlyBudget {
-  id: string
-  month: number
-  year: number
-  totalBudget: number
-  categories: BudgetCategory[]
+export interface BudgetCategoryUI {
+  id: string;
+  name: string;
+  budget: number;
+  spent: number;
+  categoryType?: string;
+  associatedEntityId?: number;
+  associatedEntityType?: 'cuenta' | 'tarjeta' | 'inversion';
+  originalCategoryId?: number;
 }
 
 export interface Transaction {
-  id: string
-  amount: number
-  categoryId: string
-  date: string
-  accountId?: string
+  id: string;
+  description: string;
+  amount: number;
+  date: Date;
+  categoryId: string;
+  type: 'expense' | 'income';
+}
+
+export interface BudgetCategory {
+  id: string;
+  name: string;
+  budget?: number;
+  spent?: number;
+  categoryType?: string;
+}
+
+export interface AddBudgetData {
+  name: string;
+  montoAsignado: number;
+  selectedCategoryId: number;
+  entityType?: "cuenta" | "tarjeta" | "inversion";
+  entityId?: number;
+}
+
+export interface BudgetData {
+  name: string;
+  totalBudget: number;
+  categories: {
+    name: string;
+    budget: number;
+    categoryType: string;
+  }[];
 }

@@ -45,7 +45,6 @@ const profileOptions = [
 
 export default function SimplifiedProfileSelector() {
   const [selected, setSelected] = useState<ProfileType>("")
-  const [showDetailsForm, setShowDetailsForm] = useState(false)
   const [showHeroForm, setShowHeroForm] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
@@ -63,9 +62,7 @@ export default function SimplifiedProfileSelector() {
       
       if (selected === "personalizado") {
         navigate("/Hero");
-      } else {
-        navigate("/Hero");
-      }
+      } 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       showErrorAlert(error.message || "Error al registrar el usuario");
@@ -75,10 +72,8 @@ export default function SimplifiedProfileSelector() {
   }
 
   const handleBack = () => {
-    setShowDetailsForm(false)
     setShowHeroForm(false)
   }
-
   // Si se seleccionó perfil personalizado, mostrar Hero con onBack
   if (showHeroForm && selected === "personalizado") {
     return <Hero onBack={handleBack} />

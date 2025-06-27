@@ -42,7 +42,6 @@ export default function TransactionHistory({ transactions, categories }: Transac
         </div>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -71,13 +70,12 @@ export default function TransactionHistory({ transactions, categories }: Transac
         </div>
       </div>
 
-      {/* Transactions List */}
       {filteredTransactions.length > 0 ? (
         <div className="space-y-4">
           {filteredTransactions.map((transaction) => {
             const category = categories.find((c) => c.id === transaction.categoryId)
             const categoryConfig = category
-              ? categoryList.find((c) => c.id === category.categoryType) || categoryList[categoryList.length - 1]
+              ? categoryList.find((c) => c.id === Number(category.categoryType)) || categoryList[categoryList.length - 1]
               : categoryList[categoryList.length - 1]
 
             return (
@@ -94,7 +92,7 @@ export default function TransactionHistory({ transactions, categories }: Transac
                     <span>{category?.name || "Sin categoría"}</span>
                     <span className="mx-2">•</span>
                     <Calendar className="w-3 h-3 mr-1" />
-                    <span>{formatDate(transaction.date)}</span>
+                    <span>{formatDate(new Date(transaction.date))}</span>
                   </div>
                 </div>
                 <div className="text-right">

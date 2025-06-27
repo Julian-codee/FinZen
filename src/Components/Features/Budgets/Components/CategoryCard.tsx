@@ -27,10 +27,12 @@ export default function CategoryCard({
 }: CategoryCardProps) {
   const [showDropdown, setShowDropdown] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [editBudget, setEditBudget] = useState(category.budget.toString())
+  const [editBudget, setEditBudget] = useState((category.budget ?? 0).toString())
 
-  const remaining = category.budget - category.spent
-  const percentage = calculatePercentage(category.spent, category.budget)
+  const budgetValue = category.budget ?? 0
+  const spentValue = category.spent ?? 0
+  const remaining = budgetValue - spentValue
+  const percentage = calculatePercentage(spentValue, budgetValue)
 
   const handleEditSave = () => {
     const newBudget = Number.parseFloat(editBudget)
@@ -42,7 +44,7 @@ export default function CategoryCard({
   }
 
   const handleEditCancel = () => {
-    setEditBudget(category.budget.toString())
+    setEditBudget((category.budget ?? 0).toString())
     setIsEditing(false)
     setShowDropdown(false)
   }
@@ -53,7 +55,7 @@ export default function CategoryCard({
   }
 
   const categoryConfig =
-    categoryList.find((c) => c.id === category.categoryType) ||
+    categoryList.find((c) => c.id === Number(category.categoryType)) ||
     categoryList[categoryList.length - 1]
 
   return (
@@ -105,7 +107,7 @@ export default function CategoryCard({
             ) : (
               <>
                 <div className="text-lg font-bold text-white">
-                  {formatCurrency(category.spent)} / {formatCurrency(category.budget)}
+                  {formatCurrency(category.spent ?? 0)} / {formatCurrency(category.budget ?? 0)}
                 </div>
                 <div className={`text-sm ${remaining >= 0 ? "text-green-400" : "text-red-400"}`}>
                   {formatCurrency(Math.abs(remaining))} {remaining >= 0 ? "restantes" : "excedido"}
@@ -178,7 +180,7 @@ export default function CategoryCard({
 
       <div className="w-full bg-[#374151] rounded-full h-3">
         <div
-          className={`h-3 rounded-full transition-all duration-300 ${getProgressColor(category.spent, category.budget)}`}
+          className={`h-3 rounded-full transition-all duration-300 ${getProgressColor(category.spent ?? 0, category.budget ?? 0)}`}
           style={{ width: `${Math.min(percentage, 100)}%` }}
         />
       </div>

@@ -32,7 +32,7 @@ export default function App() {
           <Route path="/Reporting" element={<DashboardReporting />} />
           <Route path="/Accounts" element={<Accounts />} />
           <Route path="/BudgetDashboard" element={<BudgetDashboard />} />
-          <Route path="/dashboard" element={<Hero />} />
+          <Route path="/FinZenHome" element={<FinZenHome />}></Route>
           <Route path="/Hero" element={<Hero />} />
 
           <Route path="/Forgot" element={<ForgotPassword />} />

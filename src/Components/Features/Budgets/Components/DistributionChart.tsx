@@ -18,7 +18,7 @@ export default function DistributionChart({ categories }: DistributionChartProps
     const ctx = canvasRef.current.getContext("2d")
     if (!ctx) return
 
-    const totalBudget = categories.reduce((sum, cat) => sum + cat.budget, 0)
+    const totalBudget = categories.reduce((sum, cat) => sum + (cat.budget ?? 0), 0)
     if (totalBudget === 0) return
 
     // Clear canvas
@@ -33,13 +33,13 @@ export default function DistributionChart({ categories }: DistributionChartProps
 
     // Draw pie slices
     categories.forEach((category) => {
-      if (category.budget <= 0) return
+      if ((category.budget ?? 0) <= 0) return
 
-      const slice = category.budget / totalBudget
+      const slice = (category.budget ?? 0) / totalBudget
       const endAngle = startAngle + slice * 2 * Math.PI
 
       // Find category config
-      const categoryConfig = categoryList.find((c) => c.id === category.categoryType)
+      const categoryConfig = categoryList.find((c) => String(c.id) === String(category.categoryType))
 
       // Get color from category config or use default
       let color = "#3B82F6"
@@ -83,13 +83,13 @@ export default function DistributionChart({ categories }: DistributionChartProps
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8 w-full max-w-2xl">
         {categories
-          .filter((cat) => cat.budget > 0)
+          .filter((cat) => (cat.budget ?? 0) > 0)
           .map((category) => {
             const categoryConfig =
-              categoryList.find((c) => c.id === category.categoryType) || categoryList[categoryList.length - 1]
+              categoryList.find((c) => String(c.id) === String(category.categoryType)) || categoryList[categoryList.length - 1]
             const percentage =
-              categories.reduce((sum, cat) => sum + cat.budget, 0) > 0
-                ? ((category.budget / categories.reduce((sum, cat) => sum + cat.budget, 0)) * 100).toFixed(1)
+              categories.reduce((sum, cat) => sum + (cat.budget ?? 0), 0) > 0
+                ? (((category.budget ?? 0) / categories.reduce((sum, cat) => sum + (cat.budget ?? 0), 0)) * 100).toFixed(1)
                 : "0.0"
 
             return (
@@ -98,7 +98,7 @@ export default function DistributionChart({ categories }: DistributionChartProps
                 <div className="flex-grow">
                   <p className="text-sm text-white">{category.name}</p>
                   <p className="text-xs text-gray-400">
-                    {formatCurrency(category.budget)} ({percentage}%)
+                    {formatCurrency(category.budget ?? 0)} ({percentage}%)
                   </p>
                 </div>
               </div>

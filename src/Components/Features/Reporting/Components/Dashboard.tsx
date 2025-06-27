@@ -14,7 +14,7 @@ const FinancialDashboard = () => {
   };
 
   const financialData = [
-    { month: "Ene", income: 4000, expenses: 2300 },
+    { month: "Ene", income: 40000, expenses: 2300 },
     { month: "Feb", income: 4500, expenses: 2500 },
     { month: "Mar", income: 4400, expenses: 3100 },
     { month: "Abr", income: 4300, expenses: 2700 },
