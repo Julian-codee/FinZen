@@ -1,15 +1,19 @@
 // src/components/TransactionTable.tsx
-import React, { useEffect, useState } from 'react';
+"use client";
+
+import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
-import { CheckCircle, XCircle, Trash2 } from 'lucide-react'; // Mantener estos iconos si son usados en CustomToast o en el futuro
+import { CheckCircle, XCircle, Trash2 } from 'lucide-react';
+// Si estás usando Next.js para la redirección, importa useRouter:
+// import { useRouter } from 'next/navigation'; 
 
-// Asumo que tienes estos componentes y un tipo Transaction. Ajusta las rutas si es necesario.
-import EditTransactionModal from './EditTransactionModal'; // Asume que este componente existe
-import TransactionRow from './TransactionRow'; // Asume que este componente existe
-import { Transaction } from '../Types/types'; // Importar el tipo Transaction
+// Asumo que tienes estos componentes y un tipo Transaction. Ajusta las rutas si sea necesario.
+import EditTransactionModal from './EditTransactionModal'; 
+import TransactionRow from './TransactionRow'; 
+import { Transaction } from '../Types/types'; 
 
-// Componentes Toast personalizados (replicados aquí por si no están globales)
+// Componentes Toast personalizados
 const CustomSuccessToast: React.FC<{ t: any; message: string }> = ({ t, message }) => (
   <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-neutral-800 shadow-xl rounded-xl pointer-events-auto flex`}>
     <div className="flex-1 w-0 p-4"><div className="flex items-start"><div className="flex-shrink-0 pt-0.5"><CheckCircle className="h-6 w-6 text-green-500" /></div><div className="ml-3 flex-1"><p className="text-sm font-semibold text-white">¡Éxito!</p><p className="mt-1 text-sm text-gray-300">{message}</p></div></div></div>
@@ -24,20 +28,23 @@ const CustomErrorToast: React.FC<{ t: any; message: string }> = ({ t, message })
   </div>
 );
 
-
 interface TransactionTableProps {
   activeTab: string;
-  onTransactionsUpdate: (transactions: Transaction[]) => void; // Callback para notificar al padre
+  onTransactionsUpdate: (transactions: Transaction[]) => void;
 }
 
 const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransactionsUpdate }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [editTransaction, setEditTransaction] = useState<Transaction | null>(null);
+  // const router = useRouter(); // Descomenta si usas Next.js Router
 
   const fetchTransactions = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
       toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
+      setTransactions([]);
+      onTransactionsUpdate([]);
+      // router.push('/login'); // Opcional: Redirigir al login si no hay token
       return;
     }
 
@@ -47,61 +54,67 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
       });
 
       const mappedIncomes: Transaction[] = Array.isArray(data.ingresos)
-        ? data.ingresos.map((item: any) => ({ // Añadir 'any' para evitar errores de tipado si la respuesta no es totalmente conocida
+        ? data.ingresos.map((item: any) => ({
             id: item.idIngreso?.toString() ?? crypto.randomUUID(),
             amount: item.monto ?? 0,
-            date: item.fecha ?? new Date().toISOString().split('T')[0], // Asegurar formato YYYY-MM-DD
+            date: item.fecha ?? new Date().toISOString().split('T')[0],
             description: item.nombre || item.descripcion || 'Sin descripción',
             notes: item.descripcion || '',
-            category: 'otros', // Backend no proporciona categoría para ingresos
+            category: 'otros', 
             account: 'Ingreso',
             type: 'income',
-            time: item.hora ?? '00:00',
+            // 'time' eliminado
             status: 'Completada',
           }))
         : [];
 
       const mappedExpenses: Transaction[] = Array.isArray(data.gastos)
-        ? data.gastos.map((item: any) => ({ // Añadir 'any'
+        ? data.gastos.map((item: any) => ({
             id: item.idGasto?.toString() ?? crypto.randomUUID(),
             amount: item.monto ?? 0,
-            date: item.fecha ?? new Date().toISOString().split('T')[0], // Asegurar formato YYYY-MM-DD
+            date: item.fecha ?? new Date().toISOString().split('T')[0],
             description: item.nombre || item.descripcion || 'Sin descripción',
             notes: item.descripcion || '',
             category: item.categoria || 'otros',
             account: item.cuenta || 'Gasto',
             type: 'expense',
-            time: item.hora ?? '00:00',
+            // 'time' eliminado
             status: 'Completada',
           }))
         : [];
 
       const all = [...mappedIncomes, ...mappedExpenses];
 
-      // Ordenar por fecha y luego por hora para mostrar las más recientes primero
+      // Ordenar solo por fecha para mostrar las más recientes primero
       all.sort((a, b) => {
-        const dateA = new Date(`${a.date}T${a.time}`);
-        const dateB = new Date(`${b.date}T${b.time}`);
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
         return dateB.getTime() - dateA.getTime(); // Descendente
       });
 
       setTransactions(all);
-      onTransactionsUpdate(all); // Propaga al padre
+      onTransactionsUpdate(all);
     } catch (err: any) {
-      toast.custom((t) => <CustomErrorToast t={t} message="Error al obtener transacciones." />);
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        toast.custom((t) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
+        localStorage.removeItem("token");
+        // router.push('/login');
+      } else {
+        toast.custom((t) => <CustomErrorToast t={t} message="Error al obtener transacciones." />);
+      }
       console.error(err);
+      setTransactions([]);
+      onTransactionsUpdate([]);
     }
   };
 
   useEffect(() => {
     fetchTransactions();
 
-    // El listener para el evento personalizado.
-    // Esto asegura que la tabla se actualice si AddTransaction añade algo.
     const handler = () => fetchTransactions();
     window.addEventListener("transaction-added", handler);
     return () => window.removeEventListener("transaction-added", handler);
-  }, []); // El efecto se ejecuta una vez al montar y solo se limpia al desmontar.
+  }, []);
 
   const handleDeleteTransaction = (id: string) => {
     toast.custom((t) => (
@@ -114,8 +127,15 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
             onClick={async () => {
               try {
                 const token = localStorage.getItem("token");
-                const transactionToDelete = transactions.find(tx => tx.id === id);
 
+                if (!token) {
+                  toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
+                  toast.dismiss(t.id);
+                  // router.push('/login'); 
+                  return;
+                }
+
+                const transactionToDelete = transactions.find(tx => tx.id === id);
                 if (!transactionToDelete) {
                   toast.custom((t) => <CustomErrorToast t={t} message="Transacción no encontrada para eliminar." />);
                   toast.dismiss(t.id);
@@ -134,9 +154,15 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
                 });
                 toast.dismiss(t.id);
                 toast.custom((t) => <CustomSuccessToast t={t} message="Transacción eliminada exitosamente." />);
-                fetchTransactions(); // Re-fetch para actualizar la lista
+                fetchTransactions(); 
               } catch (err) {
-                toast.custom((t) => <CustomErrorToast t={t} message="Error al eliminar la transacción." />);
+                if (axios.isAxiosError(err) && err.response?.status === 401) {
+                  toast.custom((t) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
+                  localStorage.removeItem("token");
+                  // router.push('/login');
+                } else {
+                  toast.custom((t) => <CustomErrorToast t={t} message="Error al eliminar la transacción." />);
+                }
                 console.error(err);
               }
             }}
@@ -165,7 +191,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
               {filteredTransactions.length > 0 ? (
                 filteredTransactions.map((t, i) => (
                   <TransactionRow
-                    key={t.id || `tx-${i}`} // Usar t.id como key si está disponible
+                    key={t.id || `tx-${i}`} 
                     transaction={t}
                     onEdit={() => setEditTransaction(t)}
                     onDelete={() => handleDeleteTransaction(t.id)}
@@ -187,16 +213,48 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
         <EditTransactionModal
           transaction={editTransaction}
           onClose={() => setEditTransaction(null)}
-          onSave={(updated) => {
-            // Aquí puedes llamar a tu API para actualizar la transacción
-            // Una vez que la API responde con éxito, actualiza el estado local
-            const updatedList = transactions.map((x) =>
-              x.id === updated.id ? updated : x
-            );
-            setTransactions(updatedList);
-            onTransactionsUpdate(updatedList); // Propaga la actualización al padre
-            setEditTransaction(null);
-            toast.custom((t) => <CustomSuccessToast t={t} message="Transacción actualizada." />);
+          onSave={async (updated) => {
+            try {
+              const token = localStorage.getItem("token");
+              if (!token) {
+                toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
+                // router.push('/login');
+                setEditTransaction(null);
+                return;
+              }
+
+              const updateEndpoint = updated.type === 'income'
+                ? `http://localhost:8080/finzen/ingreso/${updated.id}`
+                : `http://localhost:8080/finzen/gasto/${updated.id}`;
+              
+              const payload = {
+                monto: updated.amount,
+                fecha: updated.date,
+                descripcion: updated.description,
+                nombre: updated.description, 
+                categoria: updated.category, 
+                cuenta: updated.account, 
+                // 'hora' eliminado
+              };
+
+              await axios.put(updateEndpoint, payload, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+
+              setEditTransaction(null);
+              toast.custom((t) => <CustomSuccessToast t={t} message="Transacción actualizada." />);
+              
+              fetchTransactions(); 
+            } catch (error) {
+              if (axios.isAxiosError(error) && error.response?.status === 401) {
+                toast.custom((t) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
+                localStorage.removeItem("token");
+                // router.push('/login');
+              } else {
+                toast.custom((t) => <CustomErrorToast t={t} message="Error al actualizar la transacción." />);
+              }
+              console.error("Error al actualizar transacción:", error);
+            }
           }}
         />
       )}
