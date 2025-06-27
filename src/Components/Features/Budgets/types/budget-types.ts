@@ -79,10 +79,20 @@ export interface BudgetCategory {
   categoryType?: string;
 }
 
-export interface AddBudgetDialogData {
+export interface AddBudgetData {
   name: string;
   montoAsignado: number;
   selectedCategoryId: number;
-  entityType?: 'cuenta' | 'tarjeta' | 'inversion';
+  entityType?: "cuenta" | "tarjeta" | "inversion";
   entityId?: number;
+}
+
+export interface BudgetData {
+  name: string;
+  totalBudget: number;
+  categories: {
+    name: string;
+    budget: number;
+    categoryType: string;
+  }[];
 }

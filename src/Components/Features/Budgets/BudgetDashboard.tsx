@@ -9,7 +9,16 @@ import CategoriesSection from "./Components/CategoriesSection"
 import DistributionSection from "./Components/DistributionSection"
 import HistorySection from "./Components/HistorySection"
 import AddBudgetDialog from "./Components/AddBudgetDialog" 
-import type { BudgetCategoryUI, PresupuestoResponseDto, PresupuestoRequestDto, GastoRequestDto, AddBudgetDialogData } from "./types/budget-types"
+import type { BudgetCategoryUI, PresupuestoResponseDto, PresupuestoRequestDto, GastoRequestDto } from "./types/budget-types"
+
+// Define AddBudgetData type if not already imported
+type AddBudgetData = {
+  name: string;
+  montoAsignado: number;
+  selectedCategoryId: number;
+  entityType?: 'cuenta' | 'tarjeta' | 'inversion';
+  entityId?: number;
+};
 import { Sidebar } from "../../Ui/UiDashBoard/SideBar"
 import { toast } from "sonner" 
 
@@ -96,7 +105,7 @@ export default function BudgetDashboard() {
     })
   }
 
-  const handleAddBudget = async (data: AddBudgetDialogData) => {
+  const handleAddBudget = async (data: AddBudgetData) => {
     setIsOperationLoading(true);
     const token = localStorage.getItem("token");
 
@@ -279,7 +288,6 @@ export default function BudgetDashboard() {
       return (
         <CategoriesSection
           categories={categories}
-          onAddCategory={(newCat) => {}}
           onDeleteCategory={handleDeleteCategory}
           onUpdateBudget={handleUpdateBudget}
           onRegisterExpense={handleRegisterExpense}

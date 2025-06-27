@@ -40,13 +40,16 @@ export default function DistributionSection({ categories }: DistributionSectionP
   }
 
   // Calcular el total para los porcentajes
-  const total = categories.reduce((sum, cat) => sum + (viewMode === "budget" ? cat.budget : cat.spent), 0)
+  const total = categories.reduce(
+    (sum, cat) => sum + (viewMode === "budget" ? (cat.budget ?? 0) : (cat.spent ?? 0)),
+    0
+  )
 
   // Crear los datos para el gráfico
   const chartData = categories
-    .filter((cat) => (viewMode === "budget" ? cat.budget : cat.spent) > 0)
+    .filter((cat) => (viewMode === "budget" ? (cat.budget ?? 0) : (cat.spent ?? 0)) > 0)
     .map((cat) => {
-      const value = viewMode === "budget" ? cat.budget : cat.spent
+      const value = viewMode === "budget" ? cat.budget ?? 0 : cat.spent ?? 0
       const percentage = total > 0 ? (value / total) * 100 : 0
       const color = categoryColors[cat.categoryType as keyof typeof categoryColors] || categoryColors.otros
 
@@ -333,8 +336,8 @@ export default function DistributionSection({ categories }: DistributionSectionP
           <div className="text-center">
             <div className="text-2xl font-bold text-white mb-1">
               {formatCurrency(
-                (categories.reduce((sum, cat) => sum + cat.budget, 0) -
-                  categories.reduce((sum, cat) => sum + cat.spent, 0)) *
+                (categories.reduce((sum, cat) => sum + (cat.budget ?? 0), 0) -
+                  categories.reduce((sum, cat) => sum + (cat.spent ?? 0), 0)) *
                   animationProgress,
               )}
             </div>
