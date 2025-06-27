@@ -20,8 +20,8 @@ export const Configuration = () => {
       >
         <div className="flex items-center px-4 gap-4 pt-8 mb-6">
           <div>
-            <h1 className="text-4xl font-bold mb-2">Configuración</h1>
-            <p className="mb-12 text-white/70 text-lg">
+            <h1 className="text-2xl md:text-4xl  font-bold mb-2">Configuración</h1>
+            <p className="mb-12 text-white/70 text-sm sm:text-lg">
               Personaliza tu experiencia en Finzen y gestiona tus preferencias.
             </p>
           </div>

@@ -12,22 +12,24 @@ export const UserProfileConfig = () => {
   };
 
   return (
-    <div className="p-6 text-white border border-white/10 rounded-lg bg-[#020817]">
+    <div className="p-4 md:p-6 text-white border border-white/10 rounded-lg bg-[#020817]">
+      {/* Título */}
       <div className="mb-6">
-        <div className="flex items-center space-x-2 mb-4">
-          <UserCog className="text-blue-400"/>
-    <h2 className="text-2xl font-semibold">Información de Perfil</h2>
+        <div className="flex items-center gap-2 mb-3">
+          <UserCog className="text-blue-400" />
+          <h2 className="text-lg md:text-2xl font-semibold">
+            Información de Perfil
+          </h2>
         </div>
-        
-        <p className="text-white/70 mt-1">
+        <p className="text-white/70 text-sm">
           Actualiza tu información personal y preferencias de cuenta.
         </p>
       </div>
 
-      <div className="flex gap-6 flex-wrap">
+      <div className="flex flex-col md:flex-row md:gap-6 gap-4">
         {/* Imagen de perfil */}
         <div className="flex flex-col items-center gap-3">
-          <div className="w-28 h-28 rounded-full bg-gray-700 overflow-hidden flex items-center justify-center">
+          <div className="w-24 h-24 md:w-28 md:h-28 rounded-full bg-gray-700 overflow-hidden flex items-center justify-center">
             {profileImage ? (
               <img
                 src={profileImage}
@@ -39,7 +41,7 @@ export const UserProfileConfig = () => {
             )}
           </div>
           <label className="bg-gray-800 hover:bg-gray-700 text-white px-3 py-1 rounded cursor-pointer text-sm flex items-center gap-2">
-            <Upload className="w-4 h-8" />
+            <Upload className="w-4 h-4" />
             Cambiar foto
             <input
               type="file"
@@ -51,9 +53,8 @@ export const UserProfileConfig = () => {
         </div>
 
         {/* Formulario */}
-
-        {/* Nombre */}
         <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Nombre */}
           <div>
             <label className="block text-sm mb-1">Nombre completo</label>
             <input
@@ -73,7 +74,7 @@ export const UserProfileConfig = () => {
             />
           </div>
 
-          {/* Telefono */}
+          {/* Teléfono */}
           <div>
             <label className="block text-sm mb-1">Teléfono</label>
             <input
@@ -114,7 +115,7 @@ export const UserProfileConfig = () => {
             </select>
           </div>
 
-          {/* Biografia */}
+          {/* Biografía */}
           <div className="md:col-span-2">
             <label className="block text-sm mb-1">Biografía</label>
             <textarea
@@ -126,9 +127,9 @@ export const UserProfileConfig = () => {
         </div>
       </div>
 
-      {/* Btn Guardar */}
+      {/* Botón */}
       <div className="mt-6 flex justify-end">
-        <button className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded">
+        <button className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded text-sm">
           Guardar cambios
         </button>
       </div>
