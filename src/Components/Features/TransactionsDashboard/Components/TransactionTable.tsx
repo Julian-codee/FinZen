@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
-import { CheckCircle, XCircle, Trash2 } from 'lucide-react';
 
 import EditTransactionModal from './EditTransactionModal';
 import TransactionRow from './TransactionRow';
@@ -28,8 +27,17 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      interface IngresoItem {
+        idIngreso?: number | string;
+        monto?: number;
+        fecha?: string;
+        nombre?: string;
+        descripcion?: string;
+        hora?: string;
+      }
+
       const mappedIncomes = Array.isArray(data.ingresos)
-        ? data.ingresos.map((item) => ({
+        ? data.ingresos.map((item: IngresoItem) => ({
             id: item.idIngreso?.toString() ?? crypto.randomUUID(),
             amount: item.monto ?? 0,
             date: item.fecha ?? new Date().toISOString(),
@@ -42,8 +50,19 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
           }))
         : [];
 
+      interface GastoItem {
+        idGasto?: number | string;
+        monto?: number;
+        fecha?: string;
+        nombre?: string;
+        descripcion?: string;
+        categoria?: string;
+        cuenta?: string;
+        hora?: string;
+      }
+
       const mappedExpenses = Array.isArray(data.gastos)
-        ? data.gastos.map((item) => ({
+        ? data.gastos.map((item: GastoItem) => ({
             id: item.idGasto?.toString() ?? crypto.randomUUID(),
             amount: item.monto ?? 0,
             date: item.fecha ?? new Date().toISOString(),
