@@ -1,14 +1,12 @@
+// src/components/TransactionTable.tsx
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 
-import EditTransactionModal from './EditTransactionModal';
-import TransactionRow from './TransactionRow';
-import { Transaction } from '../Types/types'; // Asegúrate de que esta ruta sea correcta
 
 interface TransactionTableProps {
   activeTab: string;
-  onTransactionsUpdate: (transactions: Transaction[]) => void;
+  onTransactionsUpdate: (transactions: Transaction[]) => void; // Callback para notificar al padre
 }
 
 const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransactionsUpdate }) => {
@@ -18,7 +16,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
   const fetchTransactions = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.error("No estás autenticado. Inicia sesión.");
+      toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
       return;
     }
 
@@ -27,61 +25,49 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      interface IngresoItem {
-        idIngreso?: number | string;
-        monto?: number;
-        fecha?: string;
-        nombre?: string;
-        descripcion?: string;
-        hora?: string;
-      }
-
       const mappedIncomes = Array.isArray(data.ingresos)
-        ? data.ingresos.map((item: IngresoItem) => ({
+        ? data.ingresos.map((item) => ({
             id: item.idIngreso?.toString() ?? crypto.randomUUID(),
             amount: item.monto ?? 0,
-            date: item.fecha ?? new Date().toISOString(),
+            date: item.fecha ?? new Date().toISOString().split('T')[0], // Asegurar formato YYYY-MM-DD
             description: item.nombre || item.descripcion || 'Sin descripción',
-            subtitle: item.descripcion || '',
-            category: 'otros',
+            notes: item.descripcion || '',
+            category: 'otros', // Backend no proporciona categoría para ingresos
             account: 'Ingreso',
             type: 'income',
             time: item.hora ?? '00:00',
+            status: 'Completada',
           }))
         : [];
 
-      interface GastoItem {
-        idGasto?: number | string;
-        monto?: number;
-        fecha?: string;
-        nombre?: string;
-        descripcion?: string;
-        categoria?: string;
-        cuenta?: string;
-        hora?: string;
-      }
-
       const mappedExpenses = Array.isArray(data.gastos)
-        ? data.gastos.map((item: GastoItem) => ({
+        ? data.gastos.map((item) => ({
             id: item.idGasto?.toString() ?? crypto.randomUUID(),
             amount: item.monto ?? 0,
-            date: item.fecha ?? new Date().toISOString(),
+            date: item.fecha ?? new Date().toISOString().split('T')[0], // Asegurar formato YYYY-MM-DD
             description: item.nombre || item.descripcion || 'Sin descripción',
-            subtitle: item.descripcion || '',
+            notes: item.descripcion || '',
             category: item.categoria || 'otros',
             account: item.cuenta || 'Gasto',
             type: 'expense',
             time: item.hora ?? '00:00',
+            status: 'Completada',
           }))
         : [];
 
       const all = [...mappedIncomes, ...mappedExpenses];
 
-      setTransactions(all);
-      onTransactionsUpdate(all); // 🔁 Propaga al padre (FinZenHome)
+      // Ordenar por fecha y luego por hora para mostrar las más recientes primero
+      all.sort((a, b) => {
+        const dateA = new Date(`${a.date}T${a.time}`);
+        const dateB = new Date(`${b.date}T${b.time}`);
+        return dateB.getTime() - dateA.getTime(); // Descendente
+      });
 
+      setTransactions(all);
+      onTransactionsUpdate(all); // Propaga al padre
     } catch (err: any) {
-      toast.error("Error al obtener transacciones.");
+      toast.custom((t) => <CustomErrorToast t={t} message="Error al obtener transacciones." />);
       console.error(err);
     }
   };
@@ -89,10 +75,12 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
   useEffect(() => {
     fetchTransactions();
 
+    // El listener para el evento personalizado.
+    // Esto asegura que la tabla se actualice si AddTransaction añade algo.
     const handler = () => fetchTransactions();
     window.addEventListener("transaction-added", handler);
     return () => window.removeEventListener("transaction-added", handler);
-  }, []);
+  }, []); // El efecto se ejecuta una vez al montar y solo se limpia al desmontar.
 
   const handleDeleteTransaction = (id: string) => {
     toast.custom((t) => (
@@ -105,13 +93,30 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
             onClick={async () => {
               try {
                 const token = localStorage.getItem("token");
-                await axios.delete(`http://localhost:8080/finzen/ingreso/${id}`, {
+                const transactionToDelete = transactions.find(tx => tx.id === id);
+
+                if (!transactionToDelete) {
+                  toast.custom((t) => <CustomErrorToast t={t} message="Transacción no encontrada para eliminar." />);
+                  toast.dismiss(t.id);
+                  return;
+                }
+
+                let deleteEndpoint = '';
+                if (transactionToDelete.type === 'income') {
+                  deleteEndpoint = `http://localhost:8080/finzen/ingreso/${id}`;
+                } else {
+                  deleteEndpoint = `http://localhost:8080/finzen/gasto/${id}`;
+                }
+
+                await axios.delete(deleteEndpoint, {
                   headers: { Authorization: `Bearer ${token}` },
                 });
                 toast.dismiss(t.id);
-                fetchTransactions();
+                toast.custom((t) => <CustomSuccessToast t={t} message="Transacción eliminada exitosamente." />);
+                fetchTransactions(); // Re-fetch para actualizar la lista
               } catch (err) {
-                toast.error("Error al eliminar.");
+                toast.custom((t) => <CustomErrorToast t={t} message="Error al eliminar la transacción." />);
+                console.error(err);
               }
             }}
           >
@@ -139,7 +144,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
               {filteredTransactions.length > 0 ? (
                 filteredTransactions.map((t, i) => (
                   <TransactionRow
-                    key={t.id || `tx-${i}`}
+                    key={t.id || `tx-${i}`} // Usar t.id como key si está disponible
                     transaction={t}
                     onEdit={() => setEditTransaction(t)}
                     onDelete={() => handleDeleteTransaction(t.id)}
@@ -162,13 +167,15 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
           transaction={editTransaction}
           onClose={() => setEditTransaction(null)}
           onSave={(updated) => {
+            // Aquí puedes llamar a tu API para actualizar la transacción
+            // Una vez que la API responde con éxito, actualiza el estado local
             const updatedList = transactions.map((x) =>
               x.id === updated.id ? updated : x
             );
             setTransactions(updatedList);
-            onTransactionsUpdate(updatedList); // 🔁 Propaga actualización
+            onTransactionsUpdate(updatedList); // Propaga la actualización al padre
             setEditTransaction(null);
-            toast.success("Transacción actualizada.");
+            toast.custom((t) => <CustomSuccessToast t={t} message="Transacción actualizada." />);
           }}
         />
       )}
