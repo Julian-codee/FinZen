@@ -8,12 +8,12 @@ interface SummaryCardsProps {
 }
 
 export default function SummaryCards({ categories }: SummaryCardsProps) {
-  const totalBudget = categories.reduce((sum, cat) => sum + cat.budget, 0)
-  const totalSpent = categories.reduce((sum, cat) => sum + cat.spent, 0)
+  const totalBudget = categories.reduce((sum, cat) => sum + (cat.budget ?? 0), 0)
+  const totalSpent = categories.reduce((sum, cat) => sum + (cat.spent ?? 0), 0)
   const totalAvailable = totalBudget - totalSpent
   const spentPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0
   const availablePercentage = totalBudget > 0 ? (totalAvailable / totalBudget) * 100 : 0
-  const exceededCategories = categories.filter((cat) => cat.spent > cat.budget).length
+  const exceededCategories = categories.filter((cat) => (cat.spent ?? 0) > (cat.budget ?? 0)).length
 
   const summaryData = [
     {

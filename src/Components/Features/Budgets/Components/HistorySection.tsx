@@ -105,7 +105,7 @@ export default function HistorySection({ categories: currentCategories }: { cate
 
     // Calcular un 'totalBudget' de ejemplo o usar los presupuestos actuales
     // Esto es una simplificación. Lo ideal es tener un historial de presupuestos del backend.
-    const currentTotalBudget = currentCategories.reduce((sum, cat) => sum + cat.budget, 0);
+    const currentTotalBudget = currentCategories.reduce((sum, cat) => sum + (cat.budget ?? 0), 0);
 
     sortedKeys.forEach(key => {
       const data = monthlyDataMap.get(key)!;
@@ -488,7 +488,7 @@ export default function HistorySection({ categories: currentCategories }: { cate
                 {entry.categories.slice(0, 5).map((category, catIndex) => (
                   <div key={catIndex} className="text-center">
                     <div className="text-xs text-gray-400">{category.name}</div>
-                    <div className="text-sm font-medium text-white">{formatCurrency(category.spent)}</div>
+                      <div className="text-sm font-medium text-white">{formatCurrency(category.spent ?? 0)}</div>
                   </div>
                 ))}
               </div>

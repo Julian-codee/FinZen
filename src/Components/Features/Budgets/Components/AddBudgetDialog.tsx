@@ -21,7 +21,7 @@ import {
   Plus,
   Calendar,
 } from "lucide-react"
-import type { BudgetData } from "../types/budget-types" // Asegúrate de que esta ruta sea correcta
+import type { AddBudgetData } from "../types/budget-types" // Asegúrate de que esta ruta sea correcta
 
 // Definiciones de tipos para las entidades
 // Asumimos que el backend devuelve idCuenta, idInversion, idTarjeta como números.
@@ -52,7 +52,7 @@ interface Category {
 interface AddBudgetDialogProps {
   isOpen: boolean
   onClose: () => void
-  onAddBudget: (budgetData: BudgetData & { entityId: string; entityType: 'cuenta' | 'tarjeta' | 'inversion' }) => void
+  onAddBudget: (budgetData: AddBudgetData) => Promise<void>;
 }
 
 export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBudgetDialogProps) {
@@ -208,13 +208,9 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
       // Llamada a onAddBudget para actualizar el estado local de la lista de presupuestos
       onAddBudget({
         name: budgetName.trim(),
-        totalBudget: parsedAmount,
-        categories: [{
-          name: category.name,
-          budget: parsedAmount, // Aquí puedes ajustar si tu BudgetData tiene un presupuesto por categoría
-          categoryType: category.ide,
-        }],
-        entityId: selectedEntityId, // Pasar el ID de la entidad al padre
+        montoAsignado: parsedAmount,
+        selectedCategoryId: category.id, // Usa el nombre correcto según AddBudgetData
+        entityId: Number(selectedEntityId), // Pasar el ID de la entidad al padre como número
         entityType: selectedEntityType as 'cuenta' | 'tarjeta' | 'inversion', // Pasar el tipo de entidad al padre
       });
 

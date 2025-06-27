@@ -21,7 +21,7 @@ import {
   PartyPopper,
   Car,
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react"; // Importa useCallback
 import { DayPicker } from "react-day-picker";
 import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
 import axios from "axios";
@@ -59,10 +59,8 @@ export const AddTransaction: React.FC = () => {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<string | null>(null);
   const [nota, setNota] = useState<string>("");
   const [nombreTransaccion, setNombreTransaccion] = useState<string>("");
-  // Estado para presupuesto solo será relevante para gastos
   const [presupuestoSeleccionado, setPresupuestoSeleccionado] = useState<string>("");
   const [presupuestos, setPresupuestos] = useState<Budget[]>([]);
-  // Tipo de entidad y entidadId siempre estarán disponibles para selección
   const [tipoEntidad, setTipoEntidad] = useState<"cuenta" | "inversion" | "tarjeta" | "">("");
   const [entidadId, setEntidadId] = useState<string>("");
   const [cuentas, setCuentas] = useState<Account[]>([]);
@@ -250,15 +248,19 @@ export const AddTransaction: React.FC = () => {
         formatter.format(parseFloat(cleanMonto.substring(1).replace(",", ".")))
       );
     } else if (monto.includes(",")) {
-      const [intPart, decPart] = monto.split(",");
-      let formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-      let displayedDecPart = decPart;
-      if (decPart === undefined || decPart === "") {
-        displayedDecPart = "";
-      } else if (decPart.length === 1) {
-        displayedDecPart += "0";
+      const parts = monto.split(",");
+      if (parts[1] && parts[1].length >= 2) {
+        // No cambia si ya tiene 2 decimales
+      } else {
+        let formattedInt = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        let displayedDecPart = parts[1];
+        if (parts[1] === undefined || parts[1] === "") {
+          displayedDecPart = "";
+        } else if (parts[1].length === 1) {
+          displayedDecPart += ""; // Deja solo un decimal si se está escribiendo
+        }
+        setDisplayMonto(`${formattedInt},${displayedDecPart}`);
       }
-      setDisplayMonto(`${formattedInt},${displayedDecPart}`);
     }
   }, [monto]);
 
@@ -409,6 +411,10 @@ export const AddTransaction: React.FC = () => {
       setEntidadId("");
       setPresupuestos([]);
       setErrorMessage("Transacción guardada exitosamente.");
+
+      // Despacha un evento personalizado para notificar a otros componentes
+      window.dispatchEvent(new Event('transaction-added'));
+
     } catch (error) {
       console.error("Error al guardar la transacción:", error);
       if (axios.isAxiosError(error) && error.response) {
