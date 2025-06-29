@@ -107,7 +107,7 @@ export const Navconfiguration = () => {
 
             <BackUp />
 
-            <DeleteData />
+           
           </>
         );
       case "Soporte y Ayuda":
@@ -118,6 +118,8 @@ export const Navconfiguration = () => {
             <FAQsSupport />
 
             <FAQsContact />
+            
+            <DeleteData />
           </>
         );
       default:
