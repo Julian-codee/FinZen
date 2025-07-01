@@ -95,19 +95,19 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
   };
 
   return (
-    <div className="min-h-screen bg-[#020817] text-white flex flex-col items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-[#020817] text-white flex flex-col items-center justify-center px-5 py-12 sm:py-14">
       <div className="w-full max-w-md">
         <button
           onClick={onBack}
-          className="flex items-center text-gray-400 hover:text-white mb-8 transition-colors"
+          className="flex items-center text-gray-400 hover:text-white mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver
         </button>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Cuéntanos más sobre ti</h1>
-          <p className="text-gray-400">
+          <h1 className="text-2xl sm:text-4xl font-bold mb-2">Cuéntanos más sobre ti</h1>
+          <p className="text-gray-400 text-sm sm:text-xl">
             Perfil seleccionado:{" "}
             <span className="text-blue-400 font-semibold">{getUserTypeTitle(userType)}</span>
           </p>
