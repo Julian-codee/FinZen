@@ -280,11 +280,11 @@ export const Hero = ({ onBack }: HeroProps) => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <Signal className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-xl sm:text-4xl font-bold mb-6">
                 ¿Cuál es tu nivel de experiencia financiera?
               </h2>
             </div>
-            <p className="text-gray-300 mb-10 text-xl">
+            <p className="text-gray-300 mb-10 text-md sm:text-xl">
               Estas preguntas nos ayudarán a adaptar el contenido y las
               herramientas a tu nivel de conocimiento.
             </p>
@@ -308,11 +308,11 @@ export const Hero = ({ onBack }: HeroProps) => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <ChartLine className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-xl sm:text-4xl font-bold mb-6">
                 ¿Qué áreas financieras te interesan más?
               </h2>
             </div>
-            <p className="text-gray-300 mb-10 text-xl">
+            <p className="text-gray-300 mb-10 text-md sm:text-xl">
               Selecciona las áreas que más te interesen para personalizar el
               contenido y las herramientas que verás.
             </p>
@@ -330,11 +330,11 @@ export const Hero = ({ onBack }: HeroProps) => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <Heart className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-xl sm:text-4xl font-bold mb-6">
                 ¿Cómo prefieres usar Finzen?
               </h2>
             </div>
-            <p className="text-gray-300 mb-10 text-xl">
+            <p className="text-gray-300 mb-10 text-md sm:text-xl">
               Estas preferencias nos ayudarán a personalizar tu experiencia en
               la aplicación.
             </p>
