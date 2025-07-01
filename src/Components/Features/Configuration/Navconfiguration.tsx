@@ -60,6 +60,8 @@ export const Navconfiguration = () => {
             <UserProfileConfig />
 
             <UserProfileTax />
+
+            <DeleteData />
           </>
         );
       case "Apariencia":
@@ -118,8 +120,8 @@ export const Navconfiguration = () => {
             <FAQsSupport />
 
             <FAQsContact />
-            
-            <DeleteData />
+
+           
           </>
         );
       default:

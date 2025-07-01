@@ -9,18 +9,10 @@ import CategoriesSection from "./Components/CategoriesSection"
 import DistributionSection from "./Components/DistributionSection"
 import HistorySection from "./Components/HistorySection"
 import AddBudgetDialog from "./Components/AddBudgetDialog" 
-import type { BudgetCategoryUI, PresupuestoResponseDto, PresupuestoRequestDto, GastoRequestDto } from "./types/budget-types"
-
-// Define AddBudgetData type if not already imported
-type AddBudgetData = {
-  name: string;
-  montoAsignado: number;
-  selectedCategoryId: number;
-  entityType?: 'cuenta' | 'tarjeta' | 'inversion';
-  entityId?: number;
-};
+import type { BudgetCategoryUI, PresupuestoResponseDto, PresupuestoRequestDto, GastoRequestDto, AddBudgetDialogData } from "./types/budget-types"
 import { Sidebar } from "../../Ui/UiDashBoard/SideBar"
-import { toast } from "sonner" 
+import { toast } from "sonner"
+import { useNavigate } from "react-router-dom" 
 
 export default function BudgetDashboard() {
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -31,7 +23,7 @@ export default function BudgetDashboard() {
   const [error, setError] = useState<string | null>(null)
   const [isAddBudgetOpen, setIsAddBudgetOpen] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-
+  const navigate = useNavigate()
   const fetchBudgets = useCallback(async () => {
     if (!isOperationLoading) {
       setIsLoading(true); 
@@ -43,6 +35,7 @@ export default function BudgetDashboard() {
     if (!token) {
       setError("No authentication token found. Please log in.")
       setIsLoading(false)
+      navigate("/") 
       toast.error("No autenticado. Por favor, inicia sesión.")
       return
     }
@@ -105,13 +98,14 @@ export default function BudgetDashboard() {
     })
   }
 
-  const handleAddBudget = async (data: AddBudgetData) => {
+  const handleAddBudget = async (data: AddBudgetDialogData) => {
     setIsOperationLoading(true);
     const token = localStorage.getItem("token");
 
     if (!token) {
         toast.error("No autenticado para crear presupuesto.");
         setIsOperationLoading(false);
+        navigate("/");
         return;
     }
 
@@ -162,6 +156,7 @@ export default function BudgetDashboard() {
     if (!token) {
       toast.error("No autenticado para eliminar presupuesto.")
       setIsOperationLoading(false);
+      navigate("/")
       return
     }
 
@@ -195,6 +190,7 @@ export default function BudgetDashboard() {
     if (!token) {
         toast.error("No autenticado para actualizar presupuesto.");
         setIsOperationLoading(false);
+        navigate("/");
         return;
     }
 
@@ -248,6 +244,7 @@ export default function BudgetDashboard() {
     if (!token) {
         toast.error("No autenticado para registrar gasto.");
         setIsOperationLoading(false);
+        navigate("/");
         return;
     }
 
@@ -288,6 +285,7 @@ export default function BudgetDashboard() {
       return (
         <CategoriesSection
           categories={categories}
+          onAddCategory={(newCat) => {}}
           onDeleteCategory={handleDeleteCategory}
           onUpdateBudget={handleUpdateBudget}
           onRegisterExpense={handleRegisterExpense}

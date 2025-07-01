@@ -103,7 +103,7 @@ export default function AddBudgetAmountDialog({
                     </div>
                     <div className="text-left">
                       <div className="text-white font-medium">{category.name}</div>
-                      <div className="text-gray-400 text-sm">Actual: {formatCurrency(category.budget ?? 0)}</div>
+                      <div className="text-gray-400 text-sm">Actual: {formatCurrency(category.budget)}</div>
                     </div>
                   </div>
                   {selectedCategoryId === category.id && (
