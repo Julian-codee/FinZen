@@ -13,7 +13,7 @@ import Transactions from './Components/Features/TransactionsDashboard/Transactio
 import { TaxReport } from './Components/Features/TaxReport/TaxReport';
 import { Education } from './Components/Features/FinancialEducation/Education';
 import { Assistant } from './Components/Features/AssistantAI/Assistant';
-import { Goals } from './Components/Features/Goals/Goals';
+import {Goals} from './Components/Features/Goals/Goals';
 import { Configuration } from './Components/Features/Configuration/Configuration';
 import { AddTransaction } from './Components/Features/Transacctions/AddTransactions';
 import FinZenHome from './Components/Features/DashBoard/FinZenHome';
