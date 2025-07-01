@@ -1,6 +1,8 @@
-// src/components/FAQs.tsx
+"use client";
+
 import { useState } from "react";
 import { ChevronDown, ChevronUp, HelpCircle, FileText } from "lucide-react";
+import { toast } from "sonner"; // Asegúrate de tener sonner instalado
 
 const faqs = [
   {
@@ -32,10 +34,52 @@ const faqs = [
 
 export const FAQS = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [additionalFaqs, setAdditionalFaqs] = useState([]);
+  const [showAllFaqs, setShowAllFaqs] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   const toggleQuestion = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+
+  const fetchAdditionalFaqs = async () => {
+    if (isLoadingMore) return; // Evitar múltiples llamadas
+    setIsLoadingMore(true);
+
+    try {
+      const response = await fetch("http://localhost:8080/finzen/soporte", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // Si este endpoint requiere autenticación, añade el token JWT aquí:
+           "Authorization": `Bearer ${localStorage.getItem("token")}`, 
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Fallo al cargar preguntas adicionales.");
+      }
+
+      const data = await response.json();
+      // Mapear los datos del backend al formato esperado por el frontend
+      const mappedData = data.map((item: any) => ({
+        question: item.pregunta,
+        answer: item.respuesta,
+      }));
+      setAdditionalFaqs(mappedData);
+      setShowAllFaqs(true);
+      toast.success("Preguntas adicionales cargadas.");
+    } catch (error: any) {
+      console.error("Error al cargar preguntas adicionales:", error);
+      toast.error(`Error al cargar preguntas adicionales: ${error.message}`);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
+  // Combinar las FAQs estáticas y las dinámicas
+  const allFaqs = showAllFaqs ? [...faqs, ...additionalFaqs] : faqs;
 
   return (
      <div className="text-white p-6 border border-white/10 rounded-lg">
@@ -48,7 +92,7 @@ export const FAQS = () => {
       </p>
 
       <div className="space-y-4">
-        {faqs.map((faq, index) => (
+        {allFaqs.map((faq, index) => (
           <div key={index} className="border-b border-gray-700 pb-3">
             <button
               onClick={() => toggleQuestion(index)}
@@ -73,10 +117,23 @@ export const FAQS = () => {
       </div>
 
       <div className="mt-6">
-        <button className="w-full flex items-center justify-center border border-gray-600 rounded-md px-4 py-2 text-sm text-white hover:bg-gray-800 transition">
-          <FileText className="w-4 h-4 mr-2" />
-          Ver todas las preguntas frecuentes
-        </button>
+        {!showAllFaqs && ( // Solo muestra el botón si no se han cargado todas las FAQs
+          <button
+            onClick={fetchAdditionalFaqs}
+            disabled={isLoadingMore}
+            className="w-full flex items-center justify-center border border-gray-600 rounded-md px-4 py-2 text-sm text-white hover:bg-gray-800 transition"
+          >
+            {isLoadingMore ? "Cargando..." : (
+              <>
+                <FileText className="w-4 h-4 mr-2" />
+                Ver todas las preguntas frecuentes
+              </>
+            )}
+          </button>
+        )}
+        {showAllFaqs && additionalFaqs.length === 0 && ( // Mensaje si no hay más FAQs
+          <p className="text-center text-gray-400 text-sm">No hay más preguntas frecuentes disponibles.</p>
+        )}
       </div>
     </div>
   );
