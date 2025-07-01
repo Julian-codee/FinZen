@@ -21,8 +21,8 @@ import {
   Plus,
   Calendar,
 } from "lucide-react"
-import type { AddBudgetData } from "../types/budget-types" // Asegúrate de que esta ruta sea correcta
-
+import type { BudgetData } from "../types/budget-types" // Asegúrate de que esta ruta sea correcta
+import { useNavigate } from "react-router-dom"
 // Definiciones de tipos para las entidades
 // Asumimos que el backend devuelve idCuenta, idInversion, idTarjeta como números.
 interface Account {
@@ -52,7 +52,7 @@ interface Category {
 interface AddBudgetDialogProps {
   isOpen: boolean
   onClose: () => void
-  onAddBudget: (budgetData: AddBudgetData) => Promise<void>;
+  onAddBudget: (budgetData: BudgetData & { entityId: string; entityType: 'cuenta' | 'tarjeta' | 'inversion' }) => void
 }
 
 export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBudgetDialogProps) {
@@ -67,7 +67,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
   const [cards, setCards] = useState<Card[]>([])
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
-
+  const navigate = useNavigate()
   // Hardcoded categories (consider fetching from API if they are dynamic)
   const categories: Category[] = [
     { id: 1, ide: "comida", name: "Comida", icon: <UtensilsCrossed className="w-4 h-4" />, bgColor: "bg-[#FED7AA]", textColor: "text-[#EA580C]" },
@@ -96,6 +96,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
         const token = localStorage.getItem("token");
         if (!token) {
           setError("Sesión no encontrada. Por favor, inicia sesión.");
+          navigate("/"); // Redirige al usuario a la página de inicio de sesión
           return;
         }
         const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -194,6 +195,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
       if (!token) {
         setError("Sesión no encontrada. Por favor, inicia sesión.");
         setIsLoading(false);
+        navigate("/"); // Redirige al usuario a la página de inicio de sesión
         return;
       }
 
@@ -208,9 +210,13 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
       // Llamada a onAddBudget para actualizar el estado local de la lista de presupuestos
       onAddBudget({
         name: budgetName.trim(),
-        montoAsignado: parsedAmount,
-        selectedCategoryId: category.id, // Usa el nombre correcto según AddBudgetData
-        entityId: Number(selectedEntityId), // Pasar el ID de la entidad al padre como número
+        totalBudget: parsedAmount,
+        categories: [{
+          name: category.name,
+          budget: parsedAmount, // Aquí puedes ajustar si tu BudgetData tiene un presupuesto por categoría
+          categoryType: category.ide,
+        }],
+        entityId: selectedEntityId, // Pasar el ID de la entidad al padre
         entityType: selectedEntityType as 'cuenta' | 'tarjeta' | 'inversion', // Pasar el tipo de entidad al padre
       });
 

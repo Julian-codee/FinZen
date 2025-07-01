@@ -14,77 +14,58 @@ interface UserDetailsFormProps {
 
 export default function UserDetailsForm({ userType, onBack }: UserDetailsFormProps) {
   const [ingresos, setIngresos] = useState("");
-  const [ingresosFormatted, setIngresosFormatted] = useState("");
   const [meta, setMeta] = useState("");
-  const [metaFormatted, setMetaFormatted] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { updateRegisterData, submitRegister, registerData } = useRegister();
-
-  const getUserTypeTitle = (type: string) => {
-    const titles = {
-      padre_de_familia: "Padre de Familia",
-      joven_profesional: "Joven Profesional",
-      emprendedor: "Emprendedor",
-      jubilado: "Jubilado",
-      personalizado: "Perfil Personalizado",
-    };
-    return titles[type as keyof typeof titles] || type;
-  };
+  const { updateRegisterData, submitRegister } = useRegister();
 
   const formatCurrency = (value: string) => {
     const numericValue = value.replace(/[^0-9]/g, "");
+    // Evita formatear un string vacío a "0"
+    if (!numericValue) return "";
     return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
   const handleIngresosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/,/g, "");
     setIngresos(rawValue);
-    setIngresosFormatted(formatCurrency(rawValue));
   };
 
   const handleMetaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/,/g, "");
     setMeta(rawValue);
-    setMetaFormatted(formatCurrency(rawValue));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!ingresos.trim()) {
-      showErrorAlert("Por favor ingresa tus ingresos mensuales");
+    const ingresoMensualValue = Number(ingresos);
+    const metaActualValue = Number(meta);
+
+    if (isNaN(ingresoMensualValue) || ingresoMensualValue <= 0) {
+      showErrorAlert("Por favor ingresa un monto válido y positivo para tus ingresos mensuales.");
       return;
     }
 
-    if (!meta.trim()) {
-      showErrorAlert("Por favor ingresa el monto de tu meta financiera");
+    if (isNaN(metaActualValue) || metaActualValue <= 0) {
+      showErrorAlert("Por favor ingresa un monto válido y positivo para tu meta financiera.");
       return;
     }
-
-    const ingresoMensual = Number(ingresos);
-    const metaActual = Number(meta);
-
-    if (isNaN(ingresoMensual) || ingresoMensual <= 0) {
-      showErrorAlert("Los ingresos mensuales deben ser un número mayor que 0");
-      return;
-    }
-    if (isNaN(metaActual) || metaActual <= 0) {
-      showErrorAlert("La meta financiera debe ser un número mayor que 0");
-      return;
-    }
-
-    console.log("Submitting data:", { ingresoMensual, metaActual, userType });
 
     setIsLoading(true);
     try {
-      updateRegisterData({
-        ingresoMensual,
-        metaActual,
+      // Actualizar los datos de registro en el contexto
+      // Asegúrate de que los nombres de los campos coincidan con RegisterData
+      await updateRegisterData({
+        ingresoMensual: ingresoMensualValue,
+        metaActual: metaActualValue,
         tipoPersona: userType,
       });
-      console.log("Updated registerData:", registerData);
+      
+
+      // La llamada a submitRegister ahora se hará con los datos actualizados
       await submitRegister();
+
       navigate("/");
     } catch (error: any) {
       console.error("Registration error:", error);
@@ -109,7 +90,7 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
           <h1 className="text-3xl font-bold mb-2">Cuéntanos más sobre ti</h1>
           <p className="text-gray-400">
             Perfil seleccionado:{" "}
-            <span className="text-blue-400 font-semibold">{getUserTypeTitle(userType)}</span>
+            <span className="text-blue-400 font-semibold">{userType}</span>
           </p>
         </div>
 
@@ -122,7 +103,7 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                value={ingresosFormatted}
+                value={formatCurrency(ingresos)}
                 onChange={handleIngresosChange}
                 placeholder="0"
                 className="w-full pl-10 pr-4 py-3 bg-[#1E2530] border border-slate-500/30 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
@@ -141,7 +122,7 @@ export default function UserDetailsForm({ userType, onBack }: UserDetailsFormPro
               <Target className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
                 type="text"
-                value={metaFormatted}
+                value={formatCurrency(meta)}
                 onChange={handleMetaChange}
                 placeholder="0"
                 className="w-full pl-10 pr-4 py-3 bg-[#1E2530] border border-slate-500/30 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
