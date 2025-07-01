@@ -76,33 +76,33 @@ export const TaxReport = () => {
         {/* Renderizado condicional del contenido del formulario */}
         {activeDeductionTab === "Formulario" ||
         activeDeductionTab === "Personal" ? (
-          // Si la pestaña activa es "Personal", mostramos este formulario inline
           <>
-            <div className="flex items-center text-gray-400 mb-1 mt-12">
+            <div className="flex items-center text-gray-400 p-4 sm:p-6 md:p-0 -mb-6 md:mb-1 mt-12">
               <UserRound className="text-white mr-2" />
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-lg sm:text-xl font-semibold text-white">
                 Información Personal
               </h2>
             </div>
-            <p className="text-gray-400 mb-10">
+            <p className="text-gray-400 mb-6 p-4 sm:p-6 md:p-0 sm:mb-10 text-sm">
               Ingresa tus datos personales para la declaración de renta 2024
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 px-4 sm:p-6 md:p-0  sm:gap-6">
               <div>
                 <label
                   htmlFor="fullName"
-                  className="block text-white/80 text-sm font-medium mb-1 "
+                  className="block text-white/80 text-sm font-medium mb-1"
                 >
                   Nombre Completo
                 </label>
                 <input
                   type="text"
                   id="fullName"
-                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 text-sm focus:outline-none focus:border-indigo-500"
                   placeholder="Juan Pérez"
                 />
               </div>
+
               <div>
                 <label
                   htmlFor="docType"
@@ -113,7 +113,7 @@ export const TaxReport = () => {
                 <div className="relative">
                   <select
                     value={tipoDocumento}
-                    className={`w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500 appearance-none pr-8 ${
+                    className={`w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500 appearance-none pr-8 text-sm ${
                       tipoDocumento === "" ? "text-white/40" : "text-white"
                     }`}
                     onChange={(e) => setTipoDocumento(e.target.value)}
@@ -138,10 +138,11 @@ export const TaxReport = () => {
                 <input
                   type="text"
                   id="docNumber"
-                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 text-sm focus:outline-none focus:border-indigo-500"
                   placeholder="123456789"
                 />
               </div>
+
               <div>
                 <label
                   htmlFor="address"
@@ -152,7 +153,7 @@ export const TaxReport = () => {
                 <input
                   type="text"
                   id="address"
-                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 text-sm focus:outline-none focus:border-indigo-500"
                   placeholder="Calle 123 #45-67"
                 />
               </div>
@@ -167,10 +168,11 @@ export const TaxReport = () => {
                 <input
                   type="text"
                   id="city"
-                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 text-sm focus:outline-none focus:border-indigo-500"
                   placeholder="Bogotá"
                 />
               </div>
+
               <div>
                 <label
                   htmlFor="email"
@@ -181,12 +183,12 @@ export const TaxReport = () => {
                 <input
                   type="email"
                   id="email"
-                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 text-sm focus:outline-none focus:border-indigo-500"
                   placeholder="juan.perez@ejemplo.com"
                 />
               </div>
 
-              <div className="md:col-span-2">
+              <div className="sm:col-span-2">
                 <label
                   htmlFor="phone"
                   className="block text-white/80 text-sm font-medium mb-1"
@@ -196,14 +198,13 @@ export const TaxReport = () => {
                 <input
                   type="text"
                   id="phone"
-                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 focus:outline-none focus:border-indigo-500"
+                  className="w-full p-3 rounded-md bg-[#020817] border border-white/60 text-sm focus:outline-none focus:border-indigo-500"
                   placeholder="3001234567"
                 />
               </div>
             </div>
           </>
         ) : (
-          // Si no es la pestaña "Personal", usamos un switch para renderizar los otros componentes
           <div className="my-6">
             {(() => {
               switch (activeDeductionTab) {
@@ -216,14 +217,15 @@ export const TaxReport = () => {
                 case "Impuestos":
                   return <TaxesForm />;
                 default:
-                  return null; // O puedes retornar un mensaje de error o nada si no coincide
+                  return null;
               }
             })()}
           </div>
         )}
 
-        {/** Componente TaxSummary */}
-        <TaxSummary />
+        <div className="mt-12">
+          <TaxSummary />
+        </div>
       </div>
     </>
   );
