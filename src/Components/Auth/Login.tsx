@@ -244,7 +244,7 @@ export const Login = () => {
         </div>
 
         {(activeTab === "login" || activeTab === "register") && (
-          <p className="text-xs text-white/40 text-center mt-6 mb-8  max-w-sm px-4 mx-auto leading-snug">
+          <p className="text-xs text-white/40 text-center mt-6 mb-0 max-w-sm px-4 mx-auto leading-snug">
             Al continuar, aceptas nuestros{" "}
             <a href="#" className="text-blue-400 hover:underline">
               Términos de servicio
