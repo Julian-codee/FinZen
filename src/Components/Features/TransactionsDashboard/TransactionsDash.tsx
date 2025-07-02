@@ -17,7 +17,7 @@ import TransactionFilters from "./Components/TransactionFilters"
 import TransactionTable from "./Components/TransactionTable"
 import { Transaction } from "./Types/types"
 
-const Transactions: React.FC = () => {
+export const Transactions: React.FC = () => {
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([])
   const [activeTab, setActiveTab] = useState<'Todas' | 'Gastos' | 'Ingresos'>('Todas')
   const [dateRange, setDateRange] = useState<'Hoy' | 'Últimos 7 días' | 'Últimos 30 días' | 'Este mes' | 'Personalizado'>('Este mes')
@@ -130,5 +130,3 @@ const Transactions: React.FC = () => {
     </div>
   )
 }
-
-export default Transactions

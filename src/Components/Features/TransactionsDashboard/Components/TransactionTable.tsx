@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
-import { CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 // Si estás usando Next.js para la redirección, importa useRouter:
 // import { useRouter } from 'next/navigation'; 
 

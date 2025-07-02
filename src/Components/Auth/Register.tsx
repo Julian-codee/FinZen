@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { AiOutlineGoogle, AiOutlineApple } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import {  showErrorAlert } from "../Ui/Alerts/Alerts";
+import { showErrorAlert } from "../Ui/Alerts/Alerts";
 import { useRegister } from "./RegisterContext";
 
 export const Register = () => {
@@ -51,7 +51,7 @@ export const Register = () => {
       setIsLoading(true);
       setError("");
       window.location.href = `http://localhost:8080/finzen/auth/${provider}`;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setError(`Error al conectar con ${provider}`);
       setIsLoading(false);
@@ -106,7 +106,7 @@ export const Register = () => {
       setIsLoading(true);
       try {
         navigate("/custom-profile");
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         setError("Error al continuar al siguiente paso");
         showErrorAlert("Error al continuar al siguiente paso");
@@ -144,8 +144,10 @@ export const Register = () => {
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-1">{getStepTitle()}</h2>
-      <p className="text-sm text-white/50 mb-5">{getStepDescription()}</p>
+      <h2 className="text-2xl font-bold mb-1 sm:mb-2">{getStepTitle()}</h2>
+      <p className="text-sm text-white/50 mb-5 sm:mb-6">
+        {getStepDescription()}
+      </p>
 
       {error && (
         <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-md">
@@ -153,7 +155,7 @@ export const Register = () => {
         </div>
       )}
 
-      <div className="flex items-center gap-4 mb-5.5">
+      <div className="flex items-center gap-4 mb-5.5 sm:mb-6">
         <div className="relative w-3/4 h-1 bg-white/20 rounded-full">
           <div
             className="absolute top-0 left-0 h-1 bg-indigo-500 rounded-full"
@@ -335,7 +337,7 @@ export const Register = () => {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     <div className="flex items-center">
                       {hasMinLength ? (
                         <Check className="h-3 w-3 text-green-500 mr-1" />
@@ -477,7 +479,13 @@ export const Register = () => {
           </>
         )}
 
-        <div className={`flex ${step > 1 ? "space-x-3" : ""} mt-4`}>
+        <div
+          className={`flex ${
+            step > 1
+              ? "flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3"
+              : ""
+          } mt-4`}
+        >
           {step > 1 && (
             <button
               type="button"
@@ -516,37 +524,37 @@ export const Register = () => {
 
       {step === 1 && (
         <>
-          <div className="flex items-center my-6">
+          <div className="flex items-center my-6 sm:my-8">
             <hr className="flex-grow border-white/20" />
             <span className="mx-4 text-xs text-white/60">O REGÍSTRATE CON</span>
             <hr className="flex-grow border-white/20" />
           </div>
 
-          <div className="flex justify-center gap-4">
+          <div className="grid grid-cols-3 gap-3 mt-4">
             <button
               onClick={() => handleSocialLogin("facebook")}
               disabled={isLoading}
-              className="group bg-black p-3 rounded-md border border-white/30 hover:bg-blue-500/20 hover:border hover:border-blue-400/30 disabled:opacity-50"
+              className="flex items-center justify-center p-3 bg-black/80 border border-white/20 rounded-lg hover:border-blue-400/50 hover:bg-blue-500/10 transition"
             >
-              <Facebook className="w-19 h-4 text-white group-hover:text-blue-400" />
+              <Facebook className="w-5 h-5 text-white group-hover:text-blue-400" />
             </button>
             <button
               onClick={() => handleSocialLogin("apple")}
               disabled={isLoading}
-              className="group bg-black p-3 rounded-md border border-white/30 hover:bg-indigo-500/20 hover:border hover:border-indigo-400/30 disabled:opacity-50"
+              className="flex items-center justify-center p-3 bg-black/80 border border-white/20 rounded-lg hover:border-indigo-400/50 hover:bg-indigo-500/10 transition"
             >
-              <AiOutlineApple className="w-19 h-4 text-white group-hover:text-indigo-400" />
+              <AiOutlineApple className="w-5 h-5 text-white group-hover:text-indigo-400" />
             </button>
             <button
               onClick={() => handleSocialLogin("google")}
               disabled={isLoading}
-              className="group bg-black p-3 rounded-md border border-white/30 hover:bg-violet-500/20 hover:border hover:border-violet-400/30 disabled:opacity-50"
+              className="flex items-center justify-center p-3 bg-black/80 border border-white/20 rounded-lg hover:border-violet-400/50 hover:bg-violet-500/10 transition"
             >
-              <AiOutlineGoogle className="w-19 h-4 text-white group-hover:text-violet-400" />
+              <AiOutlineGoogle className="w-5 h-5 text-white group-hover:text-violet-400" />
             </button>
           </div>
 
-          <p className="text-sm text-white/70 text-center mt-6">
+          <p className="text-sm text-white/70 text-center mt-6 sm:mt-8">
             ¿Ya tienes una cuenta?{" "}
             <a href="./login" className="text-blue-400 hover:underline">
               Inicia sesión

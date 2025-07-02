@@ -10,7 +10,7 @@ interface Hero2Props {
     deudas: string;
   };
   onInputChange: (field: string, value: string) => void;
-  updateRegisterData: (data: { ingresoMensual: number }) => void; // Agregar esta prop
+  updateRegisterData: (data: { ingresoMensual: number }) => void;
 }
 
 export const Hero2 = ({
@@ -18,88 +18,85 @@ export const Hero2 = ({
   onCheckboxChange,
   financialInputs,
   onInputChange,
-  updateRegisterData, 
+  updateRegisterData,
 }: Hero2Props) => {
   const financialGoalsWithOther = [
     {
       id: "Stability",
       title: "Estable - ",
       description:
-        " Tengo ingresos regulares y puedo cubrir mis gastos sin problemas",
+        "Tengo ingresos regulares y puedo cubrir mis gastos sin problemas",
     },
     {
       id: "Moderate",
       title: "Moderada - ",
       description:
-        " Puedo cubrir mis gastos básicos pero tengo poco margen para ahorrar",
+        "Puedo cubrir mis gastos básicos pero tengo poco margen para ahorrar",
     },
     {
       id: "Inestability",
       title: "Inestable - ",
       description:
-        " Tengo dificultades para cubrir todos mis gastos regularmente",
+        "Tengo dificultades para cubrir todos mis gastos regularmente",
     },
   ];
 
- 
-  
   return (
-    <div className="grid grid-cols-2 md:grid-cols-2 gap-8 mt-6">
-      {["ingresos", "gastos", "ahorros", "deudas"].map((field) => (
-        <div className="mt-6 flex flex-col justify-center" key={field}>
-          <label className="block text-lg font-medium text-white mb-1">
-            {field.charAt(0).toUpperCase() + field.slice(1)} Mensuales
-            Aproximados
-          </label>
-          <input
-            type="text"
-            value={financialInputs[field as keyof typeof financialInputs]}
-            onChange={(e) => {
-              onInputChange(field, e.target.value); // Actualiza el estado local
-              if (field === "ingresos") {
-                const ingresoMensual = Number(e.target.value);
+    <div className="flex flex-col gap-8 mt-6">
+      {/* Inputs de ingresos, gastos, etc */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {["ingresos", "gastos", "ahorros", "deudas"].map((field) => (
+          <div key={field} className="flex flex-col">
+            <label className="block text-base sm:text-lg font-medium text-white mb-2">
+              {field.charAt(0).toUpperCase() + field.slice(1)} mensuales
+              aproximados
+            </label>
+            <input
+              type="text"
+              value={financialInputs[field as keyof typeof financialInputs]}
+              onChange={(e) => {
+                onInputChange(field, e.target.value);
+                if (field === "ingresos") {
+                  const ingresoMensual = Number(e.target.value);
+                  updateRegisterData({ ingresoMensual });
+                }
+              }}
+              placeholder="$ 0.00"
+              className="w-full border border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 px-4 bg-gray-800 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+          </div>
+        ))}
+      </div>
 
-                
-               console.log(ingresoMensual);
-               
-                  updateRegisterData({ ingresoMensual }); // Actualiza el estado global
-                
-              }
-            }}
-            className="border px-4 border-gray-700 text-white placeholder-gray-400/40 rounded-md h-12 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder="$ 0.00"
-          />
-        </div>
-      ))}
-
-      <div className="grid grid-cols-1 gap-4 w-240 mt-6 col-span-2">
+      {/* Opciones de estado financiero */}
+      <div className="grid grid-cols-1 gap-5">
         {financialGoalsWithOther.map((goal) => (
-          <div key={goal.id}>
-            <div className="flex items-start space-x-4">
-              <div
-                className="w-7 h-7 border border-blue-500 rounded-full flex-shrink-0 mr-3 mt-1 flex items-center justify-center cursor-pointer"
-                style={{
-                  backgroundColor: financialStatusOptions[goal.id]
-                    ? "#3b82f6"
-                    : "transparent",
-                }}
-                onClick={() => onCheckboxChange(goal.id)}
-              >
-                {financialStatusOptions[goal.id] && (
-                  <Check className="text-white w-5 h-5 font-extrabold" />
-                )}
-              </div>
-              <div
-                onClick={() => onCheckboxChange(goal.id)}
-                className="cursor-pointer flex w-full"
-              >
-                <span className="text-white text-lg font-medium">
-                  {goal.title}
-                </span>
-                {goal.description && (
-                  <p className="text-white">{goal.description}</p>
-                )}
-              </div>
+          <div key={goal.id} className="flex items-start space-x-4">
+            <div
+              className="w-7 h-7 border border-blue-500 rounded-full flex-shrink-0 mt-1 flex items-center justify-center cursor-pointer"
+              style={{
+                backgroundColor: financialStatusOptions[goal.id]
+                  ? "#3b82f6"
+                  : "transparent",
+              }}
+              onClick={() => onCheckboxChange(goal.id)}
+            >
+              {financialStatusOptions[goal.id] && (
+                <Check className="text-white w-5 h-5 font-extrabold" />
+              )}
+            </div>
+            <div
+              onClick={() => onCheckboxChange(goal.id)}
+              className="cursor-pointer flex flex-col text-white"
+            >
+              <span className="text-base sm:text-lg font-medium">
+                {goal.title}
+              </span>
+              {goal.description && (
+                <p className="text-sm sm:text-base text-gray-300 mt-1">
+                  {goal.description}
+                </p>
+              )}
             </div>
           </div>
         ))}
