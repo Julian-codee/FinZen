@@ -223,7 +223,7 @@ export const TaxReport = () => {
           </div>
         )}
 
-        <div className="mt-12">
+        <div className="mt-12 p-6 md:p-0">
           <TaxSummary />
         </div>
       </div>
