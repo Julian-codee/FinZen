@@ -11,7 +11,7 @@ interface Meta {
   estado: "creado" | "iniciado" | "terminado";
   valor: number;
   montoAhorrado: number;
-  idCuenta: number;
+  idUsuario: number;
   fechaInicio: string;
   fechaLimite?: string;
   enProgreso: boolean;
@@ -25,7 +25,7 @@ interface MetaDto {
   estado: "creado" | "iniciado" | "terminado";
   valor: number;
   montoAhorrado: number;
-  idCuenta: number;
+  idUsuario: number;
   fechaInicio: string;
   fechaLimite?: string;
   enProgreso: boolean;
@@ -40,14 +40,14 @@ interface GoalsState {
 
 interface AddNewGoalProps {
   onCancel: () => void;
-  idCuenta: number;
-  setGoals?: React.Dispatch<React.SetStateAction<GoalsState>>; // Hacer opcional
+  idUsuario: number;
+  setGoals?: React.Dispatch<React.SetStateAction<GoalsState>>;
   onGoalAdded: () => Promise<void>;
 }
 
 type OpcionFechaType = "" | "3m" | "6m" | "9m" | "1a" | "2a" | "5a" | "10a" | "personalizada";
 
-export const AddNewGoal = ({ onCancel, idCuenta, setGoals, onGoalAdded }: AddNewGoalProps) => {
+export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNewGoalProps) => {
   const [nombreMeta, setNombreMeta] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [estado, setEstado] = useState<"creado" | "iniciado" | "terminado">("creado");
@@ -63,7 +63,7 @@ export const AddNewGoal = ({ onCancel, idCuenta, setGoals, onGoalAdded }: AddNew
   const [error, setError] = useState<string | null>(null);
 
   // Base URL para APIs
-  const API_BASE_URL = "http://localhost:8080/finzen/meta";
+  const API_BASE_URL = "http://localhost:8080/finzen/metas";
 
   // Función para obtener headers con token
   const getAuthHeaders = () => {
@@ -87,7 +87,6 @@ export const AddNewGoal = ({ onCancel, idCuenta, setGoals, onGoalAdded }: AddNew
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 401) {
         errorMessage = "Sesión expirada. Por favor, inicia sesión nuevamente.";
-        // Aquí podrías redirigir al login
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.response?.data) {
@@ -166,7 +165,7 @@ export const AddNewGoal = ({ onCancel, idCuenta, setGoals, onGoalAdded }: AddNew
       estado,
       valor: parseFloat(montoObjetivo),
       montoAhorrado: parseFloat(montoAporte),
-      idCuenta,
+      idUsuario,
       fechaInicio: new Date().toISOString().split("T")[0],
       fechaLimite: fechaObjetivo.toISOString().split("T")[0],
       enProgreso: estado === "iniciado",
@@ -186,7 +185,7 @@ export const AddNewGoal = ({ onCancel, idCuenta, setGoals, onGoalAdded }: AddNew
       if (setGoals) {
         const newGoal: Meta = {
           ...metaDto,
-          idMeta: response.data.idMeta, // Use the ID returned from the server
+          idMeta: response.data.idMeta,
           montoAporte: parseFloat(montoAporte),
         };
         
