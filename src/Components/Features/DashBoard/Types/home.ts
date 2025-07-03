@@ -1,3 +1,36 @@
+
+export type TransactionType = 'income' | 'expense';
+export type TransactionStatus = 'Completada' | 'Pendiente' | 'Cancelada';
+
+export interface Transaction {
+    id: string;
+    description: string;
+    category: string;
+    amount: number;
+    type: TransactionType;
+    date: string;
+    time?: string;
+    notes?: string;
+    account?: string;
+    paymentMethod?: string;
+    status?: TransactionStatus;
+}
+
+export interface BudgetCategory {
+    id: string;
+    name: string;
+    spent: number;
+    limit: number;
+    icon?: React.ReactNode;
+}
+
+export interface CardSummary {
+    id: string;
+    name: string;
+    active: boolean;
+    blocked: boolean
+}
+
 export interface PresupuestoResponseDto {
   idPresupuesto: number;
   nombre: string;
@@ -62,22 +95,7 @@ export interface BudgetCategoryUI {
   originalCategoryId?: number;
 }
 
-export interface Transaction {
-  id: string;
-  description: string;
-  amount: number;
-  date: Date;
-  categoryId: string;
-  type: 'expense' | 'income';
-}
-
-export interface BudgetCategory {
-  id: string;
-  name: string;
-  budget?: number;
-  spent?: number;
-  categoryType?: string;
-}
+// Removed duplicate Transaction interface to avoid type conflicts
 
 export interface AddBudgetData {
   name: string;
@@ -95,4 +113,18 @@ export interface BudgetData {
     budget: number;
     categoryType: string;
   }[];
+}
+
+// Puedes incluir esto donde declares tus tipos, si aún no lo tienes:
+export interface Budget {
+  id: string;
+  nombre: string;
+  montoAsignado: number;
+  montoGastado: number;
+  categoriaPresupuesto?: {
+    nombre: string;
+  };
+  cuenta?: { nombre: string };
+  tarjeta?: { nombre: string };
+  inversion?: { nombre: string };
 }
