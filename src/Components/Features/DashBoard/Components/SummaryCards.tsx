@@ -4,10 +4,9 @@ import { Transaction, CardSummary } from '../Types/home';
 
 interface SummaryCardsProps {
   transactions: Transaction[];
-  cardData: CardSummary[];
 }
 
-export const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions, cardData }) => {
+export const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
   const [totalAccounts, setTotalAccounts] = useState<number>(0);
 
   // ✅ Fetch de cuentas solo para la tarjeta de "Tarjetas"

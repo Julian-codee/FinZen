@@ -35,7 +35,7 @@ const MOCK_UPCOMING_PAYMENTS: UpcomingPayment[] = [];
 
 const FinZenHome: React.FC = () => {
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
-  const [cardData, setCardData] = useState<CardSummary[]>([]);
+  // const [cardData, setCardData] = useState<CardSummary[]>([]);
   const [upcomingPayments, setUpcomingPayments] = useState<UpcomingPayment[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -95,7 +95,7 @@ const FinZenHome: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setCardData(MOCK_CARD_DATA);
+    // setCardData(MOCK_CARD_DATA);
     setUpcomingPayments(MOCK_UPCOMING_PAYMENTS);
     fetchAllTransactions();
   }, [fetchAllTransactions]);
@@ -135,13 +135,13 @@ const FinZenHome: React.FC = () => {
 
         <h1 className="hidden lg:block text-3xl font-bold text-white mb-6">Dashboard</h1>
 
-        <SummaryCards transactions={allTransactions} cardData={cardData} />
+        <SummaryCards transactions={allTransactions} />
 
         <div className="flex flex-col lg:flex-row gap-6">
           <RecentTransactions transactions={transactionsForRecentTable} />
           <div className="flex flex-col gap-6 lg:w-2/5">
             <MonthlyBudget />
-            <UpcomingPayments payments={upcomingPayments} />
+            <UpcomingPayments  />
              <DailyAdvice />
           </div>
         </div>
