@@ -123,7 +123,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
   const recentTransactionsToShow = transactions.slice(0, maxItems);
 
   return (
-    <div className="rounded-lg p-5 border border-[#1f2937] flex-1 min-w-[300px]">
+    <div className="rounded-lg p-5 border border-[#1f2937] flex-1 min-w-[500px] min-h-[300px]">
       <h2 className="text-white text-lg font-semibold mb-2">{title}</h2>
       <p className="text-gray-400 text-sm mb-4">
         Has realizado {transactions.length} transacciones este mes. {/* Considera ajustar este conteo si solo muestras 5 */}
