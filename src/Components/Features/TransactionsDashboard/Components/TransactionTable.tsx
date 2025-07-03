@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
-import { CheckCircle, XCircle, Trash2 } from 'lucide-react';
+import { CheckCircle, XCircle } from 'lucide-react';
 // Si estás usando Next.js para la redirección, importa useRouter:
 // import { useRouter } from 'next/navigation'; 
 
@@ -41,7 +41,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
   const fetchTransactions = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
+      toast.custom((t: unknown) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
       setTransactions([]);
       onTransactionsUpdate([]);
       // router.push('/login'); // Opcional: Redirigir al login si no hay token
@@ -96,11 +96,11 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
       onTransactionsUpdate(all);
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        toast.custom((t) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
+        toast.custom((t: unknown) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
         localStorage.removeItem("token");
         // router.push('/login');
       } else {
-        toast.custom((t) => <CustomErrorToast t={t} message="Error al obtener transacciones." />);
+        toast.custom((t: unknown) => <CustomErrorToast t={t} message="Error al obtener transacciones." />);
       }
       console.error(err);
       setTransactions([]);
@@ -117,7 +117,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
   }, []);
 
   const handleDeleteTransaction = (id: string) => {
-    toast.custom((t) => (
+    toast.custom((t: { id: any; }) => (
       <div className="bg-neutral-800 p-4 rounded-lg shadow-xl text-white max-w-md w-full">
         <p className="mb-2">¿Estás seguro de eliminar la transacción?</p>
         <div className="flex justify-end gap-2">
@@ -129,7 +129,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
                 const token = localStorage.getItem("token");
 
                 if (!token) {
-                  toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
+                  toast.custom((t: unknown) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
                   toast.dismiss(t.id);
                   // router.push('/login'); 
                   return;
@@ -137,7 +137,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
 
                 const transactionToDelete = transactions.find(tx => tx.id === id);
                 if (!transactionToDelete) {
-                  toast.custom((t) => <CustomErrorToast t={t} message="Transacción no encontrada para eliminar." />);
+                  toast.custom((t: unknown) => <CustomErrorToast t={t} message="Transacción no encontrada para eliminar." />);
                   toast.dismiss(t.id);
                   return;
                 }
@@ -153,15 +153,15 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
                   headers: { Authorization: `Bearer ${token}` },
                 });
                 toast.dismiss(t.id);
-                toast.custom((t) => <CustomSuccessToast t={t} message="Transacción eliminada exitosamente." />);
+                toast.custom((t: unknown) => <CustomSuccessToast t={t} message="Transacción eliminada exitosamente." />);
                 fetchTransactions(); 
               } catch (err) {
                 if (axios.isAxiosError(err) && err.response?.status === 401) {
-                  toast.custom((t) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
+                  toast.custom((t: unknown) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
                   localStorage.removeItem("token");
                   // router.push('/login');
                 } else {
-                  toast.custom((t) => <CustomErrorToast t={t} message="Error al eliminar la transacción." />);
+                  toast.custom((t: unknown) => <CustomErrorToast t={t} message="Error al eliminar la transacción." />);
                 }
                 console.error(err);
               }
@@ -217,7 +217,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
             try {
               const token = localStorage.getItem("token");
               if (!token) {
-                toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
+                toast.custom((t: unknown) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
                 // router.push('/login');
                 setEditTransaction(null);
                 return;
@@ -242,16 +242,16 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
               });
 
               setEditTransaction(null);
-              toast.custom((t) => <CustomSuccessToast t={t} message="Transacción actualizada." />);
+              toast.custom((t: unknown) => <CustomSuccessToast t={t} message="Transacción actualizada." />);
               
               fetchTransactions(); 
             } catch (error) {
               if (axios.isAxiosError(error) && error.response?.status === 401) {
-                toast.custom((t) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
+                toast.custom((t: unknown) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
                 localStorage.removeItem("token");
                 // router.push('/login');
               } else {
-                toast.custom((t) => <CustomErrorToast t={t} message="Error al actualizar la transacción." />);
+                toast.custom((t: unknown) => <CustomErrorToast t={t} message="Error al actualizar la transacción." />);
               }
               console.error("Error al actualizar transacción:", error);
             }
