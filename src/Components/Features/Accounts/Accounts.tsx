@@ -556,7 +556,7 @@ const Account = () => {
           ))}
           {grouped["Otros"] && grouped["Otros"].length > 0 && (
             <p className="text-yellow-500">
-              Algunas cuentas no tienen un tipo válido y se han clasificado como "Otros".
+            
             </p>
           )}
         </div>
