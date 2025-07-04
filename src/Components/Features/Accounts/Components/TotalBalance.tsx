@@ -10,7 +10,7 @@ const TotalBalance = ({ visible, amount }: TotalBalanceProps) => {
   })}`;
 
   return (
-    <p className="text-sm text-gray-300">
+    <p className="text-sm text-gray-300 p-6 md:p-0 md:text-lg">
       Saldo total:{' '}
       <span className="font-semibold text-white">
         {visible ? formattedAmount : '•••••••'}
