@@ -17,7 +17,7 @@ export const BackUp = () => {
           configuraciones y preferencias.
         </p>
 
-        <p className="font-light text-white/60 mb-3">Última copia de seguridad: 15 de marzo de 2024, 14:30</p>
+        <p className="font-light text-white/60 mb-3">Última copia de seguridad: 15 de junio de 2025, 14:30</p>
       </div>
 
       <div className="space-y-4 flex mx-auto w-full">

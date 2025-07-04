@@ -1,11 +1,19 @@
-import React from 'react';
+// src/components/RecentTransactions.tsx
+"use client"; // Importante si usas componentes de cliente en Next.js
+
+import React, { useState, useEffect, useCallback } from 'react'; // Agregado useCallback
 import { TrendingDown, TrendingUp } from 'lucide-react';
-import { Transaction } from '../Types/home';
 import { format, parseISO, isToday, isYesterday } from 'date-fns';
 import { es } from 'date-fns/locale';
+import axios from 'axios'; // Importar axios
+import toast from 'react-hot-toast'; // Para las notificaciones de error
+
+// Asegúrate de que Transaction y los Custom Toasts estén correctamente importados
+// Si Transaction está en 'Types/types', ajusta la ruta.
+import { Transaction } from '../Types/home'; // Asumo que el tipo Transaction ahora está aquí
+// import CustomErrorToast from '../../TransactionsDashboard/Components/TransactionTable'; // O la ruta donde estén definidos los Custom Toasts
 
 interface RecentTransactionsProps {
-  transactions: Transaction[];
   title?: string;
   maxItems?: number;
 }
@@ -28,17 +36,97 @@ const formatCurrency = (amount: number) => {
 };
 
 export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
-  transactions,
   title = "Transacciones Recientes",
   maxItems = 5,
 }) => {
-  const recentTransactions = transactions.slice(0, maxItems);
+  const [transactions, setTransactions] = useState<Transaction[]>([]); // Estado interno para las transacciones
+
+  // Función para obtener las transacciones desde la API
+  const fetchTransactions = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("No estás autenticado. Inicia sesión.");
+      setTransactions([]);
+      // Podrías redirigir aquí si lo deseas
+      // router.push('/login');
+      return;
+    }
+
+    try {
+      const { data } = await axios.get("http://localhost:8080/finzen/gasto/user/finances", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const mappedIncomes: Transaction[] = Array.isArray(data.ingresos)
+        ? data.ingresos.map((item: any) => ({
+            id: item.idIngreso?.toString() ?? crypto.randomUUID(),
+            amount: item.monto ?? 0,
+            date: item.fecha ?? new Date().toISOString().split('T')[0],
+            description: item.nombre || item.descripcion || 'Sin descripción',
+            notes: item.descripcion || '',
+            category: 'otros',
+            account: 'Ingreso',
+            type: 'income',
+            status: 'Completada',
+          }))
+        : [];
+
+      const mappedExpenses: Transaction[] = Array.isArray(data.gastos)
+        ? data.gastos.map((item: any) => ({
+            id: item.idGasto?.toString() ?? crypto.randomUUID(),
+            amount: item.monto ?? 0,
+            date: item.fecha ?? new Date().toISOString().split('T')[0],
+            description: item.nombre || item.descripcion || 'Sin descripción',
+            notes: item.descripcion || '',
+            category: item.categoria || 'otros',
+            account: item.cuenta || 'Gasto',
+            type: 'expense',
+            status: 'Completada',
+          }))
+        : [];
+
+      const all = [...mappedIncomes, ...mappedExpenses];
+
+      // Ordenar solo por fecha para mostrar las más recientes primero
+      all.sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        return dateB.getTime() - dateA.getTime(); // Descendente
+      });
+
+      setTransactions(all);
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        toast.error("Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo.");
+        localStorage.removeItem("token");
+        // router.push('/login');
+      } else {
+        toast.error("Error al obtener transacciones recientes.");
+      }
+      console.error(err);
+      setTransactions([]);
+    }
+  }, []); // Dependencias vacías para que se cree una sola vez
+
+  // Efecto para cargar las transacciones al montar el componente
+  useEffect(() => {
+    fetchTransactions();
+
+    // Opcional: Si AddTransaction u otro componente dispara un evento global
+    // para indicar una nueva transacción, puedes escucharlo aquí.
+    const handler = () => fetchTransactions();
+    window.addEventListener("transaction-added", handler);
+    return () => window.removeEventListener("transaction-added", handler);
+  }, [fetchTransactions]); // Se ejecuta cuando fetchTransactions cambia (que no debería ocurrir)
+
+  // Filtrar y tomar solo los 'maxItems'
+  const recentTransactionsToShow = transactions.slice(0, maxItems);
 
   return (
-    <div className=" rounded-lg p-5 border border-[#1f2937] flex-1 min-w-[300px]">
+    <div className="rounded-lg p-5 border border-[#1f2937] flex-1 min-w-[500px] min-h-[300px]">
       <h2 className="text-white text-lg font-semibold mb-2">{title}</h2>
       <p className="text-gray-400 text-sm mb-4">
-        Has realizado {transactions.length} transacciones este mes.
+        Has realizado {transactions.length} transacciones este mes. {/* Considera ajustar este conteo si solo muestras 5 */}
       </p>
 
       <div className="overflow-x-auto">
@@ -52,8 +140,8 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
             </tr>
           </thead>
           <tbody>
-            {recentTransactions.length > 0 ? (
-              recentTransactions.map(tx => (
+            {recentTransactionsToShow.length > 0 ? (
+              recentTransactionsToShow.map(tx => (
                 <tr key={tx.id} className="border-b border-gray-700 last:border-b-0">
                   <td className="py-3 pr-2">
                     <div className="flex items-center gap-3">
@@ -74,7 +162,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                   <td className="py-3 px-2">
                     <div className="flex flex-col">
                       <span className="text-white">{getDateLabel(tx.date)}</span>
-                      <span className="text-xs text-gray-500">{tx.time}</span>
+                      {/* Eliminado tx.time ya que decidimos quitarlo */}
                     </div>
                   </td>
                   <td className={`py-3 pl-2 text-right font-semibold ${tx.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
@@ -95,3 +183,6 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
     </div>
   );
 };
+
+// Si RecentTransactions es el único componente en este archivo, puedes exportarlo por defecto
+export default RecentTransactions; // Cambiado a exportación por defecto

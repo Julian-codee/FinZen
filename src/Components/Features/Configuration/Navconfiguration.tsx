@@ -8,6 +8,7 @@ import {
   Download,
   HelpCircle,
 } from "lucide-react";
+
 import { UserProfileConfig } from "./Components/UserProfileConfig";
 import { UserProfileTax } from "./Components/UserProfileTax";
 import { AppereanceConfig } from "./Components/AppereanceConfig";
@@ -50,23 +51,21 @@ const options: { name: Option; icon: React.ReactNode }[] = [
 export const Navconfiguration = () => {
   const [selected, setSelected] = useState<Option>("Perfil");
 
-  // Función para renderizar el contenido según la opción seleccionada
-
   const renderContent = () => {
     switch (selected) {
       case "Perfil":
         return (
           <>
             <UserProfileConfig />
-
             <UserProfileTax />
+
+            <DeleteData />
           </>
         );
       case "Apariencia":
         return (
           <>
             <AppereanceConfig />
-
             <ApperInterface />
           </>
         );
@@ -74,9 +73,7 @@ export const Navconfiguration = () => {
         return (
           <>
             <Notifications />
-
             <NotificationsPush />
-
             <FrecuencyNots />
           </>
         );
@@ -84,9 +81,7 @@ export const Navconfiguration = () => {
         return (
           <>
             <Security />
-
             <SecurityConfig />
-
             <SecurityDevices />
           </>
         );
@@ -94,9 +89,7 @@ export const Navconfiguration = () => {
         return (
           <>
             <Integrations />
-
             <IntegrationsInvertions />
-
             <IntegrationsServices />
           </>
         );
@@ -104,20 +97,21 @@ export const Navconfiguration = () => {
         return (
           <>
             <Export />
-
             <BackUp />
-
             <DeleteData />
+
+           
+
           </>
         );
       case "Soporte y Ayuda":
         return (
           <>
             <FAQS />
-
             <FAQsSupport />
-
             <FAQsContact />
+
+           
           </>
         );
       default:
@@ -126,9 +120,9 @@ export const Navconfiguration = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full text-white">
-      {/* Sidebar */}
-      <div className="w-[30%] p-4 space-y-2">
+    <div className="flex flex-col md:flex-row min-h-screen w-full text-white">
+      {/* Sidebar para pantallas grandes */}
+      <div className="hidden md:block md:w-[30%] p-4 space-y-2">
         {options.map((opt) => (
           <div
             key={opt.name}
@@ -146,8 +140,23 @@ export const Navconfiguration = () => {
         ))}
       </div>
 
+      {/* Menú desplegable para móviles */}
+      <div className="block md:hidden p-4">
+        <select
+          value={selected}
+          onChange={(e) => setSelected(e.target.value as Option)}
+          className="w-full p-2 bg-white/10 text-white rounded-md"
+        >
+          {options.map((opt) => (
+            <option key={opt.name} value={opt.name}>
+              {opt.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Contenido derecho */}
-      <div className="w-[70%] p-4">
+      <div className="w-full md:w-[70%] p-4">
         <div className="text-sm text-white/80">{renderContent()}</div>
       </div>
     </div>

@@ -11,14 +11,7 @@ export const Header: React.FC = () => {
 
   return (
     <div className="flex justify-between items-center mb-8 gap-4 px-4 pt-8">
-      <div>
-        <h1 className="text-4xl font-bold text-white mb-2">Informe Fiscal</h1>
-        <p className="text-white/70 mb-12 text-lg">
-          Genera tu declaración de renta con la información de tus finanzas
-          personales.
-        </p>
-      </div>
-
+  
       {/*Selector para la fecha*/}
       <div className="flex space-x-6">
         <div className="relative flex items-center border border-white/50 bg-[#111827] rounded-md">
