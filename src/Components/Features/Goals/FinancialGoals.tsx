@@ -625,9 +625,7 @@ export default function FinancialGoals() {
           >
             + Nueva Meta
           </button>
-          <button className="border border-gray-500 px-3 py-2 rounded hover:bg-gray-700 transition-colors">
-            <Download className="w-5 h-5" />
-          </button>
+          
         </div>
       </div>
 
