@@ -116,7 +116,7 @@ export function MonthlyBudget() {
       </h2>
 
       <p className="text-gray-400 text-sm mb-1">
-        Tu progreso de gastos para Junio 2025
+        Tu progreso de gastos para Julio 2025
       </p>
 
       <p className="text-blue-300 text-sm mb-4">

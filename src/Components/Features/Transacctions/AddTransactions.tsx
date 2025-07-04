@@ -1,3 +1,4 @@
+// src/components/AddTransaction.tsx
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import {
@@ -20,12 +21,31 @@ import {
   GraduationCap,
   PartyPopper,
   Car,
+  CheckCircle, // Added for success toast
+  XCircle, // Added for error toast
 } from "lucide-react";
-import React, { useState, useEffect, useCallback } from "react"; // Importa useCallback
+import React, { useState, useEffect } from "react";
+import toast, { Toaster } from 'react-hot-toast'; // Import toast and Toaster
 import { DayPicker } from "react-day-picker";
 import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
 import axios from "axios";
 import "react-day-picker/dist/style.css";
+
+// Componentes Toast personalizados (Copied from TransactionTable.tsx)
+const CustomSuccessToast: React.FC<{ t: any; message: string }> = ({ t, message }) => (
+  <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-neutral-800 shadow-xl rounded-xl pointer-events-auto flex`}>
+    <div className="flex-1 w-0 p-4"><div className="flex items-start"><div className="flex-shrink-0 pt-0.5"><CheckCircle className="h-6 w-6 text-green-500" /></div><div className="ml-3 flex-1"><p className="text-sm font-semibold text-white">¡Éxito!</p><p className="mt-1 text-sm text-gray-300">{message}</p></div></div></div>
+    <div className="flex border-l border-green-600/30"><button onClick={() => toast.dismiss(t.id)} className="w-full border border-transparent rounded-none rounded-r-xl p-4 flex items-center justify-center text-sm font-medium text-green-400 hover:text-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">Cerrar</button></div>
+  </div>
+);
+
+const CustomErrorToast: React.FC<{ t: any; message: string }> = ({ t, message }) => (
+  <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-neutral-800 shadow-xl rounded-xl pointer-events-auto flex`}>
+    <div className="flex-1 w-0 p-4"><div className="flex items-start"><div className="flex-shrink-0 pt-0.5"><XCircle className="h-6 w-6 text-red-500" /></div><div className="ml-3 flex-1"><p className="text-sm font-semibold text-white">Error</p><p className="mt-1 text-sm text-gray-300">{message}</p></div></div></div>
+    <div className="flex border-l border-red-600/30"><button onClick={() => toast.dismiss(t.id)} className="w-full border border-transparent rounded-none rounded-r-xl p-4 flex items-center justify-center text-sm font-medium text-red-400 hover:text-red-200 focus:outline-none focus:ring-2 focus:ring-red-500">Cerrar</button></div>
+  </div>
+);
+
 
 // Interfaces para los datos del backend
 interface Budget {
@@ -70,7 +90,7 @@ export const AddTransaction: React.FC = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  // const [errorMessage, setErrorMessage] = useState<string>(""); // Replaced by toast
 
   // Definición de categorías
   const categories = [
@@ -95,11 +115,11 @@ export const AddTransaction: React.FC = () => {
   useEffect(() => {
     const fetchEntidades = async () => {
       setIsLoading(true);
-      setErrorMessage("");
+      // setErrorMessage(""); // Replaced by toast
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          setErrorMessage("Sesión no encontrada. Por favor, inicia sesión.");
+          toast.custom((t) => <CustomErrorToast t={t} message="Sesión no encontrada. Por favor, inicia sesión." />);
           return;
         }
         const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -125,7 +145,7 @@ export const AddTransaction: React.FC = () => {
         setCuentas([]);
         setInversiones([]);
         setTarjetas([]);
-        setErrorMessage("Error al cargar cuentas, inversiones o tarjetas. Verifica tu conexión y que tengas entidades creadas.");
+        toast.custom((t) => <CustomErrorToast t={t} message="Error al cargar cuentas, inversiones o tarjetas. Verifica tu conexión y que tengas entidades creadas." />);
       } finally {
         setIsLoading(false);
       }
@@ -146,18 +166,18 @@ export const AddTransaction: React.FC = () => {
 
       const parsedEntidadId = Number(entidadId);
       if (isNaN(parsedEntidadId) || parsedEntidadId <= 0) {
-        setErrorMessage("ID de entidad seleccionado no es válido. Por favor, selecciona uno válido.");
+        toast.custom((t) => <CustomErrorToast t={t} message="ID de entidad seleccionado no es válido. Por favor, selecciona uno válido." />);
         setPresupuestos([]);
         setPresupuestoSeleccionado("");
         return;
       }
 
       setIsLoading(true);
-      setErrorMessage("");
+      // setErrorMessage(""); // Replaced by toast
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          setErrorMessage("Sesión no encontrada. Por favor, inicia sesión.");
+          toast.custom((t) => <CustomErrorToast t={t} message="Sesión no encontrada. Por favor, inicia sesión." />);
           return;
         }
         const config = { headers: { Authorization: `Bearer ${token}` } };
@@ -171,7 +191,7 @@ export const AddTransaction: React.FC = () => {
         } else if (tipoEntidad === "tarjeta") {
           endpoint = `http://localhost:8080/finzen/presupuesto/getTajeta/${parsedEntidadId}`;
         } else {
-          setErrorMessage("Tipo de entidad no reconocido para obtener presupuestos.");
+          toast.custom((t) => <CustomErrorToast t={t} message="Tipo de entidad no reconocido para obtener presupuestos." />);
           setIsLoading(false);
           return;
         }
@@ -190,9 +210,9 @@ export const AddTransaction: React.FC = () => {
         console.error("Error al obtener presupuestos:", error);
         setPresupuestos([]);
         if (axios.isAxiosError(error) && error.response) {
-          setErrorMessage(`Error al cargar presupuestos: ${error.response.data.message || error.response.statusText}`);
+          toast.custom((t) => <CustomErrorToast t={t} message={`Error al cargar presupuestos: ${(error.response?.data?.message) || error.response?.statusText || "Error desconocido"}`} />);
         } else {
-          setErrorMessage("Error al cargar los presupuestos. Asegúrate de que existan presupuestos para la entidad seleccionada.");
+          toast.custom((t) => <CustomErrorToast t={t} message="Error al cargar los presupuestos. Asegúrate de que existan presupuestos para la entidad seleccionada." />);
         }
       } finally {
         setIsLoading(false);
@@ -307,30 +327,30 @@ export const AddTransaction: React.FC = () => {
   };
 
   const handleGuardarTransaccion = async () => {
-    setErrorMessage("");
+    // setErrorMessage(""); // Replaced by toast
 
     // 1. Validaciones de campos comunes
     if (!nombreTransaccion.trim()) {
-      setErrorMessage("Por favor, ingresa el nombre de la transacción.");
+      toast.custom((t) => <CustomErrorToast t={t} message="Por favor, ingresa el nombre de la transacción." />);
       return;
     }
     const parsedMonto = parseFloat(monto.replace(",", "."));
     if (isNaN(parsedMonto) || parsedMonto <= 0) {
-      setErrorMessage("Por favor, ingresa un monto válido mayor que 0.");
+      toast.custom((t) => <CustomErrorToast t={t} message="Por favor, ingresa un monto válido mayor que 0." />);
       return;
     }
     if (!selectedDate) {
-      setErrorMessage("Por favor, selecciona una fecha.");
+      toast.custom((t) => <CustomErrorToast t={t} message="Por favor, selecciona una fecha." />);
       return;
     }
     if (!tipoEntidad || !entidadId) {
-      setErrorMessage("Por favor, selecciona el tipo y la entidad para la transacción.");
+      toast.custom((t) => <CustomErrorToast t={t} message="Por favor, selecciona el tipo y la entidad para la transacción." />);
       return;
     }
 
     const parsedEntidadIdNumber = Number(entidadId);
     if (isNaN(parsedEntidadIdNumber) || parsedEntidadIdNumber <= 0) {
-      setErrorMessage("Por favor, selecciona una entidad válida (Cuenta, Inversión o Tarjeta).");
+      toast.custom((t) => <CustomErrorToast t={t} message="Por favor, selecciona una entidad válida (Cuenta, Inversión o Tarjeta)." />);
       return;
     }
 
@@ -341,17 +361,17 @@ export const AddTransaction: React.FC = () => {
 
     if (tipoTransaccion === "gasto") {
       if (!categoriaSeleccionada) {
-        setErrorMessage("Por favor, selecciona una categoría para el gasto.");
+        toast.custom((t) => <CustomErrorToast t={t} message="Por favor, selecciona una categoría para el gasto." />);
         return;
       }
       const categoriaObj = categories.find(cat => cat.ide === categoriaSeleccionada);
       if (!categoriaObj) {
-        setErrorMessage("Categoría seleccionada no válida. (Error interno)");
+        toast.custom((t) => <CustomErrorToast t={t} message="Categoría seleccionada no válida. (Error interno)" />);
         return;
       }
       const parsedPresupuestoId = Number(presupuestoSeleccionado);
       if (isNaN(parsedPresupuestoId) || parsedPresupuestoId <= 0) {
-        setErrorMessage("Por favor, selecciona un presupuesto válido para el gasto.");
+        toast.custom((t) => <CustomErrorToast t={t} message="Por favor, selecciona un presupuesto válido para el gasto." />);
         return;
       }
 
@@ -389,7 +409,7 @@ export const AddTransaction: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setErrorMessage("Sesión no encontrada. Por favor, inicia sesión.");
+        toast.custom((t) => <CustomErrorToast t={t} message="Sesión no encontrada. Por favor, inicia sesión." />);
         return;
       }
 
@@ -410,7 +430,7 @@ export const AddTransaction: React.FC = () => {
       setTipoEntidad("");
       setEntidadId("");
       setPresupuestos([]);
-      setErrorMessage("Transacción guardada exitosamente.");
+      toast.custom((t) => <CustomSuccessToast t={t} message="Transacción guardada exitosamente." />);
 
       // Despacha un evento personalizado para notificar a otros componentes
       window.dispatchEvent(new Event('transaction-added'));
@@ -418,9 +438,9 @@ export const AddTransaction: React.FC = () => {
     } catch (error) {
       console.error("Error al guardar la transacción:", error);
       if (axios.isAxiosError(error) && error.response) {
-        setErrorMessage(`Error: ${error.response.data.message || error.response.statusText || "Hubo un problema con la solicitud."}`);
+        toast.custom((t) => <CustomErrorToast t={t} message={`Error: ${(error.response?.data?.message) || error.response?.statusText || "Hubo un problema con la solicitud."}`} />);
       } else {
-        setErrorMessage("Error al guardar la transacción. Por favor, intenta de nuevo. Error de red o desconocido.");
+        toast.custom((t) => <CustomErrorToast t={t} message="Error al guardar la transacción. Por favor, intenta de nuevo. Error de red o desconocido." />);
       }
     } finally {
       setIsLoading(false);
@@ -430,6 +450,7 @@ export const AddTransaction: React.FC = () => {
 
   return (
     <>
+      <Toaster position="bottom-right" /> {/* Added Toaster component here */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="min-h-screen bg-[#020817] text-white flex flex-col items-center justify-center py-4 px-2">
         <div className="w-[95%] sm:w-[80%] md:w-[60%] lg:w-[40%] bg-[#020817] rounded-lg shadow-lg p-4">
@@ -437,12 +458,12 @@ export const AddTransaction: React.FC = () => {
           <p className="text-gray-400 text-sm mb-4">
             Registra tus gastos e ingresos de manera rápida y sencilla.
           </p>
-          {/* Mensaje de error o éxito */}
-          {errorMessage && (
+          {/* Mensaje de error o éxito - REMOVED, now handled by toast */}
+          {/* {errorMessage && (
             <div className={`mb-4 p-2 rounded-md ${errorMessage.includes("exitosa") ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
               {errorMessage}
             </div>
-          )}
+          )} */}
           {/* Indicador de carga */}
           {isLoading && (
             <div className="mb-4 p-2 bg-blue-500/20 text-blue-400 rounded-md">

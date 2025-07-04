@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import toast, { Toaster } from 'react-hot-toast'; // Import toast and Toaster
+import axios from 'axios'; // Import axios for consistent error handling
 
 import MovementsModal from "./Components/MovementsModal";
 import AccountTabs from "./Components/AccountTabs";
@@ -10,6 +12,7 @@ import AccountCategoryCard from "./Components/AccountCategoryCard";
 import AccountList from "./Components/AccountList";
 import AddAccountModal from "./Components/AddAccountModal";
 import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
+import { CheckCircle, XCircle } from 'lucide-react'; // Import icons
 
 interface Movement {
   id: number;
@@ -37,6 +40,21 @@ export interface Account {
   startDate?: string;
   originalType?: 'cuenta' | 'tarjeta' | 'inversion';
 }
+
+// Componentes Toast personalizados (Copied from TransactionTable.tsx)
+const CustomSuccessToast: React.FC<{ t: any; message: string }> = ({ t, message }) => (
+  <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-neutral-800 shadow-xl rounded-xl pointer-events-auto flex`}>
+    <div className="flex-1 w-0 p-4"><div className="flex items-start"><div className="flex-shrink-0 pt-0.5"><CheckCircle className="h-6 w-6 text-green-500" /></div><div className="ml-3 flex-1"><p className="text-sm font-semibold text-white">¡Éxito!</p><p className="mt-1 text-sm text-gray-300">{message}</p></div></div></div>
+    <div className="flex border-l border-green-600/30"><button onClick={() => toast.dismiss(t.id)} className="w-full border border-transparent rounded-none rounded-r-xl p-4 flex items-center justify-center text-sm font-medium text-green-400 hover:text-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">Cerrar</button></div>
+  </div>
+);
+
+const CustomErrorToast: React.FC<{ t: any; message: string }> = ({ t, message }) => (
+  <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-neutral-800 shadow-xl rounded-xl pointer-events-auto flex`}>
+    <div className="flex-1 w-0 p-4"><div className="flex items-start"><div className="flex-shrink-0 pt-0.5"><XCircle className="h-6 w-6 text-red-500" /></div><div className="ml-3 flex-1"><p className="text-sm font-semibold text-white">Error</p><p className="mt-1 text-sm text-gray-300">{message}</p></div></div></div>
+    <div className="flex border-l border-red-600/30"><button onClick={() => toast.dismiss(t.id)} className="w-full border border-transparent rounded-none rounded-r-xl p-4 flex items-center justify-center text-sm font-medium text-red-400 hover:text-red-200 focus:outline-none focus:ring-2 focus:ring-red-500">Cerrar</button></div>
+  </div>
+);
 
 // Agrupa cuentas por categoría basada en el tipo
 const groupAccountsByCategory = (accounts: Account[]) => {
@@ -109,25 +127,26 @@ const Account = () => {
 
   useEffect(() => {
     const fetchAccounts = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          console.error("Token no encontrado");
-          return;
-        }
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
+        setAccounts([]);
+        // router.push('/login'); // Opcional: Redirigir al login si no hay token
+        return;
+      }
 
+      try {
         let allAccounts: Account[] = [];
 
         // Fetch Cuentas
-        const cuentasResponse = await fetch("http://localhost:8080/finzen/cuentas", {
+        const cuentasResponse = await axios.get("http://localhost:8080/finzen/cuentas", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (cuentasResponse.ok) {
-          const cuentasData = await cuentasResponse.json();
-          console.log("Fetched cuentas:", cuentasData);
+        if (cuentasResponse.status === 200) {
+          const cuentasData = cuentasResponse.data;
           const typeMap: { [key: string]: string } = {
             savings: "ahorros",
             cash: "efectivo",
@@ -138,7 +157,6 @@ const Account = () => {
           const mappedCuentas: Account[] = cuentasData.map((cuenta: any) => {
             const tipo = cuenta.tipo?.toLowerCase().trim();
             const validType = typeMap[tipo] || "corriente";
-            console.log(`Cuenta ID: ${cuenta.idCuenta}, tipo: ${cuenta.tipo}, mapped to: ${validType}`);
             return {
               id: cuenta.idCuenta,
               uniqueId: `cuenta-${cuenta.idCuenta}`,
@@ -155,19 +173,18 @@ const Account = () => {
           });
           allAccounts = [...allAccounts, ...mappedCuentas];
         } else {
-          console.error("Failed to fetch cuentas:", cuentasResponse.status, await cuentasResponse.text());
+          toast.custom((t) => <CustomErrorToast t={t} message={`Error al obtener cuentas: ${cuentasResponse.statusText}`} />);
         }
 
         // Fetch Tarjetas
-        const tarjetasResponse = await fetch("http://localhost:8080/finzen/tarjetas", {
+        const tarjetasResponse = await axios.get("http://localhost:8080/finzen/tarjetas", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (tarjetasResponse.ok) {
-          const tarjetasData = await tarjetasResponse.json();
-          console.log("Fetched tarjetas:", tarjetasData);
+        if (tarjetasResponse.status === 200) {
+          const tarjetasData = tarjetasResponse.data;
           const mappedTarjetas: Account[] = tarjetasData.map((tarjeta: any) => ({
             id: tarjeta.idTarjeta,
             uniqueId: `tarjeta-${tarjeta.idTarjeta}`,
@@ -182,19 +199,18 @@ const Account = () => {
           }));
           allAccounts = [...allAccounts, ...mappedTarjetas];
         } else {
-          console.error("Failed to fetch tarjetas:", tarjetasResponse.status, await tarjetasResponse.text());
+          toast.custom((t) => <CustomErrorToast t={t} message={`Error al obtener tarjetas: ${tarjetasResponse.statusText}`} />);
         }
 
         // Fetch Inversiones
-        const inversionesResponse = await fetch("http://localhost:8080/finzen/inversiones", {
+        const inversionesResponse = await axios.get("http://localhost:8080/finzen/inversiones", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (inversionesResponse.ok) {
-          const inversionesData = await inversionesResponse.json();
-          console.log("Fetched inversiones:", inversionesData);
+        if (inversionesResponse.status === 200) {
+          const inversionesData = inversionesResponse.data;
           const mappedInversiones: Account[] = inversionesData.map((inversion: any) => ({
             id: inversion.idInversion,
             uniqueId: `inversion-${inversion.idInversion}`,
@@ -212,18 +228,34 @@ const Account = () => {
           }));
           allAccounts = [...allAccounts, ...mappedInversiones];
         } else {
-          console.error("Failed to fetch inversiones:", inversionesResponse.status, await inversionesResponse.text());
+          toast.custom((t) => <CustomErrorToast t={t} message={`Error al obtener inversiones: ${inversionesResponse.statusText}`} />);
         }
 
         const validAccounts = allAccounts.filter((account) => account.id);
-        console.log("Mapped accounts:", validAccounts);
         setAccounts(validAccounts);
-      } catch (error) {
-        console.error("Error fetching accounts:", error);
+      } catch (err: any) {
+        if (axios.isAxiosError(err) && err.response?.status === 401) {
+          toast.custom((t) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
+          localStorage.removeItem("token");
+          // router.push('/login');
+        } else {
+          toast.custom((t) => <CustomErrorToast t={t} message="Error al obtener las cuentas." />);
+        }
+        console.error("Error fetching accounts:", err);
+        setAccounts([]);
       }
     };
 
     fetchAccounts();
+    const handler = () => fetchAccounts();
+    window.addEventListener("account-added", handler); // Listen for a custom event when an account is added
+    window.addEventListener("account-updated", handler); // Listen for a custom event when an account is updated
+    window.addEventListener("account-deleted", handler); // Listen for a custom event when an account is deleted
+    return () => {
+      window.removeEventListener("account-added", handler);
+      window.removeEventListener("account-updated", handler);
+      window.removeEventListener("account-deleted", handler);
+    };
   }, []);
 
   const totalAmount = accounts.reduce((sum, acc) => sum + acc.amount, 0);
@@ -233,7 +265,7 @@ const Account = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("Token no encontrado");
+        toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
         return;
       }
 
@@ -250,8 +282,8 @@ const Account = () => {
         payload = {
           nombre: newAccount.title || "",
           tipo: (newAccount.type?.toUpperCase() === "DEBITO" || newAccount.type?.toUpperCase() === "CREDITO")
-                ? newAccount.type.toUpperCase()
-                : "CREDITO",
+            ? newAccount.type.toUpperCase()
+            : "CREDITO",
           banco: newAccount.bank || "",
           numeroUltimosDigitos: newAccount.number || "",
           saldoActual: parseFloat(newAccount.amount?.toString() || "0") || 0,
@@ -280,21 +312,15 @@ const Account = () => {
         };
       }
 
-      console.log("Creating account with payload:", payload);
-
-      const response = await fetch(endpoint, {
-        method: "POST",
+      const response = await axios.post(endpoint, payload, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
-        const createdAccount = await response.json();
-        console.log("Backend response:", createdAccount);
-
+      if (response.status === 200 || response.status === 201) {
+        const createdAccount = response.data;
         let mappedAccount: Account;
 
         if (tab === "Tarjetas") {
@@ -343,13 +369,20 @@ const Account = () => {
         }
 
         setAccounts((prev) => [...prev, mappedAccount]);
+        toast.custom((t) => <CustomSuccessToast t={t} message="Cuenta creada exitosamente." />);
+        window.dispatchEvent(new Event("account-added")); // Dispatch custom event
       } else {
-        const errorText = await response.text();
-        console.error("Failed to create account:", response.status, errorText);
-        throw new Error(`Failed to create account: ${response.status} - ${errorText}`);
+        toast.custom((t) => <CustomErrorToast t={t} message={`Error al crear la cuenta: ${response.statusText}`} />);
       }
-    } catch (error) {
-      console.error("Error creating account:", error);
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        toast.custom((t) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
+        localStorage.removeItem("token");
+        // router.push('/login');
+      } else {
+        toast.custom((t) => <CustomErrorToast t={t} message="Error al crear la cuenta." />);
+      }
+      console.error("Error creating account:", err);
     }
   };
 
@@ -358,6 +391,11 @@ const Account = () => {
 
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
+        return;
+      }
+
       let endpoint = "";
       let payload: any = {};
 
@@ -372,8 +410,8 @@ const Account = () => {
         payload = {
           nombre: updatedAccount.title,
           tipo: (updatedAccount.type?.toUpperCase() === "DEBITO" || updatedAccount.type?.toUpperCase() === "CREDITO")
-                ? updatedAccount.type.toUpperCase()
-                : "CREDITO",
+            ? updatedAccount.type.toUpperCase()
+            : "CREDITO",
           banco: updatedAccount.bank || "",
           numeroUltimosDigitos: updatedAccount.number || "",
           saldoActual: parseFloat(updatedAccount.amount?.toString() || "0") || 0,
@@ -400,18 +438,14 @@ const Account = () => {
         };
       }
 
-      console.log("Updating account with payload:", payload);
-
-      const response = await fetch(endpoint, {
-        method: "PUT",
+      const response = await axios.put(endpoint, payload, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         setAccounts((prev) =>
           prev.map((acc) =>
             acc.id === editAccount.id ? { ...acc, ...updatedAccount, type: validType, originalType: acc.originalType } : acc
@@ -419,66 +453,95 @@ const Account = () => {
         );
         setEditModalOpen(false);
         setEditAccount(null);
+        toast.custom((t) => <CustomSuccessToast t={t} message="Cuenta actualizada exitosamente." />);
+        window.dispatchEvent(new Event("account-updated")); // Dispatch custom event
       } else {
-        console.error("Failed to update account:", response.status, await response.text());
+        toast.custom((t) => <CustomErrorToast t={t} message={`Error al actualizar la cuenta: ${response.statusText}`} />);
       }
-    } catch (error) {
-      console.error("Error updating account:", error);
+    } catch (err: any) {
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        toast.custom((t) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
+        localStorage.removeItem("token");
+        // router.push('/login');
+      } else {
+        toast.custom((t) => <CustomErrorToast t={t} message="Error al actualizar la cuenta." />);
+      }
+      console.error("Error updating account:", err);
     }
   };
 
   const handleDeleteAccount = async (id: number) => {
     if (!id) {
-      console.error("ID de cuenta no válido:", id);
+      toast.custom((t) => <CustomErrorToast t={t} message="ID de cuenta no válido." />);
       return;
     }
 
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("Token de autorización no encontrado");
-        return;
-      }
+    toast.custom((t) => (
+      <div className="bg-neutral-800 p-4 rounded-lg shadow-xl text-white max-w-md w-full">
+        <p className="mb-2">¿Estás seguro de eliminar esta cuenta?</p>
+        <div className="flex justify-end gap-2">
+          <button onClick={() => toast.dismiss(t.id)} className="px-4 py-1 border border-gray-500 rounded hover:bg-gray-700">Cancelar</button>
+          <button
+            className="px-4 py-1 bg-red-600 rounded hover:bg-red-700"
+            onClick={async () => {
+              try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                  toast.custom((t) => <CustomErrorToast t={t} message="No estás autenticado. Inicia sesión." />);
+                  toast.dismiss(t.id);
+                  // router.push('/login');
+                  return;
+                }
 
-      const accountToDelete = accounts.find(acc => acc.id === id);
-      if (!accountToDelete) {
-        console.error("Cuenta no encontrada en el estado local");
-        return;
-      }
+                const accountToDelete = accounts.find(acc => acc.id === id);
+                if (!accountToDelete) {
+                  toast.custom((t) => <CustomErrorToast t={t} message="Cuenta no encontrada para eliminar." />);
+                  toast.dismiss(t.id);
+                  return;
+                }
 
-      const accountType = determineAccountType(accountToDelete);
+                const accountType = determineAccountType(accountToDelete);
 
-      const endpoint =
-        accountType === 'tarjeta'
-          ? `http://localhost:8080/finzen/tarjetas/${id}`
-          : accountType === 'inversion'
-          ? `http://localhost:8080/finzen/inversiones/${id}`
-          : `http://localhost:8080/finzen/cuentas/${id}`;
+                const endpoint =
+                  accountType === 'tarjeta'
+                    ? `http://localhost:8080/finzen/tarjetas/${id}`
+                    : accountType === 'inversion'
+                      ? `http://localhost:8080/finzen/inversiones/${id}`
+                      : `http://localhost:8080/finzen/cuentas/${id}`;
 
-      const response = await fetch(endpoint, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+                const response = await axios.delete(endpoint, {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                });
 
-      if (response.ok) {
-        setAccounts((prev) => prev.filter((acc) => acc.id !== id));
-        console.log("Cuenta eliminada exitosamente");
-      } else {
-        if (response.status === 401) {
-          console.error("Error de autorización - Token inválido o expirado");
-          window.location.href = "/login";
-        } else if (response.status === 404) {
-          console.error("Cuenta no encontrada");
-        } else {
-          console.error("Error al eliminar cuenta:", response.status, await response.text());
-        }
-      }
-    } catch (error) {
-      console.error("Error en la petición de eliminación:", error);
-    }
+                if (response.status === 200 || response.status === 204) { // 204 No Content is common for successful DELETE
+                  setAccounts((prev) => prev.filter((acc) => acc.id !== id));
+                  toast.dismiss(t.id);
+                  toast.custom((t) => <CustomSuccessToast t={t} message="Cuenta eliminada exitosamente." />);
+                  window.dispatchEvent(new Event("account-deleted")); // Dispatch custom event
+                } else {
+                  toast.dismiss(t.id);
+                  toast.custom((t) => <CustomErrorToast t={t} message={`Error al eliminar la cuenta: ${response.statusText}`} />);
+                }
+              } catch (err: any) {
+                if (axios.isAxiosError(err) && err.response?.status === 401) {
+                  toast.custom((t) => <CustomErrorToast t={t} message="Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo." />);
+                  localStorage.removeItem("token");
+                  // router.push('/login');
+                } else {
+                  toast.custom((t) => <CustomErrorToast t={t} message="Error al eliminar la cuenta." />);
+                }
+                console.error("Error en la petición de eliminación:", err);
+              }
+            }}
+          >
+            Eliminar
+          </button>
+        </div>
+      </div>
+    ));
   };
 
   const handleViewMovements = (account: Account) => {
@@ -500,6 +563,7 @@ const Account = () => {
 
   return (
     <>
+      <Toaster position="bottom-right" /> {/* Add Toaster component */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       <div
