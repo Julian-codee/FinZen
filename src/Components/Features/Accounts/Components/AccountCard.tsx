@@ -53,7 +53,7 @@ const AccountCard = ({
 
   return (
     <>
-      <div className="bg-[#111827] p-4 rounded-lg text-white shadow border border-gray-700 relative">
+      <div className=" p-4 rounded-lg text-white shadow border border-gray-700 relative">
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <h4 className="font-semibold text-lg mb-1">{account.title}</h4>
