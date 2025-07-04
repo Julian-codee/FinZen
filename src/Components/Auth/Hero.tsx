@@ -186,11 +186,11 @@ export const Hero = ({ onBack }: HeroProps) => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <Shell className="w-8 h-8" />
               </div>
-              <h2 className="text-3xl font-bold text-white">
+              <h2 className="text-xl sm:text-4xl font-bold text-white">
                 ¿Cuáles son tus principales objetivos financieros?
               </h2>
             </div>
-            <p className="text-gray-300 mb-10 text-xl">
+            <p className="text-gray-300 mb-10 text-md sm:text-xl">
               Selecciona todos los objetivos que sean relevantes para ti. Esto
               nos ayudará a personalizar tu experiencia.
             </p>
@@ -254,11 +254,11 @@ export const Hero = ({ onBack }: HeroProps) => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <Wallet className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-xl sm:text-4xl font-bold mb-6">
                 ¿Cuál es tu situación financiera actual?
               </h2>
             </div>
-            <p className="text-gray-300 mb-10 text-xl">
+            <p className="text-gray-300 mb-10 text-md sm:text-xl">
               Esta información nos ayudará a ofrecerte recomendaciones más
               precisas. Todos los datos son confidenciales.
             </p>
@@ -280,11 +280,11 @@ export const Hero = ({ onBack }: HeroProps) => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <Signal className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-xl sm:text-4xl font-bold mb-6">
                 ¿Cuál es tu nivel de experiencia financiera?
               </h2>
             </div>
-            <p className="text-gray-300 mb-10 text-xl">
+            <p className="text-gray-300 mb-10 text-md sm:text-xl">
               Estas preguntas nos ayudarán a adaptar el contenido y las
               herramientas a tu nivel de conocimiento.
             </p>
@@ -308,11 +308,11 @@ export const Hero = ({ onBack }: HeroProps) => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <ChartLine className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-xl sm:text-4xl font-bold mb-6">
                 ¿Qué áreas financieras te interesan más?
               </h2>
             </div>
-            <p className="text-gray-300 mb-10 text-xl">
+            <p className="text-gray-300 mb-10 text-md sm:text-xl">
               Selecciona las áreas que más te interesen para personalizar el
               contenido y las herramientas que verás.
             </p>
@@ -330,11 +330,11 @@ export const Hero = ({ onBack }: HeroProps) => {
               <div className="w-8 h-8 rounded-full bg-transparent text-blue-600 flex items-center justify-center mr-4">
                 <Heart className="w-8 h-8 -mt-6" />
               </div>
-              <h2 className="text-3xl font-bold mb-6">
+              <h2 className="text-xl sm:text-4xl font-bold mb-6">
                 ¿Cómo prefieres usar Finzen?
               </h2>
             </div>
-            <p className="text-gray-300 mb-10 text-xl">
+            <p className="text-gray-300 mb-10 text-md sm:text-xl">
               Estas preferencias nos ayudarán a personalizar tu experiencia en
               la aplicación.
             </p>
@@ -359,11 +359,13 @@ export const Hero = ({ onBack }: HeroProps) => {
   const progress = (currentStep / 5) * 100;
 
   return (
-    <div className="w-full bg-[#020817] min-h-screen flex items-center justify-center p-4 -mt-10">
-      <div className="w-full max-w-5xl scale-[0.75]">
-        <div className="flex justify-between items-center mb-4">
-          <div className="text-white text-xl">Paso {currentStep} de 5</div>
-          <div className="text-white text-xl">
+    <div className="w-full bg-[#020817] min-h-screen flex items-center justify-center px-4 py-6">
+      <div className="w-full max-w-5xl scale-100 sm:scale-95 md:scale-100">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-2">
+          <div className="text-white text-lg sm:text-xl">
+            Paso {currentStep} de 5
+          </div>
+          <div className="text-white text-lg sm:text-xl text-left sm:text-right">
             {
               [
                 "Objetivos financieros",
@@ -375,29 +377,29 @@ export const Hero = ({ onBack }: HeroProps) => {
             }
           </div>
         </div>
-        <div className="w-full h-2 bg-gray-800 rounded-full mb-8">
+
+        <div className="w-full h-2 bg-gray-800 rounded-full mb-6">
           <div
             className="h-full bg-blue-600 rounded-full transition-all duration-300 ease-in-out"
             style={{ width: `${progress}%` }}
           ></div>
         </div>
-        <div className="bg-[#020817] border border-gray-700 rounded-xl p-8 mb-8">
+
+        <div className="bg-[#020817] border border-gray-700 rounded-xl p-6 sm:p-8 mb-8">
           {renderStepContent()}
         </div>
-        <div className="flex justify-between">
+
+        <div className="flex flex-col sm:flex-row justify-between gap-4">
           <button
             onClick={handleBack}
-            className="flex items-center px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
-            // La lógica para deshabilitar el botón se maneja dentro de handleBack
-            // Si quieres deshabilitarlo solo si no hay historial de navegación,
-            // necesitarías una lógica más avanzada o un estado global.
+            className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
           >
             Volver
           </button>
 
           <button
             onClick={handleNext}
-            className="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            className="w-full sm:w-auto flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
           >
             {currentStep < 5 ? "Siguiente" : "Finalizar"}
           </button>

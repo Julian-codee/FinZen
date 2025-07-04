@@ -1,5 +1,6 @@
 "use client"
 
+import { DollarSign, TrendingDown, TrendingUp, AlertTriangle } from "lucide-react"
 import { formatCurrency } from "../utils/budgest-utils"
 import type { BudgetCategory } from "../types/budget-types"
 
@@ -8,62 +9,97 @@ interface SummaryCardsProps {
 }
 
 export default function SummaryCards({ categories }: SummaryCardsProps) {
-  const totalBudget = categories.reduce((sum, cat) => sum + cat.budget, 0)
-  const totalSpent = categories.reduce((sum, cat) => sum + cat.spent, 0)
+  const totalBudget = categories.reduce((sum, cat) => sum + (cat.budget ?? 0), 0)
+  const totalSpent = categories.reduce((sum, cat) => sum + (cat.spent ?? 0), 0)
   const totalAvailable = totalBudget - totalSpent
   const spentPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0
   const availablePercentage = totalBudget > 0 ? (totalAvailable / totalBudget) * 100 : 0
-  const exceededCategories = categories.filter((cat) => cat.spent > cat.budget).length
+  const exceededCategories = categories.filter((cat) => (cat.spent ?? 0) > (cat.budget ?? 0)).length
 
   const summaryData = [
     {
       title: "Presupuesto Total",
       value: formatCurrency(totalBudget),
       subtitle: "Presupuesto mensual",
-      iconColor: "bg-[#3B82F6]",
+      icon: <DollarSign className="w-5 h-5 text-blue-400" />,
+      gradientFrom: "from-blue-900/20",
+      gradientTo: "to-slate-900/80",
     },
     {
       title: "Gastado",
       value: formatCurrency(totalSpent),
       subtitle: `${spentPercentage.toFixed(0)}% del presupuesto`,
-      iconColor: "bg-[#F59E0B]",
+      icon: <TrendingDown className="w-5 h-5 text-amber-400" />,
+      gradientFrom: "from-amber-900/20",
+      gradientTo: "to-slate-900/80",
       progress: Math.min(spentPercentage, 100),
+      progressColor: "from-amber-500 to-orange-500",
     },
     {
       title: "Disponible",
       value: formatCurrency(totalAvailable),
       subtitle: `${availablePercentage.toFixed(0)}% restante`,
-      iconColor: "bg-[#10B981]",
+      icon: <TrendingUp className="w-5 h-5 text-green-400" />,
+      gradientFrom: "from-green-900/20",
+      gradientTo: "to-slate-900/80",
       progress: Math.min(availablePercentage, 100),
+      progressColor: "from-green-500 to-emerald-500",
     },
     {
       title: "Categorías Excedidas",
       value: exceededCategories.toString(),
       subtitle: `De ${categories.length} categorías`,
-      iconColor: "bg-[#EF4444]",
+      icon: <AlertTriangle className="w-5 h-5 text-red-400" />,
+      gradientFrom: "from-red-900/20",
+      gradientTo: "to-slate-900/80",
     },
   ]
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {summaryData.map((item, index) => (
-        <div key={index} className="bg-[#020817] border border-white/40 rounded-xl p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-gray-400 font-medium">{item.title}</h3>
-            <div className={`w-8 h-8 ${item.iconColor}/20 rounded-full flex items-center justify-center`}>
-              <div className={`w-4 h-4 ${item.iconColor} rounded-full`}></div>
-            </div>
+        <div key={index} className="group relative overflow-hidden">
+          {/* Background gradient */}
+          <div className={`absolute inset-0 bg-gradient-to-br ${item.gradientFrom} ${item.gradientTo} rounded-2xl transition-all duration-300 group-hover:scale-[1.02]`}></div>
+          
+          {/* Border gradient */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-slate-700/50 via-transparent to-slate-600/30 p-[1px]">
+            <div className="h-full w-full rounded-2xl bg-slate-900/90 backdrop-blur-sm"></div>
           </div>
-          <div className="text-3xl font-bold mb-1">{item.value}</div>
-          <p className="text-gray-400 text-sm">{item.subtitle}</p>
-          {item.progress !== undefined && (
-            <div className="w-full bg-[#374151] rounded-full h-2 mt-3">
-              <div
-                className="bg-[#3B82F6] h-2 rounded-full transition-all duration-300"
-                style={{ width: `${item.progress}%` }}
-              ></div>
+
+          {/* Content */}
+          <div className="relative p-6">
+            {/* Header */}
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-gray-400 text-sm font-medium tracking-wide">{item.title}</h3>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-800/50 border border-slate-700/50 group-hover:border-slate-600/50 transition-colors">
+                {item.icon}
+              </div>
             </div>
-          )}
+
+            {/* Value */}
+            <div className="text-white text-2xl lg:text-3xl font-bold mb-3 tracking-tight">
+              {item.value}
+            </div>
+
+            {/* Subtitle */}
+            <p className="text-gray-400 text-sm font-medium mb-3">{item.subtitle}</p>
+
+            {/* Progress bar */}
+            {item.progress !== undefined && (
+              <div className="w-full bg-slate-800/50 rounded-full h-2 overflow-hidden">
+                <div
+                  className={`bg-gradient-to-r ${item.progressColor} h-2 rounded-full transition-all duration-500 ease-out shadow-sm`}
+                  style={{ width: `${item.progress}%` }}
+                ></div>
+              </div>
+            )}
+
+            {/* Decorative element */}
+            <div className="absolute top-4 right-4 w-20 h-20 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+          </div>
         </div>
       ))}
     </div>

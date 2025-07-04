@@ -2,17 +2,15 @@
 
 import { useState } from "react"
 import { Plus } from "lucide-react"
-import type { BudgetCategory } from "../types/budget-types"
-import RegisterExpenseDialog from "./RegisterExpenseDialog"
+import type { BudgetCategoryUI } from "../types/budget-types"
 import CategoryCard from "./CategoryCard"
 
 interface CategoriesSectionProps {
-  categories: BudgetCategory[]
-  budgetName?: string
-  onAddCategory: (category: Omit<BudgetCategory, "id" | "spent">) => void
-  onDeleteCategory: (id: string) => void
-  onUpdateBudget?: (id: string, newBudget: number) => void
-  onRegisterExpense?: (id: string, amount: number) => void
+  categories: BudgetCategoryUI[];
+  budgetName?: string;
+  onDeleteCategory: (id: string) => Promise<void>;
+  onUpdateBudget: (id: string, budgetAmount: number, currentCategory: BudgetCategoryUI) => Promise<void>;
+  onRegisterExpense: () => void;
 }
 
 export default function CategoriesSection({
@@ -23,7 +21,6 @@ export default function CategoriesSection({
   onRegisterExpense,
 }: CategoriesSectionProps) {
   const [searchFilter, setSearchFilter] = useState("")
-  const [isRegisterExpenseOpen, setIsRegisterExpenseOpen] = useState(false)
 
   const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(searchFilter.toLowerCase()),
@@ -42,16 +39,14 @@ export default function CategoriesSection({
           )}
         </div>
         <button
-          onClick={() => setIsRegisterExpenseOpen(true)}
+          onClick={onRegisterExpense}
           className="bg-[#F59E0B] hover:bg-[#D97706] px-4 py-2 rounded-lg transition-colors flex items-center"
-          disabled={categories.length === 0}
         >
           <Plus className="w-4 h-4 mr-2" />
           Registrar Gasto
         </button>
       </div>
 
-      {/* Search Filter */}
       <div className="mb-6">
         <input
           type="text"
@@ -62,7 +57,6 @@ export default function CategoriesSection({
         />
       </div>
 
-      {/* Categories List */}
       <div className="space-y-4">
         {filteredCategories.map((category) => (
           <CategoryCard
@@ -70,18 +64,10 @@ export default function CategoriesSection({
             category={category}
             budgetName={budgetName}
             onDelete={onDeleteCategory}
-            onUpdateBudget={onUpdateBudget || (() => {})}
+            onUpdateBudget={(id, newBudget) => onUpdateBudget(id, newBudget, category)}
           />
         ))}
       </div>
-
-      {/* Register Expense Dialog */}
-      <RegisterExpenseDialog
-        isOpen={isRegisterExpenseOpen}
-        onClose={() => setIsRegisterExpenseOpen(false)}
-        categories={categories}
-        onRegisterExpense={onRegisterExpense || (() => {})}
-      />
     </div>
-  )
+  ) 
 }

@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+// --- Interfaces ---
 interface Ingreso {
   idIngreso?: number;
   fecha: string;
@@ -28,6 +29,7 @@ interface MonthlyDataPoint {
   balance: number;
 }
 
+// --- Componente MonthlyTrends ---
 const MonthlyTrends = () => {
   const [data, setData] = useState<MonthlyDataPoint[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -35,30 +37,45 @@ const MonthlyTrends = () => {
   useEffect(() => {
     const fetchFinances = async () => {
       try {
-        // Remove Authorization header for public endpoint
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          setError("No se encontró token de autenticación. Por favor, inicia sesión.");
+          return;
+        }
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        };
+
         const response = await axios.get(
-          "http://localhost:8080/finzen/gasto/user/finances"
+          "http://localhost:8080/finzen/gasto/user/finances",
+          config
         );
+
         const { ingresos, gastos } = response.data;
         const monthlyData = processFinancialData(ingresos || [], gastos || []);
         setData(monthlyData);
         setError(null);
       } catch (error) {
         console.error("Error al obtener datos financieros:", error);
-        let errorMessage = "No se pudieron cargar los datos financieros";
-        if (
-          typeof error === "object" &&
-          error !== null &&
-          "response" in error &&
-          typeof (error as any).response === "object" &&
-          (error as any).response !== null
-        ) {
-          const response = (error as any).response;
-          if (response.data?.message) {
-            errorMessage = response.data.message;
+        let errorMessage = "No se pudieron cargar los datos financieros.";
+
+        if (axios.isAxiosError(error) && error.response) {
+          const response = error.response;
+          if (response.status === 401) {
+            errorMessage = "No autorizado. Por favor, inicia sesión de nuevo.";
+          } else if (response.data?.message) {
+            errorMessage = `Error: ${response.data.message}`;
           } else if (typeof response.data === "string") {
-            errorMessage = response.data;
+            errorMessage = `Error: ${response.data}`;
+          } else {
+            errorMessage = `Error en la solicitud: ${response.status} ${response.statusText}`;
           }
+        } else if (error instanceof Error) {
+          errorMessage = `Error: ${error.message}`;
         }
         setError(errorMessage);
       }
@@ -101,11 +118,7 @@ const MonthlyTrends = () => {
         const monthIndex = date.getMonth();
         monthlyMap[monthIndex].ingresos += Number(ingreso.monto) || 0;
       } catch (e) {
-        if (e instanceof Error) {
-          console.warn(`Error procesando ingreso: ${e.message}`);
-        } else {
-          console.warn(`Error procesando ingreso:`, e);
-        }
+        console.warn(`Error procesando ingreso:`, e);
       }
     });
 
@@ -119,11 +132,7 @@ const MonthlyTrends = () => {
         const monthIndex = date.getMonth();
         monthlyMap[monthIndex].gastos += Number(gasto.monto) || 0;
       } catch (e) {
-        if (e instanceof Error) {
-          console.warn(`Error procesando gasto: ${e.message}`);
-        } else {
-          console.warn(`Error procesando gasto:`, e);
-        }
+        console.warn(`Error procesando gasto:`, e);
       }
     });
 
@@ -131,13 +140,11 @@ const MonthlyTrends = () => {
       month.balance = month.ingresos - month.gastos;
     });
 
-    return Object.values(monthlyMap).filter(
-      (month) => month.ingresos > 0 || month.gastos > 0
-    );
+    return Object.values(monthlyMap);
   };
 
   return (
-    <div className="border border-white/40 rounded-lg p-6 shadow-md text-white">
+    <div className="border border-white/40 rounded-lg p-6 shadow-md text-white bg-[#020817]">
       <h2 className="text-lg font-semibold mb-1">Tendencias Mensuales</h2>
       <p className="text-gray-400 text-sm mb-4">
         Evolución de tus finanzas a lo largo del tiempo
@@ -149,25 +156,28 @@ const MonthlyTrends = () => {
           <YAxis stroke="#cbd5e1" />
           <Tooltip />
           <Line
-            type="monotone"
+            // CAMBIO AQUÍ: de "monotone" a "linear"
+            type="linear"
             dataKey="ingresos"
             stroke="#00FF00"
             strokeWidth={2}
-            dot
+            dot={{ r: 4 }}
           />
           <Line
-            type="monotone"
+            // CAMBIO AQUÍ: de "monotone" a "linear"
+            type="linear"
             dataKey="gastos"
             stroke="#b91c1c"
             strokeWidth={2}
-            dot
+            dot={{ r: 4 }}
           />
           <Line
-            type="monotone"
+            // CAMBIO AQUÍ: de "monotone" a "linear"
+            type="linear"
             dataKey="balance"
             stroke="#3b82f6"
             strokeWidth={2}
-            dot
+            dot={{ r: 4 }}
           />
         </LineChart>
       </ResponsiveContainer>

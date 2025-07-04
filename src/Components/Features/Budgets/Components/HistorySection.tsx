@@ -1,173 +1,193 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Calendar, TrendingUp, TrendingDown, Search, Download } from "lucide-react"
-import type { BudgetCategory } from "../types/budget-types"
+import { toast } from "sonner"
+import type { BudgetCategory, GastosResponseDto } from "../types/budget-types"
+import { formatCurrency } from "../utils/budgest-utils"
 
 interface HistoryEntry {
-  id: string
-  date: string
-  month: string
-  year: number
-  totalBudget: number
-  totalSpent: number
-  categories: BudgetCategory[]
-  status: "completed" | "in-progress" | "exceeded"
+  id: string;
+  date: string;
+  month: string;
+  year: number;
+  totalBudget: number; // Esto será una aproximación si el backend no lo provee históricamente
+  totalSpent: number;
+  categories: BudgetCategory[]; // Esto será una agregación de gastos por categoría
+  status: "completed" | "in-progress" | "exceeded" | "unknown";
 }
 
-interface HistorySectionProps {
-  categories: BudgetCategory[]
-}
-
-export default function HistorySection({ categories }: HistorySectionProps) {
+export default function HistorySection({ categories: currentCategories }: { categories: BudgetCategory[] }) {
   const [animationProgress, setAnimationProgress] = useState(0)
   const [selectedPeriod, setSelectedPeriod] = useState("6months")
   const [searchTerm, setSearchTerm] = useState("")
   const [filterStatus, setFilterStatus] = useState("all")
+  const [transactions, setTransactions] = useState<GastosResponseDto[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  // Datos de ejemplo para el historial
-  const historyData: HistoryEntry[] = [
-    {
-      id: "1",
-      date: "2024-01-01",
-      month: "Enero 2024",
-      year: 2024,
-      totalBudget: 2500000,
-      totalSpent: 2200000,
-      categories: [
-        { id: "1", name: "Vivienda", budget: 800000, spent: 750000, categoryType: "vivienda" },
-        { id: "2", name: "Comida", budget: 600000, spent: 580000, categoryType: "comida" },
-        { id: "3", name: "Transporte", budget: 400000, spent: 420000, categoryType: "transporte" },
-        { id: "4", name: "Entretenimiento", budget: 300000, spent: 250000, categoryType: "entretenimiento" },
-        { id: "5", name: "Salud", budget: 400000, spent: 200000, categoryType: "salud" },
-      ],
-      status: "completed",
-    },
-    {
-      id: "2",
-      date: "2024-02-01",
-      month: "Febrero 2024",
-      year: 2024,
-      totalBudget: 2600000,
-      totalSpent: 2750000,
-      categories: [
-        { id: "1", name: "Vivienda", budget: 800000, spent: 800000, categoryType: "vivienda" },
-        { id: "2", name: "Comida", budget: 650000, spent: 720000, categoryType: "comida" },
-        { id: "3", name: "Transporte", budget: 450000, spent: 480000, categoryType: "transporte" },
-        { id: "4", name: "Entretenimiento", budget: 350000, spent: 400000, categoryType: "entretenimiento" },
-        { id: "5", name: "Salud", budget: 350000, spent: 350000, categoryType: "salud" },
-      ],
-      status: "exceeded",
-    },
-    {
-      id: "3",
-      date: "2024-03-01",
-      month: "Marzo 2024",
-      year: 2024,
-      totalBudget: 2400000,
-      totalSpent: 2100000,
-      categories: [
-        { id: "1", name: "Vivienda", budget: 750000, spent: 750000, categoryType: "vivienda" },
-        { id: "2", name: "Comida", budget: 550000, spent: 480000, categoryType: "comida" },
-        { id: "3", name: "Transporte", budget: 400000, spent: 350000, categoryType: "transporte" },
-        { id: "4", name: "Entretenimiento", budget: 300000, spent: 220000, categoryType: "entretenimiento" },
-        { id: "5", name: "Salud", budget: 400000, spent: 300000, categoryType: "salud" },
-      ],
-      status: "completed",
-    },
-    {
-      id: "4",
-      date: "2024-04-01",
-      month: "Abril 2024",
-      year: 2024,
-      totalBudget: 2700000,
-      totalSpent: 2650000,
-      categories: [
-        { id: "1", name: "Vivienda", budget: 850000, spent: 850000, categoryType: "vivienda" },
-        { id: "2", name: "Comida", budget: 600000, spent: 590000, categoryType: "comida" },
-        { id: "3", name: "Transporte", budget: 500000, spent: 480000, categoryType: "transporte" },
-        { id: "4", name: "Entretenimiento", budget: 400000, spent: 380000, categoryType: "entretenimiento" },
-        { id: "5", name: "Salud", budget: 350000, spent: 350000, categoryType: "salud" },
-      ],
-      status: "completed",
-    },
-    {
-      id: "5",
-      date: "2024-05-01",
-      month: "Mayo 2024",
-      year: 2024,
-      totalBudget: 2800000,
-      totalSpent: 2600000,
-      categories: [
-        { id: "1", name: "Vivienda", budget: 900000, spent: 900000, categoryType: "vivienda" },
-        { id: "2", name: "Comida", budget: 650000, spent: 600000, categoryType: "comida" },
-        { id: "3", name: "Transporte", budget: 500000, spent: 450000, categoryType: "transporte" },
-        { id: "4", name: "Entretenimiento", budget: 400000, spent: 350000, categoryType: "entretenimiento" },
-        { id: "5", name: "Salud", budget: 350000, spent: 300000, categoryType: "salud" },
-      ],
-      status: "completed",
-    },
-    {
-      id: "6",
-      date: "2024-06-01",
-      month: "Junio 2024",
-      year: 2024,
-      totalBudget: 2900000,
-      totalSpent: 1800000,
-      categories:
-        categories.length > 0
-          ? categories
-          : [
-              { id: "1", name: "Vivienda", budget: 950000, spent: 600000, categoryType: "vivienda" },
-              { id: "2", name: "Comida", budget: 700000, spent: 450000, categoryType: "comida" },
-              { id: "3", name: "Transporte", budget: 550000, spent: 350000, categoryType: "transporte" },
-              { id: "4", name: "Entretenimiento", budget: 400000, spent: 200000, categoryType: "entretenimiento" },
-              { id: "5", name: "Salud", budget: 300000, spent: 200000, categoryType: "salud" },
-            ],
-      status: "in-progress",
-    },
-  ]
+  const fetchTransactions = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    const token = localStorage.getItem("token");
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("es-CO", {
-      style: "currency",
-      currency: "COP",
-      minimumFractionDigits: 0,
-    }).format(amount)
-  }
-
-  // Filtrar datos según el período seleccionado
-  const getFilteredData = () => {
-    let filteredData = historyData
-
-    switch (selectedPeriod) {
-      case "3months":
-        filteredData = historyData.slice(-3)
-        break
-      case "6months":
-        filteredData = historyData.slice(-6)
-        break
-      case "1year":
-        filteredData = historyData
-        break
+    if (!token) {
+      setError("No authentication token found. Please log in.");
+      setIsLoading(false);
+      toast.error("No autenticado para ver el historial.");
+      return;
     }
 
-    // Filtrar por término de búsqueda
+    try {
+      const transactionsResponse = await fetch("http://localhost:8080/finzen/gasto/my-expenses", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (transactionsResponse.status === 204) {
+        setTransactions([]);
+        toast.info("No se encontraron transacciones para este usuario.");
+      } else if (!transactionsResponse.ok) {
+        const errorData = await transactionsResponse.json();
+        throw new Error(errorData.error || "Fallo al cargar transacciones.");
+      } else {
+        const data: GastosResponseDto[] = await transactionsResponse.json();
+        setTransactions(data);
+      }
+      toast.success("Transacciones cargadas exitosamente.");
+    } catch (err: any) {
+      console.error("Error al cargar transacciones:", err);
+      setError(err.message || "Ocurrió un error desconocido al cargar transacciones.");
+      toast.error(`Error al cargar transacciones: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
+
+  // Procesa las transacciones del backend para generar el historial monthly
+  const processTransactionsToHistory = useCallback((txs: GastosResponseDto[]): HistoryEntry[] => {
+    const monthlyDataMap = new Map<string, { totalSpent: number; categories: Map<string, { spent: number; budget: number }> }>();
+
+    txs.forEach(tx => {
+      const date = new Date(tx.fecha);
+      const year = date.getFullYear();
+      const month = date.toLocaleString('es-ES', { month: 'long' });
+      const monthYearKey = `${month.charAt(0).toUpperCase() + month.slice(1)} ${year}`;
+
+      if (!monthlyDataMap.has(monthYearKey)) {
+        monthlyDataMap.set(monthYearKey, { totalSpent: 0, categories: new Map() });
+      }
+
+      const monthlyEntry = monthlyDataMap.get(monthYearKey)!;
+      monthlyEntry.totalSpent += tx.monto;
+
+      const categoryKey = tx.nombreCategoria || "Sin categoría";
+      if (!monthlyEntry.categories.has(categoryKey)) {
+        monthlyEntry.categories.set(categoryKey, { spent: 0, budget: 0 }); // El budget por categoría aquí es desconocido sin un endpoint de historial de presupuestos
+      }
+      monthlyEntry.categories.get(categoryKey)!.spent += tx.monto;
+    });
+
+    const history: HistoryEntry[] = [];
+    const sortedKeys = Array.from(monthlyDataMap.keys()).sort((a, b) => {
+      const [monthA, yearA] = a.split(' ');
+      const [monthB, yearB] = b.split(' ');
+      const dateA = new Date(`${monthA} 1, ${yearA}`);
+      const dateB = new Date(`${monthB} 1, ${yearB}`);
+      return dateA.getTime() - dateB.getTime();
+    });
+
+    // Calcular un 'totalBudget' de ejemplo o usar los presupuestos actuales
+    // Esto es una simplificación. Lo ideal es tener un historial de presupuestos del backend.
+    const currentTotalBudget = currentCategories.reduce((sum, cat) => sum + (cat.budget ?? 0), 0);
+
+    sortedKeys.forEach(key => {
+      const data = monthlyDataMap.get(key)!;
+      const [monthName, yearStr] = key.split(' ');
+      const year = parseInt(yearStr);
+      const monthDate = new Date(`${monthName} 1, ${year}`);
+      
+      // Intentar asignar un presupuesto aproximado. Podrías usar un promedio o el presupuesto actual.
+      // Aquí, por simplicidad, usaremos el 'currentTotalBudget' como una aproximación del presupuesto para cada mes histórico.
+      // O, si quieres que la gráfica muestre solo lo gastado vs una línea de referencia, pon un valor fijo o cero.
+      const totalBudgetForMonth = currentTotalBudget > 0 ? currentTotalBudget : data.totalSpent * 1.1; // Ejemplo: 10% más de lo gastado si no hay presupuesto actual.
+
+      const status: "completed" | "in-progress" | "exceeded" | "unknown" = 
+        data.totalSpent <= totalBudgetForMonth * 0.95 ? "completed" : // Completado si está por debajo del 95%
+        data.totalSpent > totalBudgetForMonth ? "exceeded" : "in-progress";
+
+      history.push({
+        id: key,
+        date: monthDate.toISOString().split('T')[0],
+        month: key,
+        year: year,
+        totalBudget: totalBudgetForMonth,
+        totalSpent: data.totalSpent,
+        categories: Array.from(data.categories.entries()).map(([name, { spent }]) => ({
+          id: name, // Usamos el nombre como ID aquí
+          name: name,
+          budget: 0, // No podemos determinar el presupuesto por categoría histórica sin más datos
+          spent: spent,
+        })),
+        status: status,
+      });
+    });
+
+    return history;
+  }, [currentCategories]);
+
+  const historyData = processTransactionsToHistory(transactions);
+
+  const getFilteredData = useCallback(() => {
+    let filteredData = historyData
+
+    const now = new Date();
+    switch (selectedPeriod) {
+      case "3months":
+        filteredData = historyData.filter(entry => {
+          const entryDate = new Date(entry.date);
+          const diffMonths = (now.getFullYear() - entryDate.getFullYear()) * 12 + (now.getMonth() - entryDate.getMonth());
+          return diffMonths >= 0 && diffMonths < 3;
+        });
+        break;
+      case "6months":
+        filteredData = historyData.filter(entry => {
+          const entryDate = new Date(entry.date);
+          const diffMonths = (now.getFullYear() - entryDate.getFullYear()) * 12 + (now.getMonth() - entryDate.getMonth());
+          return diffMonths >= 0 && diffMonths < 6;
+        });
+        break;
+      case "1year":
+        filteredData = historyData.filter(entry => {
+          const entryDate = new Date(entry.date);
+          const diffMonths = (now.getFullYear() - entryDate.getFullYear()) * 12 + (now.getMonth() - entryDate.getMonth());
+          return diffMonths >= 0 && diffMonths < 12;
+        });
+        break;
+      default:
+        filteredData = historyData; // All data for 'all' or undefined
+        break;
+    }
+
     if (searchTerm) {
       filteredData = filteredData.filter((entry) => entry.month.toLowerCase().includes(searchTerm.toLowerCase()))
     }
 
-    // Filtrar por estado
     if (filterStatus !== "all") {
       filteredData = filteredData.filter((entry) => entry.status === filterStatus)
     }
 
-    return filteredData
-  }
+    return filteredData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [historyData, selectedPeriod, searchTerm, filterStatus]);
 
   const chartData = getFilteredData()
 
-  // Animación
   useEffect(() => {
     setAnimationProgress(0)
     const duration = 1500
@@ -185,10 +205,9 @@ export default function HistorySection({ categories }: HistorySectionProps) {
     }
 
     requestAnimationFrame(animate)
-  }, [selectedPeriod, searchTerm, filterStatus])
+  }, [selectedPeriod, searchTerm, filterStatus, transactions]) // Se añadió transactions como dependencia
 
-  // Calcular el máximo para escalar las barras
-  const maxValue = Math.max(...chartData.map((entry) => Math.max(entry.totalBudget, entry.totalSpent)))
+  const maxValue = Math.max(...chartData.map((entry) => Math.max(entry.totalBudget, entry.totalSpent, 1)))
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -216,9 +235,25 @@ export default function HistorySection({ categories }: HistorySectionProps) {
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-400">Cargando historial de transacciones...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8 text-red-500">
+        <p>Error al cargar transacciones: {error}</p>
+        <button onClick={fetchTransactions} className="mt-4 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded">Reintentar</button>
+      </div>
+    );
+  }
+
   return (
     <div>
-      {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
           <h2 className="text-2xl font-bold mb-2">Historial de Presupuestos</h2>
@@ -230,7 +265,6 @@ export default function HistorySection({ categories }: HistorySectionProps) {
         </button>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-4 mb-8">
         <div className="flex bg-[#1A2332] border border-[#2A3441] rounded-lg p-1">
           <button
@@ -282,12 +316,10 @@ export default function HistorySection({ categories }: HistorySectionProps) {
         </select>
       </div>
 
-      {/* Bar Chart */}
       <div className="bg-[#1A2332] border border-[#2A3441] rounded-xl p-6 mb-8">
         <h3 className="text-lg font-semibold mb-6">Presupuesto vs Gastado</h3>
         <div className="relative h-80">
           <svg width="100%" height="100%" className="overflow-visible">
-            {/* Grid lines */}
             {[0, 0.25, 0.5, 0.75, 1].map((ratio, index) => (
               <g key={index}>
                 <line
@@ -305,7 +337,6 @@ export default function HistorySection({ categories }: HistorySectionProps) {
               </g>
             ))}
 
-            {/* Bars */}
             {chartData.map((entry, index) => {
               const barWidth = 40
               const barSpacing = 80
@@ -315,7 +346,6 @@ export default function HistorySection({ categories }: HistorySectionProps) {
 
               return (
                 <g key={entry.id}>
-                  {/* Budget bar */}
                   <rect
                     x={x}
                     y={320 - budgetHeight}
@@ -328,7 +358,6 @@ export default function HistorySection({ categories }: HistorySectionProps) {
                     }}
                   />
 
-                  {/* Spent bar */}
                   <rect
                     x={x + barWidth / 2 + 2}
                     y={320 - spentHeight}
@@ -341,7 +370,6 @@ export default function HistorySection({ categories }: HistorySectionProps) {
                     }}
                   />
 
-                  {/* Month label */}
                   <text
                     x={x + barWidth / 2}
                     y={340}
@@ -354,7 +382,6 @@ export default function HistorySection({ categories }: HistorySectionProps) {
                     {entry.month.split(" ")[0]}
                   </text>
 
-                  {/* Values on hover */}
                   <g className="opacity-0 hover:opacity-100 transition-opacity duration-300">
                     <rect
                       x={x - 20}
@@ -387,7 +414,6 @@ export default function HistorySection({ categories }: HistorySectionProps) {
             })}
           </svg>
 
-          {/* Legend */}
           <div className="absolute top-4 right-4 flex space-x-4">
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-[#3B82F6] rounded"></div>
@@ -401,7 +427,6 @@ export default function HistorySection({ categories }: HistorySectionProps) {
         </div>
       </div>
 
-      {/* History List */}
       <div className="bg-[#1A2332] border border-[#2A3441] rounded-xl p-6">
         <h3 className="text-lg font-semibold mb-6">Detalle del Historial</h3>
         <div className="space-y-4">
@@ -447,7 +472,6 @@ export default function HistorySection({ categories }: HistorySectionProps) {
                 </div>
               </div>
 
-              {/* Progress bar */}
               <div className="w-full bg-[#374151] rounded-full h-2 mb-3">
                 <div
                   className={`h-2 rounded-full transition-all duration-1000 ${
@@ -460,12 +484,11 @@ export default function HistorySection({ categories }: HistorySectionProps) {
                 />
               </div>
 
-              {/* Categories summary */}
               <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
                 {entry.categories.slice(0, 5).map((category, catIndex) => (
                   <div key={catIndex} className="text-center">
                     <div className="text-xs text-gray-400">{category.name}</div>
-                    <div className="text-sm font-medium text-white">{formatCurrency(category.spent)}</div>
+                      <div className="text-sm font-medium text-white">{formatCurrency(category.spent ?? 0)}</div>
                   </div>
                 ))}
               </div>

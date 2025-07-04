@@ -46,41 +46,17 @@ export default function AddBudgetAmountDialog({
         }).format(amount)
     }
 
-    const handleSubmit = async () => {
-      if (selectedCategoryId && amount) {
-        const additionalAmount = Number.parseFloat(amount);
-        if (!isNaN(additionalAmount) && additionalAmount > 0) {
-          const presupuesto = {
-            nombre: `Presupuesto para ${categories.find((cat) => cat.id === selectedCategoryId)?.name || "Categoría"}`,
-            montoAsignado: additionalAmount,
-            categoria: { id: selectedCategoryId }, // ID de la categoría
-          };
-
-          try {
-            const response = await fetch("http://localhost:8080/finzen/presupuesto", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(presupuesto),
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-              console.log("Presupuesto creado:", data);
-              onAddBudgetAmount(selectedCategoryId, additionalAmount); // Actualiza el estado local
-              setSelectedCategoryId("");
-              setAmount("");
-              onClose();
-            } else {
-              console.error("Error al crear el presupuesto:", await response.text());
+    const handleSubmit = () => {
+        if (selectedCategoryId && amount) {
+            const additionalAmount = Number.parseFloat(amount)
+            if (!isNaN(additionalAmount) && additionalAmount > 0) {
+                onAddBudgetAmount(selectedCategoryId, additionalAmount)
+                setSelectedCategoryId("")
+                setAmount("")
+                onClose()
             }
-          } catch (error) {
-            console.error("Error en la solicitud:", error);
-          }
         }
-      }
-    }; 
+    }
 
     const handleClose = () => {
         setSelectedCategoryId("")
