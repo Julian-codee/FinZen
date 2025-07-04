@@ -425,7 +425,7 @@ const Account = () => {
         endpoint = `http://localhost:8080/finzen/tarjetas/${editAccount.id}`;
         payload = {
           nombre: updatedAccount.title,
-          tipo:
+          tipo: validType.toUpperCase() ||
             updatedAccount.type?.toUpperCase() === "DEBITO" ||
             updatedAccount.type?.toUpperCase() === "CREDITO"
               ? updatedAccount.type.toUpperCase()
@@ -450,6 +450,12 @@ const Account = () => {
       } else {
         // cuenta
         endpoint = `http://localhost:8080/finzen/cuentas/${editAccount.id}`;
+
+        const normalizedType = updatedAccount.type?.toLowerCase();
+        const validType = ["corriente", "ahorros", "efectivo"].includes(normalizedType)
+          ? normalizedType
+          : "corriente";
+
         payload = {
           nombre: updatedAccount.title,
           banco: updatedAccount.bank || "",
@@ -463,6 +469,7 @@ const Account = () => {
             ) || 0,
           montoOcupado:
             parseFloat(updatedAccount.occupiedAmount?.toString() || "0") || 0,
+            tipo: validType.toUpperCase(),
         };
       }
 
