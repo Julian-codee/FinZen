@@ -11,7 +11,7 @@ interface Meta {
   estado: "creado" | "iniciado" | "terminado";
   valor: number;
   montoAhorrado: number;
-  idCuenta: number;
+  idUsuario: number;
   fechaInicio: string;
   fechaLimite?: string;
   enProgreso: boolean;
@@ -158,7 +158,7 @@ function ConfirmDialog({
             <h3 className="text-lg font-semibold text-white">{title}</h3>
           </div>
           
-          <p className="text-gray-300 mb-6">{message}</p>
+          <p className="text-gray-300 mb-6">{ }</p>
           
           <div className="flex gap-3 justify-end">
             <button
@@ -275,7 +275,7 @@ export default function FinancialGoals() {
   const [view, setView] = useState<"active" | "completed" | "upcoming">("active");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [goals, setGoals] = useState<GoalsState>({ active: [], completed: [], upcoming: [] });
-  const [idCuenta] = useState<number>(1);
+  const [idUsuario, setIdUsuario] = useState<number>(0); // Obtener dinámicamente
   const [estadisticas, setEstadisticas] = useState<Estadisticas | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -299,7 +299,20 @@ export default function FinancialGoals() {
   }>({ isOpen: false, title: '', message: '', placeholder: '', onConfirm: () => {} });
 
   // Base URL para APIs
-  const API_BASE_URL = "http://localhost:8080/finzen/meta";
+  const API_BASE_URL = "http://localhost:8080/finzen/metas";
+
+  // Obtener el ID del usuario autenticado
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/finzen/usuarios", getAuthHeaders());
+        setIdUsuario(response.data.idUsuario);
+      } catch (error) {
+        handleApiError(error, "Error al obtener el ID del usuario");
+      }
+    };
+    fetchUserId();
+  }, []);
 
   // Función para mostrar alertas
   const showAlert = (type: Alert['type'], title: string, message: string, duration = 5000) => {
@@ -358,9 +371,10 @@ export default function FinancialGoals() {
 
   // Función para obtener estadísticas
   const fetchEstadisticas = async () => {
+    if (!idUsuario) return;
     try {
       const response = await axios.get<Estadisticas>(
-        `${API_BASE_URL}/cuenta/${idCuenta}/estadisticas`,
+        `${API_BASE_URL}/estadisticas`,
         getAuthHeaders()
       );
       setEstadisticas(response.data);
@@ -372,9 +386,10 @@ export default function FinancialGoals() {
 
   // Función para obtener metas próximas a vencer
   const fetchUpcomingGoals = async (): Promise<Meta[]> => {
+    if (!idUsuario) return [];
     try {
       const response = await axios.get<Meta[]>(
-        `${API_BASE_URL}/cuenta/${idCuenta}/proximas-vencer?dias=30`,
+        `${API_BASE_URL}/proximas-vencer?dias=30`,
         getAuthHeaders()
       );
       return response.data || [];
@@ -384,14 +399,15 @@ export default function FinancialGoals() {
     }
   };
 
-  // Obtener metas por cuenta
+  // Obtener metas por usuario
   const fetchGoals = async () => {
+    if (!idUsuario) return;
     try {
       setLoading(true);
       setError(null);
       
       const response = await axios.get<Meta[]>(
-        `${API_BASE_URL}/${idCuenta}`,
+        API_BASE_URL,
         getAuthHeaders()
       );
       
@@ -416,12 +432,14 @@ export default function FinancialGoals() {
 
   // Obtener metas y estadísticas al cargar el componente
   useEffect(() => {
-    const loadData = async () => {
-      await fetchGoals();
-      await fetchEstadisticas();
-    };
-    loadData();
-  }, [idCuenta]);
+    if (idUsuario) {
+      const loadData = async () => {
+        await fetchGoals();
+        await fetchEstadisticas();
+      };
+      loadData();
+    }
+  }, [idUsuario]);
 
   // Manejar eliminación de una meta
   const handleDeleteGoal = async (idMeta: number, titulo: string): Promise<void> => {
@@ -462,7 +480,7 @@ export default function FinancialGoals() {
     try {
       await axios.put(
         `${API_BASE_URL}/${idMeta}/estado`,
-        { estado: nuevoEstado },
+        nuevoEstado,
         getAuthHeaders()
       );
 
@@ -494,7 +512,7 @@ export default function FinancialGoals() {
 
           await axios.put(
             `${API_BASE_URL}/${idMeta}/aporte`,
-            { montoAhorrado: aporte },
+            aporte,
             getAuthHeaders()
           );
 
@@ -529,7 +547,7 @@ export default function FinancialGoals() {
     }
   };
 
-  if (loading) {
+  if (loading || !idUsuario) {
     return (
       <div className="flex justify-center items-center min-h-[200px]">
         <div className="text-white">Cargando metas...</div>
@@ -626,7 +644,7 @@ export default function FinancialGoals() {
             <div className="p-6">
               <AddNewGoal 
                 onCancel={() => setShowModal(false)} 
-                idCuenta={idCuenta} 
+                idUsuario={idUsuario} 
                 onGoalAdded={handleGoalAdded}
               />
             </div>
