@@ -3,24 +3,20 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Cambiado a useNavigate
 
-interface Income {
-  id: number;
-  valor: number;
-  descripcion: string;
-  fecha: string;
-}
+
 
 export const TaxSummary: React.FC = () => {
   const [totalIncomes, setTotalIncomes] = useState<number>(0);
   const [totalDeductions, setTotalDeductions] = useState<number>(0);
   const [netIncome, setNetIncome] = useState<number>(0);
   const [calculatedTax, setCalculatedTax] = useState<number>(0);
-  const [taxesPaid, setTaxesPaid] = useState<number>(9200000); // Valor fijo de ejemplo
   const [balanceInFavor, setBalanceInFavor] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const navigate = useNavigate(); // Hook para redirigir
+  const taxesPaid = 9200000; // Constante, no cambia
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchIncomeData = async () => {
@@ -31,7 +27,7 @@ export const TaxSummary: React.FC = () => {
         const token = localStorage.getItem("token");
         if (!token) {
           setError("No se encontró token de autenticación. Por favor, inicia sesión.");
-          navigate("/"); 
+          navigate("/");
           setLoading(false);
           return;
         }
@@ -99,7 +95,7 @@ export const TaxSummary: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-[#111827] border border-white/60 p-6 rounded-lg mt-8 text-white text-center text-red-500">
+      <div className="bg-[#111827] border border-white/60 p-6 rounded-lg mt-8 text-white text-center">
         <p>Error: {error}</p>
         <p>Por favor, asegúrate de que estás autenticado y de que el backend está funcionando correctamente.</p>
       </div>
