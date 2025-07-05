@@ -1,35 +1,36 @@
 // src/components/RecentTransactions.tsx
 "use client"; // Importante si usas componentes de cliente en Next.js
 
-import React, { useState, useEffect, useCallback } from 'react'; // Agregado useCallback
-import { TrendingDown, TrendingUp } from 'lucide-react';
-import { format, parseISO, isToday, isYesterday } from 'date-fns';
-import { es } from 'date-fns/locale';
-import axios from 'axios'; // Importar axios
-import toast from 'react-hot-toast'; // Para las notificaciones de error
+import React, { useState, useEffect, useCallback } from "react"; // Agregado useCallback
+import { TrendingDown, TrendingUp } from "lucide-react";
+import { format, parseISO, isToday, isYesterday } from "date-fns";
+import { es } from "date-fns/locale";
+import axios from "axios"; // Importar axios
+import toast from "react-hot-toast"; // Para las notificaciones de error
 
 // Asegúrate de que Transaction y los Custom Toasts estén correctamente importados
 // Si Transaction está en 'Types/types', ajusta la ruta.
-import { Transaction } from '../Types/home'; // Asumo que el tipo Transaction ahora está aquí
+import { Transaction } from "../Types/home"; // Asumo que el tipo Transaction ahora está aquí
 // import CustomErrorToast from '../../TransactionsDashboard/Components/TransactionTable'; // O la ruta donde estén definidos los Custom Toasts
 
 interface RecentTransactionsProps {
   title?: string;
   maxItems?: number;
+  transactions?: Transaction[]; // Permite pasar transacciones como prop opcional
 }
 
 // Helper para obtener el label de la fecha (Hoy, Ayer, Mar 01)
 const getDateLabel = (dateString: string) => {
   const date = parseISO(dateString);
-  if (isToday(date)) return 'Hoy';
-  if (isYesterday(date)) return 'Ayer';
-  return format(date, 'MMM dd', { locale: es });
+  if (isToday(date)) return "Hoy";
+  if (isYesterday(date)) return "Ayer";
+  return format(date, "MMM dd", { locale: es });
 };
 
 const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('es-CO', {
-    style: 'currency',
-    currency: 'COP',
+  return new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
@@ -53,21 +54,24 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
     }
 
     try {
-      const { data } = await axios.get("http://localhost:8080/finzen/gasto/user/finances", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await axios.get(
+        "http://localhost:8080/finzen/gasto/user/finances",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       const mappedIncomes: Transaction[] = Array.isArray(data.ingresos)
         ? data.ingresos.map((item: any) => ({
             id: item.idIngreso?.toString() ?? crypto.randomUUID(),
             amount: item.monto ?? 0,
-            date: item.fecha ?? new Date().toISOString().split('T')[0],
-            description: item.nombre || item.descripcion || 'Sin descripción',
-            notes: item.descripcion || '',
-            category: 'otros',
-            account: 'Ingreso',
-            type: 'income',
-            status: 'Completada',
+            date: item.fecha ?? new Date().toISOString().split("T")[0],
+            description: item.nombre || item.descripcion || "Sin descripción",
+            notes: item.descripcion || "",
+            category: "otros",
+            account: "Ingreso",
+            type: "income",
+            status: "Completada",
           }))
         : [];
 
@@ -75,13 +79,13 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
         ? data.gastos.map((item: any) => ({
             id: item.idGasto?.toString() ?? crypto.randomUUID(),
             amount: item.monto ?? 0,
-            date: item.fecha ?? new Date().toISOString().split('T')[0],
-            description: item.nombre || item.descripcion || 'Sin descripción',
-            notes: item.descripcion || '',
-            category: item.categoria || 'otros',
-            account: item.cuenta || 'Gasto',
-            type: 'expense',
-            status: 'Completada',
+            date: item.fecha ?? new Date().toISOString().split("T")[0],
+            description: item.nombre || item.descripcion || "Sin descripción",
+            notes: item.descripcion || "",
+            category: item.categoria || "otros",
+            account: item.cuenta || "Gasto",
+            type: "expense",
+            status: "Completada",
           }))
         : [];
 
@@ -97,7 +101,9 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
       setTransactions(all);
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response?.status === 401) {
-        toast.error("Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo.");
+        toast.error(
+          "Tu sesión ha expirado o no estás autorizado. Por favor, inicia sesión de nuevo."
+        );
         localStorage.removeItem("token");
         // router.push('/login');
       } else {
@@ -126,31 +132,57 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
     <div className="rounded-lg p-5 border border-[#1f2937] flex-1 min-w-[500px] min-h-[300px]">
       <h2 className="text-white text-lg font-semibold mb-2">{title}</h2>
       <p className="text-gray-400 text-sm mb-4">
-        Has realizado {transactions.length} transacciones este mes. {/* Considera ajustar este conteo si solo muestras 5 */}
+        Has realizado {transactions.length} transacciones este mes.{" "}
+        {/* Considera ajustar este conteo si solo muestras 5 */}
       </p>
 
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm text-gray-400">
           <thead className="text-xs uppercase text-gray-400 border-b border-gray-700">
             <tr>
-              <th scope="col" className="py-2 pr-2">Descripción</th>
-              <th scope="col" className="py-2 px-2">Categoría</th>
-              <th scope="col" className="py-2 px-2">Fecha</th>
-              <th scope="col" className="py-2 pl-2 text-right">Monto</th>
+              <th scope="col" className="py-2 pr-2">
+                Descripción
+              </th>
+              <th scope="col" className="py-2 px-2">
+                Categoría
+              </th>
+              <th scope="col" className="py-2 px-2">
+                Fecha
+              </th>
+              <th scope="col" className="py-2 pl-2 text-right">
+                Monto
+              </th>
             </tr>
           </thead>
           <tbody>
             {recentTransactionsToShow.length > 0 ? (
-              recentTransactionsToShow.map(tx => (
-                <tr key={tx.id} className="border-b border-gray-700 last:border-b-0">
+              recentTransactionsToShow.map((tx) => (
+                <tr
+                  key={tx.id}
+                  className="border-b border-gray-700 last:border-b-0"
+                >
                   <td className="py-3 pr-2">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-full ${tx.type === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                        {tx.type === 'income' ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                      <div
+                        className={`p-2 rounded-full ${
+                          tx.type === "income"
+                            ? "bg-green-500/20 text-green-400"
+                            : "bg-red-500/20 text-red-400"
+                        }`}
+                      >
+                        {tx.type === "income" ? (
+                          <TrendingUp className="w-4 h-4" />
+                        ) : (
+                          <TrendingDown className="w-4 h-4" />
+                        )}
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-white font-medium">{tx.description}</span>
-                        <span className="text-xs text-gray-500">{tx.notes}</span>
+                        <span className="text-white font-medium">
+                          {tx.description}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {tx.notes}
+                        </span>
                       </div>
                     </div>
                   </td>
@@ -161,12 +193,19 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
                   </td>
                   <td className="py-3 px-2">
                     <div className="flex flex-col">
-                      <span className="text-white">{getDateLabel(tx.date)}</span>
+                      <span className="text-white">
+                        {getDateLabel(tx.date)}
+                      </span>
                       {/* Eliminado tx.time ya que decidimos quitarlo */}
                     </div>
                   </td>
-                  <td className={`py-3 pl-2 text-right font-semibold ${tx.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
-                    {tx.type === 'income' ? '+' : ''}{formatCurrency(tx.amount)}
+                  <td
+                    className={`py-3 pl-2 text-right font-semibold ${
+                      tx.type === "income" ? "text-green-400" : "text-red-400"
+                    }`}
+                  >
+                    {tx.type === "income" ? "+" : ""}
+                    {formatCurrency(tx.amount)}
                   </td>
                 </tr>
               ))

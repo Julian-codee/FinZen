@@ -1,6 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { TrendingUp, TrendingDown, CreditCard, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { Transaction, CardSummary } from '../Types/home';
+import React, { useEffect, useState } from "react";
+import {
+  TrendingUp,
+  TrendingDown,
+  CreditCard,
+  DollarSign,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react";
+import { Transaction } from "../Types/home";
 
 interface SummaryCardsProps {
   transactions: Transaction[];
@@ -19,11 +26,14 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
           return;
         }
 
-        const cuentasResponse = await fetch("http://localhost:8080/finzen/cuentas", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const cuentasResponse = await fetch(
+          "http://localhost:8080/finzen/cuentas",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (cuentasResponse.ok) {
           const cuentasData = await cuentasResponse.json();
@@ -40,15 +50,15 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
   }, []);
 
   const currentMonthIncome = transactions
-    .filter(t => t.type === 'income')
+    .filter((t) => t.type === "income")
     .reduce((sum, t) => sum + t.amount, 0);
 
   const currentMonthExpense = transactions
-    .filter(t => t.type === 'expense')
+    .filter((t) => t.type === "expense")
     .reduce((sum, t) => sum + t.amount, 0);
 
   const totalBalance = transactions.reduce((sum, t) => {
-    return t.type === 'income' ? sum + t.amount : sum - t.amount;
+    return t.type === "income" ? sum + t.amount : sum - t.amount;
   }, 0);
 
   const incomeChange = 0;
@@ -56,26 +66,28 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
   const balanceChange = 0;
 
   const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: 'COP',
+    return new Intl.NumberFormat("es-CO", {
+      style: "currency",
+      currency: "COP",
       minimumFractionDigits: 0,
     }).format(amount);
   };
 
   const formatPercentage = (percentage: number) => {
-    const sign = percentage >= 0 ? '+' : '';
+    const sign = percentage >= 0 ? "+" : "";
     return `${sign}${percentage.toFixed(1)}%`;
   };
 
   const getPercentageColor = (percentage: number) => {
-    return percentage >= 0 ? 'text-green-400' : 'text-red-400';
+    return percentage >= 0 ? "text-green-400" : "text-red-400";
   };
 
   const getPercentageIcon = (percentage: number) => {
-    return percentage >= 0 ? 
-      <ArrowUpRight className="w-4 h-4 text-green-400" /> : 
-      <ArrowDownRight className="w-4 h-4 text-red-400" />;
+    return percentage >= 0 ? (
+      <ArrowUpRight className="w-4 h-4 text-green-400" />
+    ) : (
+      <ArrowDownRight className="w-4 h-4 text-red-400" />
+    );
   };
 
   const SummaryCardItem: React.FC<{
@@ -88,11 +100,27 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
     gradientFrom?: string;
     gradientTo?: string;
     percentage?: number;
-  }> = ({ title, value, detail, icon, valueColorClass, detailColorClass, gradientFrom, gradientTo, percentage }) => (
+  }> = ({
+    title,
+    value,
+    detail,
+    icon,
+    valueColorClass,
+    detailColorClass,
+    gradientFrom,
+    gradientTo,
+    percentage,
+  }) => (
     <div className="group relative overflow-hidden">
       {/* Background gradient */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradientFrom || 'from-slate-900/80'} ${gradientTo || 'to-slate-800/50'} rounded-2xl transition-all duration-300 group-hover:scale-[1.02]`}></div>
-      
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${
+          gradientFrom || "from-slate-900/80"
+        } ${
+          gradientTo || "to-slate-800/50"
+        } rounded-2xl transition-all duration-300 group-hover:scale-[1.02]`}
+      ></div>
+
       {/* Border gradient */}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-slate-700/50 via-transparent to-slate-600/30 p-[1px]">
         <div className="h-full w-full rounded-2xl bg-slate-900/90 backdrop-blur-sm"></div>
@@ -103,7 +131,9 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-2">
-            <h3 className="text-gray-400 text-sm font-medium tracking-wide">{title}</h3>
+            <h3 className="text-gray-400 text-sm font-medium tracking-wide">
+              {title}
+            </h3>
           </div>
           <div className="p-2 rounded-xl bg-slate-800/50 border border-slate-700/50 group-hover:border-slate-600/50 transition-colors">
             {icon}
@@ -111,7 +141,9 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
         </div>
 
         {/* Value */}
-        <div className={`text-white text-2xl lg:text-3xl font-bold mb-3 ${valueColorClass} tracking-tight`}>
+        <div
+          className={`text-white text-2xl lg:text-3xl font-bold mb-3 ${valueColorClass} tracking-tight`}
+        >
           {value}
         </div>
 

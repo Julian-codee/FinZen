@@ -1,34 +1,33 @@
-
-export type TransactionType = 'income' | 'expense';
-export type TransactionStatus = 'Completada' | 'Pendiente' | 'Cancelada';
+export type TransactionType = "income" | "expense";
+export type TransactionStatus = "Completada" | "Pendiente" | "Cancelada";
 
 export interface Transaction {
-    id: string;
-    description: string;
-    category: string;
-    amount: number;
-    type: TransactionType;
-    date: string;
-    time?: string;
-    notes?: string;
-    account?: string;
-    paymentMethod?: string;
-    status?: TransactionStatus;
+  id: string;
+  description: string;
+  category: string;
+  amount: number;
+  type: TransactionType;
+  date: string;
+  time?: string;
+  notes?: string;
+  account?: string;
+  paymentMethod?: string;
+  status?: TransactionStatus;
 }
 
 export interface BudgetCategory {
-    id: string;
-    name: string;
-    spent: number;
-    limit: number;
-    icon?: React.ReactNode;
+  id: string;
+  name: string;
+  spent: number;
+  limit: number;
+  icon?: React.ReactNode;
 }
 
 export interface CardSummary {
-    id: string;
-    name: string;
-    active: boolean;
-    blocked: boolean
+  id: string;
+  name: string;
+  active: boolean;
+  blocked: boolean;
 }
 
 export interface PresupuestoResponseDto {
@@ -37,20 +36,20 @@ export interface PresupuestoResponseDto {
   montoAsignado: number;
   montoGastado: number;
   categoria?: {
-      idCategoria: number;
-      nombre: string;
+    idCategoria: number;
+    nombre: string;
   };
   cuenta?: {
-      idCuenta: number;
-      nombre: string;
+    idCuenta: number;
+    nombre: string;
   };
   tarjeta?: {
-      idTarjeta: number;
-      nombre: string;
+    idTarjeta: number;
+    nombre: string;
   };
   inversion?: {
-      idInversion: number;
-      nombre: string;
+    idInversion: number;
+    nombre: string;
   };
 }
 
@@ -91,7 +90,7 @@ export interface BudgetCategoryUI {
   spent: number;
   categoryType?: string;
   associatedEntityId?: number;
-  associatedEntityType?: 'cuenta' | 'tarjeta' | 'inversion';
+  associatedEntityType?: "cuenta" | "tarjeta" | "inversion";
   originalCategoryId?: number;
 }
 

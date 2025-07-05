@@ -15,14 +15,8 @@ import { UpcomingPayments } from "./Components/UpcomingPayments";
 import { DailyAdvice } from "./Components/DailyAdvice";
 
 
-import { Transaction, CardSummary } from "./Types/home";
+import { Transaction } from "./Types/home";
 
-// Datos simulados de tarjetas y pagos próximos
-const MOCK_CARD_DATA: CardSummary[] = [
-  { id: "c1", name: "Débito Principal", active: true, blocked: false },
-  { id: "c2", name: "Crédito Visa", active: true, blocked: false },
-  { id: "c3", name: "Crédito Mastercard", active: false, blocked: true },
-];
 
 interface UpcomingPayment {
   id: string;
@@ -138,11 +132,15 @@ const FinZenHome: React.FC = () => {
         <SummaryCards transactions={allTransactions} />
 
         <div className="flex flex-col lg:flex-row gap-6">
-          <RecentTransactions transactions={transactionsForRecentTable} />
+          <RecentTransactions
+            title="Transacciones recientes"
+            maxItems={5}
+            transactions={transactionsForRecentTable}
+          />
           <div className="flex flex-col gap-6 lg:w-2/5">
             <MonthlyBudget />
-            <UpcomingPayments  />
-             <DailyAdvice />
+            <UpcomingPayments payments={upcomingPayments} />
+            <DailyAdvice />
           </div>
         </div>
 
