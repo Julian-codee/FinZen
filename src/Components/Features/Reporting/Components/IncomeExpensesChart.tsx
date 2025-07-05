@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
 import {
   BarChart,
   Bar,
@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-} from 'recharts';
+} from "recharts";
 
 // --- Interfaces para los datos del backend ---
 interface Ingreso {
@@ -43,11 +43,22 @@ const IncomeExpensesChart = () => {
     gastos: Gasto[]
   ): ChartData[] => {
     const months = [
-      "Ene", "Feb", "Mar", "Abr", "May", "Jun",
-      "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
+      "Ene",
+      "Feb",
+      "Mar",
+      "Abr",
+      "May",
+      "Jun",
+      "Jul",
+      "Ago",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dic",
     ];
     // Usamos un mapa para agrupar ingresos y gastos por mes
-    const monthlyMap: { [key: number]: { income: number; expenses: number } } = {};
+    const monthlyMap: { [key: number]: { income: number; expenses: number } } =
+      {};
 
     // Inicializar el mapa para todos los meses del año para asegurar que todos los meses se muestren
     months.forEach((_, index) => {
@@ -101,7 +112,9 @@ const IncomeExpensesChart = () => {
         const token = localStorage.getItem("token");
 
         if (!token) {
-          setError("No se encontró token de autenticación. Por favor, inicia sesión.");
+          setError(
+            "No se encontró token de autenticación. Por favor, inicia sesión."
+          );
           setIsLoading(false);
           return;
         }
@@ -119,11 +132,16 @@ const IncomeExpensesChart = () => {
 
         const { ingresos, gastos } = response.data;
         // Procesar y establecer los datos para el gráfico
-        const monthlyChartData = processFinancialData(ingresos || [], gastos || []);
+        const monthlyChartData = processFinancialData(
+          ingresos || [],
+          gastos || []
+        );
         setData(monthlyChartData);
-        
       } catch (error) {
-        console.error("Error al obtener datos financieros para IncomeExpensesChart:", error);
+        console.error(
+          "Error al obtener datos financieros para IncomeExpensesChart:",
+          error
+        );
         let errorMessage = "No se pudieron cargar los datos financieros.";
 
         if (axios.isAxiosError(error) && error.response) {
@@ -157,52 +175,81 @@ const IncomeExpensesChart = () => {
   return (
     <div className="border border-white/40 p-6 rounded-lg w-full bg-[#020817]">
       <h2 className="text-white text-lg font-semibold">Ingresos vs Gastos</h2>
-      <p className="text-gray-400 text-sm mb-4">Comparativa mensual de ingresos y gastos</p>
-      
+      <p className="text-gray-400 text-sm mb-4">
+        Comparativa mensual de ingresos y gastos
+      </p>
+
       {isLoading && <p className="text-blue-400 mb-4">Cargando datos...</p>}
       {error && <p className="text-red-500 mb-4">{error}</p>}
-      
+
       {!isLoading && !error && data.length === 0 && (
-        <p className="text-gray-400 text-center">No hay datos de ingresos o gastos para mostrar en el gráfico.</p>
+        <p className="text-gray-400 text-center">
+          No hay datos de ingresos o gastos para mostrar en el gráfico.
+        </p>
       )}
 
       {!isLoading && !error && data.length > 0 && (
         <div className="h-72">
           <ResponsiveContainer width="90%" height="100%">
             <BarChart data={data} barCategoryGap="20%">
-              <CartesianGrid strokeDasharray="3 3" stroke="#1F2937" vertical={false} />
-              <XAxis dataKey="month" tick={{ fill: '#9CA3AF', fontSize: 12 }} />
-              <YAxis tick={{ fill: '#9CA3AF', fontSize: 12 }} />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#1F2937"
+                vertical={false}
+              />
+              <XAxis dataKey="month" tick={{ fill: "#9CA3AF", fontSize: 12 }} />
+              <YAxis tick={{ fill: "#9CA3AF", fontSize: 12 }} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
-                labelStyle={{ color: '#fff' }}
+                contentStyle={{ backgroundColor: "#1F2937", border: "none" }}
+                labelStyle={{ color: "#fff" }}
                 // Eliminado `cursor={{ fill: '#374615120' }}` por un color más estándar si no es específico
-                cursor={{ fill: 'rgba(55, 65, 81, 0.5)' }} // Un color más legible para el cursor del tooltip
+                cursor={{ fill: "rgba(55, 65, 81, 0.5)" }} // Un color más legible para el cursor del tooltip
               />
               <Legend
                 verticalAlign="top"
                 align="center"
-                wrapperStyle={{ color: '#9CA3AF', fontSize: 12, paddingTop: '10px' }} // Ajuste para el espaciado
+                wrapperStyle={{
+                  color: "#9CA3AF",
+                  fontSize: 12,
+                  paddingTop: "10px",
+                }} // Ajuste para el espaciado
               />
-              <Bar dataKey="income" name="Ingresos" fill="#33beff" barSize={35} />
-              <Bar dataKey="expenses" name="Gastos" fill="#B91C1C" barSize={35} />
+              <Bar
+                dataKey="income"
+                name="Ingresos"
+                fill="#33beff"
+                barSize={35}
+              />
+              <Bar
+                dataKey="expenses"
+                name="Gastos"
+                fill="#B91C1C"
+                barSize={35}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
       )}
 
-      {!isLoading && !error && ( // Solo muestra los totales si no está cargando y no hay error
-        <div className="flex justify-between text-sm mt-6">
-          <div className="text-green-400 font-semibold">
-            Ingresos Totales <br />
-            <span className="text-xl">${totalIncome.toLocaleString('es-CO')}</span> {/* Formato de moneda */}
+      {!isLoading &&
+        !error && ( // Solo muestra los totales si no está cargando y no hay error
+          <div className="flex justify-between text-sm mt-6">
+            <div className="text-green-400 font-semibold">
+              Ingresos Totales <br />
+              <span className="text-xl">
+                ${totalIncome.toLocaleString("es-CO")}
+              </span>{" "}
+              {/* Formato de moneda */}
+            </div>
+            <div className="text-red-500 font-semibold text-right">
+              Gastos Totales <br />
+              <span className="text-xl">
+                ${totalExpenses.toLocaleString("es-CO")}
+              </span>{" "}
+              {/* Formato de moneda */}
+            </div>
           </div>
-          <div className="text-red-500 font-semibold text-right">
-            Gastos Totales <br />
-            <span className="text-xl">${totalExpenses.toLocaleString('es-CO')}</span> {/* Formato de moneda */}
-          </div>
-        </div>
-      )}
+        )}
     </div>
   );
 };

@@ -22,7 +22,7 @@ interface Props {
   categoryData: CategoryData[];
 }
 
-const DashboardTabs = ({ financialData, categoryData }: Props) => {
+const DashboardTabs = ({ }: Props) => {
   const [activeTab, setActiveTab] = useState("Resumen");
 
   const renderContent = () => {
@@ -30,8 +30,8 @@ const DashboardTabs = ({ financialData, categoryData }: Props) => {
       case "Resumen":
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <IncomeExpensesChart data={financialData} />
-            <CategoryDistributionChart data={categoryData} />
+            <IncomeExpensesChart />
+            <CategoryDistributionChart />
             <MonthlyTrends />
             <SavingsProgress />
           </div>
@@ -39,13 +39,13 @@ const DashboardTabs = ({ financialData, categoryData }: Props) => {
       case "Ingresos/Gastos":
         return (
           <div className="grid grid-cols-1 gap-6">
-            <IncomeExpensesChart data={financialData} />
+            <IncomeExpensesChart  />
           </div>
         );
       case "Categorías":
         return (
           <div>
-            <CategoryDistributionChart data={categoryData} />
+            <CategoryDistributionChart  />
           </div>
         );
       case "Tendencias":

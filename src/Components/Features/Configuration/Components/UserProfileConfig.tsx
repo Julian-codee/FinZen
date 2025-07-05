@@ -27,7 +27,9 @@ interface BackendUserDto {
 }
 
 export const UserProfileConfig = () => {
-  const [currentProfileImageUrl, setCurrentProfileImageUrl] = useState<string | null>(null);
+  const [currentProfileImageUrl, setCurrentProfileImageUrl] = useState<
+    string | null
+  >(null);
   const [newImageBase64, setNewImageBase64] = useState<string | null>(null);
   const [userData, setUserData] = useState<UserProfileForm>({
     nombreCompleto: "",
@@ -35,7 +37,9 @@ export const UserProfileConfig = () => {
     nombreUsuario: "",
     tipoPersona: "",
   });
-  const [backendUserData, setBackendUserData] = useState<BackendUserDto | null>(null);
+  const [backendUserData, setBackendUserData] = useState<BackendUserDto | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -54,11 +58,14 @@ export const UserProfileConfig = () => {
           return;
         }
 
-        const response = await axios.get<BackendUserDto>("http://localhost:8080/finzen/usuarios", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get<BackendUserDto>(
+          "http://localhost:8080/finzen/usuarios",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         const dataFromBackend = response.data;
         setBackendUserData(dataFromBackend);
@@ -119,7 +126,15 @@ export const UserProfileConfig = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        setError("No se encontró token de autenticación. Por favor, inicia sesión.");
+        setError(
+          "No se encontró token de autenticación. Por favor, inicia sesión."
+        );
+        setLoading(false);
+        return;
+      }
+
+      if (!backendUserData) {
+        setError("No se pudo cargar la información actual del usuario.");
         setLoading(false);
         return;
       }
@@ -144,7 +159,9 @@ export const UserProfileConfig = () => {
     } catch (err) {
       console.error("Error al actualizar el perfil:", err);
       if (axios.isAxiosError(err) && err.response) {
-        setError(`Error: ${err.response.data || 'No se pudo guardar la información.'}`);
+        setError(
+          `Error: ${err.response.data || "No se pudo guardar la información."}`
+        );
       } else {
         setError("Error al guardar los cambios. Inténtalo de nuevo.");
       }
@@ -165,7 +182,9 @@ export const UserProfileConfig = () => {
         </p>
       </div>
 
-      {loading && <p className="text-blue-300">Cargando información del perfil...</p>}
+      {loading && (
+        <p className="text-blue-300">Cargando información del perfil...</p>
+      )}
       {error && <p className="text-red-500">{error}</p>}
       {successMessage && <p className="text-green-500">{successMessage}</p>}
 

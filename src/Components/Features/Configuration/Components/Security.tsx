@@ -40,7 +40,7 @@ export const Security = () => {
         return;
       }
 
-      const response = await axios.put(
+      await axios.put(
         "http://localhost:8080/finzen/usuarios/cambiar-contrasena", // Este es tu endpoint en UsuariosControllers
         {
           currentPassword,
