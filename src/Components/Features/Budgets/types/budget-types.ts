@@ -4,20 +4,20 @@ export interface PresupuestoResponseDto {
   montoAsignado: number;
   montoGastado: number;
   categoria?: {
-      idCategoria: number;
-      nombre: string;
+    idCategoria: number;
+    nombre: string;
   };
   cuenta?: {
-      idCuenta: number;
-      nombre: string;
+    idCuenta: number;
+    nombre: string;
   };
   tarjeta?: {
-      idTarjeta: number;
-      nombre: string;
+    idTarjeta: number;
+    nombre: string;
   };
   inversion?: {
-      idInversion: number;
-      nombre: string;
+    idInversion: number;
+    nombre: string;
   };
 }
 
@@ -58,7 +58,7 @@ export interface BudgetCategoryUI {
   spent: number;
   categoryType?: string;
   associatedEntityId?: number;
-  associatedEntityType?: 'cuenta' | 'tarjeta' | 'inversion';
+  associatedEntityType?: "cuenta" | "tarjeta" | "inversion";
   originalCategoryId?: number;
 }
 
@@ -68,8 +68,19 @@ export interface Transaction {
   amount: number;
   date: Date;
   categoryId: string;
-  type: 'expense' | 'income';
+  type: "expense" | "income";
 }
+
+export type Budget = {
+  id: string;
+  nombre: string;
+  montoAsignado: number;
+  montoGastado?: number;
+  cuenta?: { nombre: string };
+  tarjeta?: { nombre: string };
+  inversion?: { nombre: string };
+  categoriaPresupuesto?: { nombre: string };
+};
 
 export interface BudgetCategory {
   id: string;

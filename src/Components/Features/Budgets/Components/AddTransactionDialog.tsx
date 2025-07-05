@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect, ReactElement } from "react"
-import { X, DollarSign } from "lucide-react" // Importa DollarSign para el icono de monto
-import axios from "axios"
+import React, { useState, useEffect } from "react";
+import { X, DollarSign } from "lucide-react"; // Importa DollarSign para el icono de monto
+import axios from "axios";
 
 // Interfaces de las entidades (deben coincidir con tu backend)
 interface Account {
-  idCuenta: number
-  nombre: string
+  idCuenta: number;
+  nombre: string;
 }
 
 interface Investment {
-  idInversion: number
-  nombre: string
+  idInversion: number;
+  nombre: string;
 }
 
 interface Card {
-  idTarjeta: number
-  nombre: string
+  idTarjeta: number;
+  nombre: string;
 }
 
 interface Category {
@@ -29,32 +29,38 @@ interface Category {
   textColor?: string; // Opcional para este select simple
 }
 
-
 interface AddTransactionDialogProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
   // El onSubmit ahora debe recibir el ID de la entidad y el tipo de entidad, además de los datos de la transacción
   onSubmit: (
     amount: number,
     description: string,
     categoryId: number, // Cambiado a number para que coincida con el backend
     entityId: number, // ID numérico de la entidad (cuenta, tarjeta, inversión)
-    entityType: 'cuenta' | 'tarjeta' | 'inversion'
-  ) => void
-  categories: Category[] // Las categorías ahora deben tener un ID numérico
+    entityType: "cuenta" | "tarjeta" | "inversion"
+  ) => void;
+  categories: Category[]; // Las categorías ahora deben tener un ID numérico
 }
 
-export default function AddTransactionDialog({ isOpen, onClose, onSubmit, categories }: AddTransactionDialogProps) {
-  const [amount, setAmount] = useState("")
-  const [description, setDescription] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null) // Cambiado a number | null
-  const [selectedEntityType, setSelectedEntityType] = useState<"cuenta" | "tarjeta" | "inversion" | "">("")
-  const [selectedEntityId, setSelectedEntityId] = useState("") // Usará el string del select, luego se parsea a number
-  const [accounts, setAccounts] = useState<Account[]>([])
-  const [investments, setInvestments] = useState<Investment[]>([])
-  const [cards, setCards] = useState<Card[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export default function AddTransactionDialog({
+  isOpen,
+  onClose,
+  onSubmit,
+  categories,
+}: AddTransactionDialogProps) {
+  const [amount, setAmount] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null); // Cambiado a number | null
+  const [selectedEntityType, setSelectedEntityType] = useState<
+    "cuenta" | "tarjeta" | "inversion" | ""
+  >("");
+  const [selectedEntityId, setSelectedEntityId] = useState(""); // Usará el string del select, luego se parsea a number
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [investments, setInvestments] = useState<Investment[]>([]);
+  const [cards, setCards] = useState<Card[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // --- Carga de entidades (cuentas, inversiones, tarjetas) ---
   useEffect(() => {
@@ -72,20 +78,35 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
         }
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
-        const [cuentasResponse, inversionesResponse, tarjetasResponse] = await Promise.all([
-          axios.get<Account[]>("http://localhost:8080/finzen/cuentas", config),
-          axios.get<Investment[]>("http://localhost:8080/finzen/inversiones", config),
-          axios.get<Card[]>("http://localhost:8080/finzen/tarjetas", config),
-        ]);
+        const [cuentasResponse, inversionesResponse, tarjetasResponse] =
+          await Promise.all([
+            axios.get<Account[]>(
+              "http://localhost:8080/finzen/cuentas",
+              config
+            ),
+            axios.get<Investment[]>(
+              "http://localhost:8080/finzen/inversiones",
+              config
+            ),
+            axios.get<Card[]>("http://localhost:8080/finzen/tarjetas", config),
+          ]);
 
         setAccounts(cuentasResponse.data);
         setInvestments(inversionesResponse.data);
         setCards(tarjetasResponse.data);
-        console.log("Entidades cargadas - Cuentas:", cuentasResponse.data, "Inversiones:", inversionesResponse.data, "Tarjetas:", tarjetasResponse.data);
-
+        console.log(
+          "Entidades cargadas - Cuentas:",
+          cuentasResponse.data,
+          "Inversiones:",
+          inversionesResponse.data,
+          "Tarjetas:",
+          tarjetasResponse.data
+        );
       } catch (err) {
         console.error("Error al cargar las entidades:", err);
-        setError("Error al cargar cuentas, inversiones o tarjetas. Verifica tu conexión y que tengas entidades creadas.");
+        setError(
+          "Error al cargar cuentas, inversiones o tarjetas. Verifica tu conexión y que tengas entidades creadas."
+        );
       } finally {
         setIsLoading(false);
       }
@@ -123,12 +144,15 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
       setError("Por favor, ingresa una descripción para la transacción.");
       return;
     }
-    if (selectedCategory === null) { // Usar null para verificar que se haya seleccionado
+    if (selectedCategory === null) {
+      // Usar null para verificar que se haya seleccionado
       setError("Por favor, selecciona una categoría.");
       return;
     }
     if (!selectedEntityType) {
-      setError("Por favor, selecciona un tipo de entidad (Cuenta, Tarjeta o Inversión).");
+      setError(
+        "Por favor, selecciona un tipo de entidad (Cuenta, Tarjeta o Inversión)."
+      );
       return;
     }
     if (!selectedEntityId) {
@@ -138,12 +162,18 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
 
     const parsedEntityId = Number(selectedEntityId);
     if (isNaN(parsedEntityId)) {
-        setError("Error interno: ID de entidad no válido.");
-        return;
+      setError("Error interno: ID de entidad no válido.");
+      return;
     }
 
     // Llamar a la función onSubmit del componente padre con todos los datos
-    onSubmit(amountValue, description.trim(), selectedCategory, parsedEntityId, selectedEntityType);
+    onSubmit(
+      amountValue,
+      description.trim(),
+      selectedCategory,
+      parsedEntityId,
+      selectedEntityType
+    );
 
     // Reiniciar estados del formulario
     setAmount("");
@@ -175,12 +205,18 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h2 className="text-lg font-bold text-white mb-1">Registrar Gasto</h2>
+            <h2 className="text-lg font-bold text-white mb-1">
+              Registrar Gasto
+            </h2>
             <p className="text-gray-400 text-sm">
               Selecciona una categoría y la entidad asociada.
             </p>
           </div>
-          <button onClick={handleCloseDialog} className="text-gray-400 hover:text-white" disabled={isLoading}>
+          <button
+            onClick={handleCloseDialog}
+            className="text-gray-400 hover:text-white"
+            disabled={isLoading}
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -199,7 +235,10 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
 
         {/* Amount */}
         <div className="mb-4">
-          <label htmlFor="transaction-amount" className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="transaction-amount"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             Monto
           </label>
           <div className="relative">
@@ -221,7 +260,10 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
 
         {/* Description */}
         <div className="mb-5">
-          <label htmlFor="transaction-description" className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="transaction-description"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             Descripción
           </label>
           <input
@@ -237,20 +279,27 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
 
         {/* Tipo de Entidad */}
         <div className="mb-4">
-          <label htmlFor="entity-type" className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="entity-type"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             Tipo de Entidad
           </label>
           <select
             id="entity-type"
             value={selectedEntityType}
             onChange={(e) => {
-              setSelectedEntityType(e.target.value as "cuenta" | "tarjeta" | "inversion" | "");
+              setSelectedEntityType(
+                e.target.value as "cuenta" | "tarjeta" | "inversion" | ""
+              );
               setSelectedEntityId(""); // Reset entity selection when type changes
             }}
             className="w-full bg-[#020817] border border-white/40 text-white px-3 py-2.5 rounded-lg focus:outline-none focus:border-blue-500 appearance-none"
             disabled={isLoading}
           >
-            <option value="" disabled>Selecciona un tipo</option>
+            <option value="" disabled>
+              Selecciona un tipo
+            </option>
             <option value="cuenta">Cuenta</option>
             <option value="tarjeta">Tarjeta</option>
             <option value="inversion">Inversión</option>
@@ -260,8 +309,13 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
         {/* Entidad Específica (condicional) */}
         {selectedEntityType && (
           <div className="mb-4">
-            <label htmlFor="specific-entity" className="block text-sm font-medium text-gray-300 mb-2">
-              Selecciona {selectedEntityType.charAt(0).toUpperCase() + selectedEntityType.slice(1)}
+            <label
+              htmlFor="specific-entity"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
+              Selecciona{" "}
+              {selectedEntityType.charAt(0).toUpperCase() +
+                selectedEntityType.slice(1)}
             </label>
             <select
               id="specific-entity"
@@ -270,7 +324,9 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
               className="w-full bg-[#020817] border border-white/40 text-white px-3 py-2.5 rounded-lg focus:outline-none focus:border-blue-500 appearance-none"
               disabled={isLoading || getEntitiesToShow().length === 0}
             >
-              <option value="" disabled>Selecciona una {selectedEntityType}</option>
+              <option value="" disabled>
+                Selecciona una {selectedEntityType}
+              </option>
               {getEntitiesToShow().length > 0 ? (
                 getEntitiesToShow().map((entity: any) => {
                   const idField = getIdFieldName();
@@ -281,7 +337,9 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
                   );
                 })
               ) : (
-                <option value="" disabled>No hay {selectedEntityType}s disponibles</option>
+                <option value="" disabled>
+                  No hay {selectedEntityType}s disponibles
+                </option>
               )}
             </select>
           </div>
@@ -289,7 +347,10 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
 
         {/* Category Selection */}
         <div className="mb-4">
-          <label htmlFor="transaction-category" className="block text-sm font-medium text-gray-300 mb-2">
+          <label
+            htmlFor="transaction-category"
+            className="block text-sm font-medium text-gray-300 mb-2"
+          >
             Categoría
           </label>
           <select
@@ -319,7 +380,14 @@ export default function AddTransactionDialog({ isOpen, onClose, onSubmit, catego
           </button>
           <button
             onClick={handleSubmitClick}
-            disabled={isLoading || !amount || !description.trim() || selectedCategory === null || !selectedEntityType || !selectedEntityId}
+            disabled={
+              isLoading ||
+              !amount ||
+              !description.trim() ||
+              selectedCategory === null ||
+              !selectedEntityType ||
+              !selectedEntityId
+            }
             className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2.5 rounded-lg text-sm font-medium transition-colors"
           >
             Registrar Gasto

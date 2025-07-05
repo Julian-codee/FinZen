@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { DollarSign, Tag, Banknote, CreditCard, TrendingUp, XCircle, Loader2 } from "lucide-react";
+import { Banknote, CreditCard, TrendingUp, XCircle, Loader2 } from "lucide-react";
 import { Budget } from "../types/budget-types";
 
 interface BudgetListProps {
