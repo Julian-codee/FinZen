@@ -45,70 +45,86 @@ interface AddNewGoalProps {
   onGoalAdded: () => Promise<void>;
 }
 
-type OpcionFechaType = "" | "3m" | "6m" | "9m" | "1a" | "2a" | "5a" | "10a" | "personalizada";
+type OpcionFechaType =
+  | ""
+  | "3m"
+  | "6m"
+  | "9m"
+  | "1a"
+  | "2a"
+  | "5a"
+  | "10a"
+  | "personalizada";
 
-export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNewGoalProps) => {
+export const AddNewGoal = ({
+  onCancel,
+  idUsuario,
+  setGoals,
+  onGoalAdded,
+}: AddNewGoalProps) => {
   const [nombreMeta, setNombreMeta] = useState("");
   const [descripcion, setDescripcion] = useState("");
-  const [estado, setEstado] = useState<"creado" | "iniciado" | "terminado">("creado");
+  const [estado, setEstado] = useState<"creado" | "iniciado" | "terminado">(
+    "creado"
+  );
   const [montoObjetivo, setMontoObjetivo] = useState("");
   const [montoAporte, setMontoAporte] = useState("");
-  const [fechaObjetivo, setFechaObjetivo] = useState<Date | undefined>(undefined);
+  const [fechaObjetivo, setFechaObjetivo] = useState<Date | undefined>(
+    undefined
+  );
   const [opcionFecha, setOpcionFecha] = useState<OpcionFechaType>("");
-  const [mostrarCalendario, setMostrarCalendario] = useState(false);
   const [icon, setIcon] = useState("💰");
-  
-  // Estados para el manejo de carga y errores
-  const [loading, setLoading] = useState<boolean>(false);
+
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Base URL para APIs
   const API_BASE_URL = "http://localhost:8080/finzen/metas";
 
-  // Función para obtener headers con token
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Token de autenticación no encontrado");
-    }
+    if (!token) throw new Error("Token de autenticación no encontrado");
     return {
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
     };
   };
 
-  // Función mejorada para manejar errores
   const handleApiError = (error: any, defaultMessage: string) => {
     console.error(defaultMessage, error);
     let errorMessage = defaultMessage;
-    
+
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 401) {
         errorMessage = "Sesión expirada. Por favor, inicia sesión nuevamente.";
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.response?.data) {
-        errorMessage = typeof error.response.data === 'string' 
-          ? error.response.data 
-          : defaultMessage;
+        errorMessage =
+          typeof error.response.data === "string"
+            ? error.response.data
+            : defaultMessage;
       }
     }
-    
+
     setError(errorMessage);
     return errorMessage;
   };
 
   const formatDate = (): string =>
-    fechaObjetivo ? format(fechaObjetivo, "d MMMM yyyy", { locale: es }) : "Selecciona una fecha";
+    fechaObjetivo
+      ? format(fechaObjetivo, "d MMMM yyyy", { locale: es })
+      : "Selecciona una fecha";
 
   const handleFechaChange = (value: OpcionFechaType) => {
     setOpcionFecha(value);
-    setMostrarCalendario(false);
     const now = new Date();
 
-    const fechas: Record<Exclude<OpcionFechaType, "" | "personalizada">, Date> = {
+    const fechas: Record<
+      Exclude<OpcionFechaType, "" | "personalizada">,
+      Date
+    > = {
       "3m": addMonths(now, 3),
       "6m": addMonths(now, 6),
       "9m": addMonths(now, 9),
@@ -120,7 +136,6 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
 
     if (value === "personalizada") {
       setFechaObjetivo(undefined);
-      setMostrarCalendario(true);
     } else if (value !== "") {
       const fecha = fechas[value];
       if (isBefore(fecha, now)) {
@@ -134,26 +149,23 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Limpiar errores previos
     setError(null);
 
-    // Validaciones
     if (!nombreMeta.trim()) {
       setError("El nombre de la meta es obligatorio.");
       return;
     }
-    
+
     if (!montoObjetivo || parseFloat(montoObjetivo) <= 0) {
       setError("Monto objetivo inválido.");
       return;
     }
-    
+
     if (!montoAporte || parseFloat(montoAporte) < 0) {
       setError("El aporte inicial es obligatorio y no puede ser menor a cero.");
       return;
     }
-    
+
     if (!fechaObjetivo) {
       setError("Debes seleccionar una fecha válida.");
       return;
@@ -174,38 +186,31 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
 
     try {
       setLoading(true);
-      
+
       const response = await axios.post<Meta>(
-        API_BASE_URL, 
-        metaDto, 
+        API_BASE_URL,
+        metaDto,
         getAuthHeaders()
       );
 
-      // Solo hacer optimistic update si setGoals está disponible
       if (setGoals) {
         const newGoal: Meta = {
           ...metaDto,
           idMeta: response.data.idMeta,
           montoAporte: parseFloat(montoAporte),
         };
-        
+
         setGoals((prev) => ({
           ...prev,
           active: [...prev.active, newGoal],
         }));
       }
 
-      // Reuse the refresh logic from FinancialGoals.tsx
       await onGoalAdded();
-
-      // Mostrar mensaje de éxito
       setError(null);
-      
-      // Cerrar modal después de un breve delay para mostrar el éxito
       setTimeout(() => {
         onCancel();
       }, 500);
-      
     } catch (error) {
       handleApiError(error, "Error al crear meta");
     } finally {
@@ -219,13 +224,14 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
       className="bg-[#0f172a] text-white p-6 rounded-lg shadow-lg space-y-5 max-w-xl mx-auto"
     >
       <h2 className="text-2xl font-bold">Nueva Meta Financiera</h2>
-      <p className="text-gray-400 mb-4">Completa la información para planear tu objetivo de ahorro.</p>
+      <p className="text-gray-400 mb-4">
+        Completa la información para planear tu objetivo de ahorro.
+      </p>
 
-      {/* Mostrar errores si existen */}
       {error && (
         <div className="bg-red-600 text-white p-3 rounded-md mb-4">
           <p>{error}</p>
-          <button 
+          <button
             type="button"
             onClick={() => setError(null)}
             className="text-sm underline mt-1"
@@ -235,7 +241,6 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
         </div>
       )}
 
-      {/* Mostrar indicador de carga */}
       {loading && (
         <div className="bg-blue-600 text-white p-3 rounded-md mb-4 flex items-center">
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
@@ -352,7 +357,6 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
             onSelect={(date) => {
               if (date && !isBefore(date, new Date())) {
                 setFechaObjetivo(date);
-                setMostrarCalendario(false);
                 setError(null);
               } else {
                 setError("No puedes seleccionar una fecha pasada.");
@@ -367,7 +371,8 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
 
       {fechaObjetivo && (
         <p className="text-sm text-gray-300">
-          Fecha seleccionada: <span className="text-white font-semibold">{formatDate()}</span>
+          Fecha seleccionada:{" "}
+          <span className="text-white font-semibold">{formatDate()}</span>
         </p>
       )}
 
