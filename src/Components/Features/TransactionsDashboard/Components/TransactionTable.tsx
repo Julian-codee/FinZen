@@ -49,7 +49,7 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
     }
 
     try {
-      const { data } = await axios.get("http://localhost:8080/finzen/gasto/user/finances", {
+      const { data } = await axios.get("https://finzenbackend-production.up.railway.app/finzen/gasto/user/finances", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -144,9 +144,9 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
 
                 let deleteEndpoint = '';
                 if (transactionToDelete.type === 'income') {
-                  deleteEndpoint = `http://localhost:8080/finzen/ingreso/${id}`;
+                  deleteEndpoint = `https://finzenbackend-production.up.railway.app/finzen/ingreso/${id}`;
                 } else {
-                  deleteEndpoint = `http://localhost:8080/finzen/gasto/${id}`;
+                  deleteEndpoint = `https://finzenbackend-production.up.railway.app/finzen/gasto/${id}`;
                 }
 
                 await axios.delete(deleteEndpoint, {
@@ -224,8 +224,8 @@ const TransactionTable: React.FC<TransactionTableProps> = ({ activeTab, onTransa
               }
 
               const updateEndpoint = updated.type === 'income'
-                ? `http://localhost:8080/finzen/ingreso/${updated.id}`
-                : `http://localhost:8080/finzen/gasto/${updated.id}`;
+                ? `https://finzenbackend-production.up.railway.app/finzen/ingreso/${updated.id}`
+                : `https://finzenbackend-production.up.railway.app/finzen/gasto/${updated.id}`;
               
               const payload = {
                 monto: updated.amount,
