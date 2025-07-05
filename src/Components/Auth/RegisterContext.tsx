@@ -32,8 +32,8 @@ const initialRegisterData: RegisterData = {
   contrasena: "",
   tipoPersona: "emprendedor",
   role: "USUARIO",
-  ingresoMensual: null,
-  metaActual: null,
+  ingresoMensual: 1,
+  metaActual: 1,
 };
 
 const RegisterContext = createContext<RegisterContextType | undefined>(undefined);
@@ -88,12 +88,7 @@ export const RegisterProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       missingFields.push("tipoDocumento");
     }
 
-    if (typeof currentDataForSubmission.ingresoMensual !== 'number' || currentDataForSubmission.ingresoMensual <= 0) {
-      missingFields.push("ingresoMensual");
-    }
-    if (typeof currentDataForSubmission.metaActual !== 'number' || currentDataForSubmission.metaActual <= 0) {
-      missingFields.push("metaActual");
-    }
+  
 
     if (missingFields.length > 0) {
       throw new Error(`Faltan los siguientes campos obligatorios: ${missingFields.join(", ")}`);
