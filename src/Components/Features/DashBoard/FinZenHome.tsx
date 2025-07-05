@@ -47,7 +47,7 @@ const FinZenHome: React.FC = () => {
     }
 
     try {
-      const { data } = await axios.get("http://localhost:8080/finzen/gasto/user/finances", {
+      const { data } = await axios.get("https://finzenbackend-production.up.railway.app/finzen/gasto/user/finances", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

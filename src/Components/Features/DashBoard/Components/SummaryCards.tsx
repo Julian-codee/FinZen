@@ -27,7 +27,7 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ transactions }) => {
         }
 
         const cuentasResponse = await fetch(
-          "http://localhost:8080/finzen/cuentas",
+          "https://finzenbackend-production.up.railway.app/finzen/cuentas",
           {
             headers: {
               Authorization: `Bearer ${token}`,

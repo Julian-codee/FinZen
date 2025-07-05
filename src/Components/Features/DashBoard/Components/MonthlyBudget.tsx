@@ -45,7 +45,7 @@ export function MonthlyBudget() {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/finzen/presupuesto/user-budgets", {
+      const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/presupuesto/user-budgets", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

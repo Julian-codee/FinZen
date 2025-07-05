@@ -55,7 +55,7 @@ export const RecentTransactions: React.FC<RecentTransactionsProps> = ({
 
     try {
       const { data } = await axios.get(
-        "http://localhost:8080/finzen/gasto/user/finances",
+        "https://finzenbackend-production.up.railway.app/finzen/gasto/user/finances",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
