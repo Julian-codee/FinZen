@@ -81,14 +81,14 @@ export default function AddTransactionDialog({
         const [cuentasResponse, inversionesResponse, tarjetasResponse] =
           await Promise.all([
             axios.get<Account[]>(
-              "http://localhost:8080/finzen/cuentas",
+              "https://finzenbackend-production.up.railway.app/finzen/cuentas",
               config
             ),
             axios.get<Investment[]>(
-              "http://localhost:8080/finzen/inversiones",
+              "https://finzenbackend-production.up.railway.app/finzen/inversiones",
               config
             ),
-            axios.get<Card[]>("http://localhost:8080/finzen/tarjetas", config),
+            axios.get<Card[]>("https://finzenbackend-production.up.railway.app/finzen/tarjetas", config),
           ]);
 
         setAccounts(cuentasResponse.data);

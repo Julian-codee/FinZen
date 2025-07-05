@@ -39,7 +39,7 @@ export default function HistorySection({ categories: currentCategories }: { cate
     }
 
     try {
-      const transactionsResponse = await fetch("http://localhost:8080/finzen/gasto/my-expenses", {
+      const transactionsResponse = await fetch("https://finzenbackend-production.up.railway.app/finzen/gasto/my-expenses", {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,

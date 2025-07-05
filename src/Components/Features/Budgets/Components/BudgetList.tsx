@@ -24,7 +24,7 @@ export default function BudgetList({ shouldRefresh, onRefreshDone }: BudgetListP
         throw new Error("No hay token de autenticación disponible. Por favor, inicia sesión.");
       }
 
-      const response = await fetch("http://localhost:8080/finzen/presupuesto/getPresupuestoUser", {
+      const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/presupuesto/getPresupuestoUser", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

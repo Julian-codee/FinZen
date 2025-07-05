@@ -102,9 +102,9 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
 
         // Realiza todas las llamadas en paralelo
         const [cuentasResponse, inversionesResponse, tarjetasResponse] = await Promise.all([
-          axios.get<Account[]>("http://localhost:8080/finzen/cuentas", config),
-          axios.get<Investment[]>("http://localhost:8080/finzen/inversiones", config),
-          axios.get<Card[]>("http://localhost:8080/finzen/tarjetas", config),
+          axios.get<Account[]>("https://finzenbackend-production.up.railway.app/finzen/cuentas", config),
+          axios.get<Investment[]>("https://finzenbackend-production.up.railway.app/finzen/inversiones", config),
+          axios.get<Card[]>("https://finzenbackend-production.up.railway.app/finzen/tarjetas", config),
         ]);
 
         console.log("Cuentas cargadas:", cuentasResponse.data); // Log para depuración
@@ -199,7 +199,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
 
       // El endpoint para crear un presupuesto es único: /finzen/presupuesto
       // El backend determinará a qué entidad asociarlo por la presencia de idCuenta, idInversion o idTarjeta en el payload.
-      await axios.post("http://localhost:8080/finzen/presupuesto", payload, {
+      await axios.post("https://finzenbackend-production.up.railway.app/finzen/presupuesto", payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -54,7 +54,7 @@ export default function BudgetDashboard() {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/finzen/presupuesto/user-budgets",
+        "https://finzenbackend-production.up.railway.app/finzen/presupuesto/user-budgets",
         {
           method: "GET",
           headers: {
@@ -152,7 +152,7 @@ export default function BudgetDashboard() {
         newBudgetDto.idInversion = data.entityId;
       }
 
-      const response = await fetch("http://localhost:8080/finzen/presupuesto", {
+      const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/presupuesto", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -189,7 +189,7 @@ export default function BudgetDashboard() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/finzen/presupuesto/${id}`,
+        `https://finzenbackend-production.up.railway.app/finzen/presupuesto/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -258,7 +258,7 @@ export default function BudgetDashboard() {
       }
 
       const response = await fetch(
-        `http://localhost:8080/finzen/presupuesto/${id}`,
+        `https://finzenbackend-production.up.railway.app/finzen/presupuesto/${id}`,
         {
           method: "PUT",
           headers: {
@@ -306,7 +306,7 @@ export default function BudgetDashboard() {
         fecha: new Date().toISOString().split("T")[0],
       };
 
-      const response = await fetch("http://localhost:8080/finzen/gasto", {
+      const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/gasto", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
