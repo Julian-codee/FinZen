@@ -44,7 +44,7 @@ const CategoryDistributionChart = () => {
 
         // Llamada al endpoint
         const response = await axios.get<CategoriaGastoConConteoDTO[]>(
-          "http://localhost:8080/finzen/gasto/getCategoriasGasto", // Ajusta la URL según tu backend
+          "https://finzenbackend-production.up.railway.app/finzen/gasto/getCategoriasGasto", // Ajusta la URL según tu backend
           {
             headers: {
               Authorization: `Bearer ${token}`,
