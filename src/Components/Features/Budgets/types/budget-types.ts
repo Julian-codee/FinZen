@@ -51,6 +51,15 @@ export interface GastosResponseDto {
   nombrePresupuesto?: string;
 }
 
+export interface MonthlyBudget {
+  id: string;
+  month: number;
+  year: number;
+  totalBudget: number;
+  categories: BudgetCategory[];
+}
+
+
 export interface BudgetCategoryUI {
   id: string;
   name: string;
