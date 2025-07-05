@@ -215,13 +215,13 @@ export default function FinancialGoals() {
     onConfirm: (value: string) => void;
   }>({ isOpen: false, title: '', message: '', placeholder: '', onConfirm: () => {} });
 
-  const API_BASE_URL = "http://localhost:8080/finzen/metas";
+  const API_BASE_URL = "https://finzenbackend-production.up.railway.app/finzen/metas";
 
   // Obtener el ID del usuario autenticado
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/finzen/usuarios", getAuthHeaders());
+        const response = await axios.get("https://finzenbackend-production.up.railway.app/finzen/usuarios", getAuthHeaders());
         setIdUsuario(response.data.idUsuario);
       } catch (error) {
         handleApiError(error, "Error al obtener el ID del usuario");

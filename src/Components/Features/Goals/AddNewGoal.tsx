@@ -78,7 +78,7 @@ export const AddNewGoal = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const API_BASE_URL = "http://localhost:8080/finzen/metas";
+  const API_BASE_URL = "https://finzenbackend-production.up.railway.app/finzen/metas";
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
