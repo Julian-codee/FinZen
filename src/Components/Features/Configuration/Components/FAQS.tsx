@@ -56,7 +56,7 @@ export const FAQS = () => {
 				return;
 			}
 
-			const response = await fetch("http://localhost:8080/finzen/soporte", {
+			const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/soporte", {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",

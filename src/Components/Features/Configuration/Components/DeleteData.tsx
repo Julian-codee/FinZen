@@ -20,7 +20,7 @@ export const DeleteData = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:8080/finzen/usuarios", {
+      const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/usuarios", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

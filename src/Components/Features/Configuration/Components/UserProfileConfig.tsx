@@ -148,7 +148,7 @@ export const UserProfileConfig = () => {
         urlImg: newImageBase64 || currentProfileImageUrl || undefined,
       };
 
-      await axios.put("http://localhost:8080/finzen/usuarios", dataToSend, {
+      await axios.put("https://finzenbackend-production.up.railway.app/finzen/usuarios", dataToSend, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
