@@ -77,7 +77,7 @@ export const RegisterProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     if (!currentDataForSubmission.numeroDocumento.trim()) missingFields.push("numeroDocumento");
     if (!currentDataForSubmission.contrasena.trim()) missingFields.push("contrasena");
     if (!currentDataForSubmission.tipoPersona.trim()) missingFields.push("tipoPersona");
-    if (!currentDataForSubmission.nombreUsuario || !currentDataForSubmission.nombreUsuario.trim()) missingFields.push("nombreUsuario");
+
 
     if (
       !currentDataForSubmission.tipoDocumento ||
