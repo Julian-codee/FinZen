@@ -27,7 +27,7 @@ export const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/finzen/auth/signin", {
+      const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/auth/signin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
