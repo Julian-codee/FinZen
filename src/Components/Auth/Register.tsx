@@ -50,7 +50,7 @@ export const Register = () => {
     try {
       setIsLoading(true);
       setError("");
-      window.location.href = `http://localhost:8080/finzen/auth/${provider}`;
+      window.location.href = `https://finzenbackend-production.up.railway.app/finzen/auth/${provider}`;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setError(`Error al conectar con ${provider}`);

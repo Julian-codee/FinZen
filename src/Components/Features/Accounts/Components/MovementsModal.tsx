@@ -50,7 +50,7 @@ const MovementsModal = ({ open, onClose, account }: MovementsModalProps) => {
           return;
         }
 
-        const response = await fetch(`http://localhost:8080/finzen/cuentas/${account.id}/movimientos`, {
+        const response = await fetch(`https://finzenbackend-production.up.railway.app/finzen/cuentas/${account.id}/movimientos`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`, 

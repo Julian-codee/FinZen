@@ -6,7 +6,7 @@ import axios from "axios";
 import { AuthBackground } from "../../assets/Backgrounds/Auht-background";
 import { showErrorAlert, showSuccessAlert } from "../Ui/Alerts/Alerts";
 
-const API_URL = "http://localhost:8080/finzen/auth"; // Adjust to your backend URL
+const API_URL = "https://finzenbackend-production.up.railway.app/finzen/auth"; // Adjust to your backend URL
 
 export default function Component() {
   const [currentStep, setCurrentStep] = useState(1);

@@ -130,7 +130,7 @@ const Account = () => {
 
         // Fetch Cuentas
         const cuentasResponse = await fetch(
-          "http://localhost:8080/finzen/cuentas",
+          "https://finzenbackend-production.up.railway.app/finzen/cuentas",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -164,7 +164,7 @@ const Account = () => {
 
         // Fetch Tarjetas
         const tarjetasResponse = await fetch(
-          "http://localhost:8080/finzen/tarjetas",
+          "https://finzenbackend-production.up.railway.app/finzen/tarjetas",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -199,7 +199,7 @@ const Account = () => {
 
         // Fetch Inversiones
         const inversionesResponse = await fetch(
-          "http://localhost:8080/finzen/inversiones",
+          "https://finzenbackend-production.up.railway.app/finzen/inversiones",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -268,7 +268,7 @@ const Account = () => {
         : "corriente";
 
       if (tab === "Tarjetas") {
-        endpoint = "http://localhost:8080/finzen/tarjetas";
+        endpoint = "https://finzenbackend-production.up.railway.app/finzen/tarjetas";
         payload = {
           nombre: newAccount.title || "",
           tipo:
@@ -283,7 +283,7 @@ const Account = () => {
             parseFloat(newAccount.creditLimit?.toString() || "0") || 0,
         };
       } else if (tab === "Inversiones") {
-        endpoint = "http://localhost:8080/finzen/inversiones";
+        endpoint = "https://finzenbackend-production.up.railway.app/finzen/inversiones";
         payload = {
           nombre: newAccount.title || "",
           tipoInversion: newAccount.investmentType?.toUpperCase() || "ACCIONES",
@@ -293,7 +293,7 @@ const Account = () => {
           fechaInicio: new Date().toISOString().split("T")[0],
         };
       } else {
-        endpoint = "http://localhost:8080/finzen/cuentas";
+        endpoint = "https://finzenbackend-production.up.railway.app/finzen/cuentas";
         payload = {
           nombre: newAccount.title || "",
           banco: newAccount.bank || "",
@@ -422,7 +422,7 @@ const Account = () => {
         : "corriente";
 
       if (accountType === "tarjeta") {
-        endpoint = `http://localhost:8080/finzen/tarjetas/${editAccount.id}`;
+        endpoint = `https://finzenbackend-production.up.railway.app/finzen/tarjetas/${editAccount.id}`;
         payload = {
           nombre: updatedAccount.title,
           tipo: validType.toUpperCase() ||
@@ -438,7 +438,7 @@ const Account = () => {
             parseFloat(updatedAccount.creditLimit?.toString() || "0") || 0,
         };
       } else if (accountType === "inversion") {
-        endpoint = `http://localhost:8080/finzen/inversiones/${editAccount.id}`;
+        endpoint = `https://finzenbackend-production.up.railway.app/finzen/inversiones/${editAccount.id}`;
         payload = {
           nombre: updatedAccount.title,
           tipoInversion:
@@ -449,7 +449,7 @@ const Account = () => {
         };
       } else {
         // cuenta
-        endpoint = `http://localhost:8080/finzen/cuentas/${editAccount.id}`;
+        endpoint = `https://finzenbackend-production.up.railway.app/finzen/cuentas/${editAccount.id}`;
 
         const normalizedType = updatedAccount.type?.toLowerCase();
         const validType = ["corriente", "ahorros", "efectivo"].includes(normalizedType)
@@ -530,10 +530,10 @@ const Account = () => {
 
       const endpoint =
         accountType === "tarjeta"
-          ? `http://localhost:8080/finzen/tarjetas/${id}`
+          ? `https://finzenbackend-production.up.railway.app/finzen/tarjetas/${id}`
           : accountType === "inversion"
-          ? `http://localhost:8080/finzen/inversiones/${id}`
-          : `http://localhost:8080/finzen/cuentas/${id}`;
+          ? `https://finzenbackend-production.up.railway.app/finzen/inversiones/${id}`
+          : `https://finzenbackend-production.up.railway.app/finzen/cuentas/${id}`;
 
       const response = await fetch(endpoint, {
         method: "DELETE",
