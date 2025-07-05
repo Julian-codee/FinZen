@@ -27,45 +27,44 @@ export const HeaderEducation = () => {
   ];
 
   return (
-    <div className="text-white px-4 pt-8">
-      <div>
-        <h1 className="text-4xl font-bold mb-2">Educación Financiera</h1>
-        <p className="mb-12 max-w-2xl text-white/70 text-lg">
-          Aprende conceptos financieros, recibe consejos personalizados y mejora
-          tus habilidades para tomar decisiones financieras inteligentes.
-        </p>
+    <div className="text-white px-4 pt-6 sm:px-6 lg:px-12">
+      {/* Tabs */}
+      <div className="w-full overflow-x-auto scrollbar-hide">
+        <div
+          className={`
+            flex flex-col gap-2
+            sm:flex-row sm:overflow-x-auto sm:gap-2 sm:bg-gray-800 sm:rounded-lg sm:p-2
+            sm:inline-flex
+          `}
+        >
+          {tabs.map((tab) => (
+            <button
+              key={tab.name}
+              onClick={() => setActiveTab(tab.name)}
+              className={`flex items-center px-4 py-2 rounded-md text-sm font-medium flex-shrink-0
+                transition-all duration-300
+                ${
+                  activeTab === tab.name
+                    ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow"
+                    : "bg-[#1c1f2b] text-gray-300 hover:bg-[#2c2f3c] sm:bg-transparent sm:hover:bg-[#2c2f3c]"
+                }
+              `}
+            >
+              <span className="mr-2">{tab.icon}</span>
+              {tab.name}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Tabs de navegación */}
-      <div className="flex space-x-2 mb-8 p-1 rounded-lg w-fit bg-gray-800 shadow-lg">
-        {tabs.map((tab) => (
-          <button
-            key={tab.name}
-            className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ease-in-out
-              ${
-                activeTab === tab.name
-                  ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-md"
-                  : "text-gray-400 hover:bg-gray-700"
-              }`}
-            onClick={() => setActiveTab(tab.name)}
-          >
-            <span className="mr-2 flex items-center justify-center">
-              {tab.icon}
-            </span>
-            {tab.name}
-          </button>
-        ))}
-      </div>
-
-      {/* Contenedor de barra de búsqueda y filtros */}
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-        {/* Barra de búsqueda - Solo visible en la pestaña "Glosario" */}
+      {/* Buscador y Filtros */}
+      <div className="flex flex-col gap-4 mt-6 sm:flex-row sm:items-center sm:justify-between sm:mt-4 sm:mb-6">
         {activeTab === "Glosario" && (
-          <div className="relative flex-grow w-full md:w-auto">
+          <div className="relative w-full sm:w-auto">
             <input
               type="text"
               placeholder="Buscar en el glosario..."
-              className="w-[38%] pl-10 pr-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow-md"
+              className="w-full sm:w-[300px] pl-10 pr-4 py-2 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 shadow"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -75,64 +74,47 @@ export const HeaderEducation = () => {
           </div>
         )}
 
-        {/* Mueve los filtros de nivel aquí, dentro del mismo flexbox, para que se alineen a la derecha */}
         {activeTab === "Consejos" && (
-          <div className="flex space-x-2 bg-gray-800 rounded-lg p-1 shadow-lg ml-auto"> {/* ml-auto para alinear a la derecha */}
-            {CoursesLevel.map((course) => (
-              <button
-                key={course}
-                className={`px-4 py-2 rounded-md transition-colors duration-200 text-sm font-medium
-                  ${
-                    selectedCourses === course
-                      ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow-md"
-                      : "text-gray-400 hover:bg-gray-700"
-                  }`}
-                onClick={() => setSelectedCourses(course)}
-              >
-                {course}
-              </button>
-            ))}
+          <div className="w-full">
+            <div
+              className={`
+                grid grid-cols-2 gap-2 mt-2
+                sm:flex sm:flex-row sm:overflow-x-auto sm:bg-gray-800 sm:rounded-lg sm:p-2 sm:gap-2 w-full sm:w-fit
+              `}
+            >
+              {CoursesLevel.map((course) => (
+                <button
+                  key={course}
+                  onClick={() => setSelectedCourses(course)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium flex-shrink-0 text-center 
+                    ${
+                      selectedCourses === course
+                        ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white shadow"
+                        : "bg-[#1c1f2b] text-gray-300 hover:bg-[#2c2f3c] sm:bg-transparent"
+                    }
+                  `}
+                >
+                  {course}
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
 
-      {/* Contenido dinámico según la pestaña activa */}
-      <div className="mt-8 text-gray-400">
-        {activeTab === "Recursos" && (
-          <div>
-         
-              <WallStreetArticles />
-           
-          </div>
-        )}
-
+      {/* Contenido dinámico */}
+      <div className="mt-4 sm:mt-6 lg:mt-8 text-gray-300">
+        {activeTab === "Recursos" && <WallStreetArticles />}
         {activeTab === "Consejos" && (
-          <div>
-         
-        
-              <FinancialTipCard selectedCategory={selectedCourses} />
-        
-          </div>
+          <FinancialTipCard selectedCategory={selectedCourses} />
         )}
-
         {activeTab === "Glosario" && (
-          <div>
-        
-              <GlosarioFinanciero
-                selectedCategory="Todos"
-                searchQuery={searchQuery}
-              />
-            
-          </div>
+          <GlosarioFinanciero
+            selectedCategory="Todos"
+            searchQuery={searchQuery}
+          />
         )}
-
-        {activeTab === "Cursos" && (
-          <div>
-          
-
-            <YoutubeCourses />
-          </div>
-        )}
+        {activeTab === "Cursos" && <YoutubeCourses />}
       </div>
     </div>
   );

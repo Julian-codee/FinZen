@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Share2, Menu } from "lucide-react"
 import DateNavigation from "./Components/DateNavigation"
 import SummaryCards from "./Components/SummaryCards"
@@ -9,24 +9,83 @@ import CategoriesSection from "./Components/CategoriesSection"
 import DistributionSection from "./Components/DistributionSection"
 import HistorySection from "./Components/HistorySection"
 import AddBudgetDialog from "./Components/AddBudgetDialog"
-import type { BudgetCategory } from "./types/budget-types"
+import type { BudgetCategoryUI, PresupuestoResponseDto, PresupuestoRequestDto, AddBudgetDialogData } from "./types/budget-types"
 import { Sidebar } from "../../Ui/UiDashBoard/SideBar"
+import { toast } from "sonner"
+import { useNavigate } from "react-router-dom"
 
 export default function BudgetDashboard() {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [activeTab, setActiveTab] = useState("categorias")
-  const [categories, setCategories] = useState<BudgetCategory[]>([])
+  const [categories, setCategories] = useState<BudgetCategoryUI[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isOperationLoading, setIsOperationLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [isAddBudgetOpen, setIsAddBudgetOpen] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const navigate = useNavigate()
+
+  const fetchBudgets = useCallback(async () => {
+    if (!isOperationLoading) {
+      setIsLoading(true)
+    }
+    setError(null)
+
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+      setError("No authentication token found. Please log in.")
+      setIsLoading(false)
+      navigate("/")
+      toast.error("No autenticado. Por favor, inicia sesión.")
+      return
+    }
+
+    try {
+      const response = await fetch("http://localhost:8080/finzen/presupuesto/user-budgets", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+      })
+
+      if (response.status === 204) {
+        setCategories([])
+        toast.info("No se encontraron presupuestos para este usuario.")
+        return
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Fallo al cargar presupuestos")
+      }
+
+      const data: PresupuestoResponseDto[] = await response.json()
+
+      const mappedCategories: BudgetCategoryUI[] = data.map(budget => ({
+        id: String(budget.idPresupuesto),
+        name: budget.nombre,
+        budget: budget.montoAsignado,
+        spent: budget.montoGastado,
+        categoryType: budget.categoria?.nombre || "Sin Categoría",
+        associatedEntityId: budget.cuenta?.idCuenta || budget.tarjeta?.idTarjeta || budget.inversion?.idInversion,
+        associatedEntityType: budget.cuenta ? 'cuenta' : (budget.tarjeta ? 'tarjeta' : (budget.inversion ? 'inversion' : undefined)),
+        originalCategoryId: budget.categoria?.idCategoria
+      }))
+      setCategories(mappedCategories)
+    } catch (err: any) {
+      console.error("Error al cargar presupuestos:", err)
+      setError(err.message || "Ocurrió un error desconocido al cargar presupuestos.")
+      toast.error(`Error al cargar presupuestos: ${err.message}`)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [isOperationLoading, navigate])
 
   useEffect(() => {
-    const saved = localStorage.getItem("categories")
-    if (saved) setCategories(JSON.parse(saved))
-  }, [])
-
-  useEffect(() => {
-    localStorage.setItem("categories", JSON.stringify(categories))
-  }, [categories])
+    fetchBudgets()
+  }, [fetchBudgets])
 
   const toggleSidebar = () => {
     setIsSidebarOpen(prev => !prev)
@@ -40,38 +99,147 @@ export default function BudgetDashboard() {
     })
   }
 
-  const handleAddCategory = (newCat: Omit<BudgetCategory, "id" | "spent">) => {
-    setCategories(prev => [...prev, { ...newCat, id: Date.now().toString(), spent: 0 }])
+  const handleAddBudget = async (data: AddBudgetDialogData) => {
+    setIsOperationLoading(true)
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+        toast.error("No autenticado para crear presupuesto.")
+        setIsOperationLoading(false)
+        navigate("/")
+        return
+    }
+
+    try {
+        const newBudgetDto: PresupuestoRequestDto = {
+            nombre: data.name,
+            montoAsignado: data.montoAsignado,
+            idCategoriaPresupuesto: data.selectedCategoryId,
+        }
+
+        if (data.entityType === 'cuenta' && data.entityId !== undefined) {
+            newBudgetDto.idCuenta = data.entityId
+        } else if (data.entityType === 'tarjeta' && data.entityId !== undefined) {
+            newBudgetDto.idTarjeta = data.entityId
+        } else if (data.entityType === 'inversion' && data.entityId !== undefined) {
+            newBudgetDto.idInversion = data.entityId
+        }
+
+        const response = await fetch("http://localhost:8080/finzen/presupuesto", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(newBudgetDto),
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || "Fallo al crear presupuesto.")
+        }
+
+        toast.success("Presupuesto creado exitosamente.")
+        setIsAddBudgetOpen(false)
+        await fetchBudgets()
+    } catch (err: any) {
+        console.error("Error al añadir presupuesto:", err)
+        toast.error(`Error al crear presupuesto: ${err.message}`)
+    } finally {
+        setIsOperationLoading(false)
+    }
   }
 
-  const handleDeleteCategory = (id: string) =>
-    setCategories(prev => prev.filter(c => c.id !== id))
+  const handleDeleteCategory = async (id: string) => {
+    setIsOperationLoading(true)
+    const token = localStorage.getItem("token")
 
-  const handleUpdateBudget = (id: string, budget: number) =>
-    setCategories(prev => prev.map(c => c.id === id ? { ...c, budget } : c))
+    if (!token) {
+      toast.error("No autenticado para eliminar presupuesto.")
+      setIsOperationLoading(false)
+      navigate("/")
+      return
+    }
 
-  const handleRegisterExpense = (id: string, amt: number) =>
-    setCategories(prev => prev.map(c => c.id === id ? { ...c, spent: c.spent + amt } : c))
+    try {
+      const response = await fetch(`http://localhost:8080/finzen/presupuesto/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      })
 
-  const handleAddBudget = (data: {
-    totalBudget: number
-    categories: { name: string; budget: number; categoryType: string }[]
-  }) => {
-    const count = data.categories.length
-    const perCat = count > 0 ? data.totalBudget / count : 0
-    const newCats = data.categories.map((c, i) => ({
-      id: Date.now().toString() + "-" + i,
-      name: c.name,
-      categoryType: c.categoryType,
-      budget: perCat,
-      spent: 0,
-    }))
-    setCategories(prev =>
-      [...prev, ...newCats].filter((nc, i, arr) =>
-        arr.findIndex(x =>
-          x.name.toLowerCase() === nc.name.toLowerCase() &&
-          x.categoryType === nc.categoryType) === i)
-    )
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Fallo al eliminar presupuesto.")
+      }
+
+      toast.success("Presupuesto eliminado exitosamente.")
+      await fetchBudgets()
+    } catch (err: any) {
+      console.error("Error al eliminar presupuesto:", err)
+      toast.error(`Error al eliminar presupuesto: ${err.message}`)
+    } finally {
+      setIsOperationLoading(false)
+    }
+  }
+
+  const handleUpdateBudget = async (id: string, budgetAmount: number, currentCategory: BudgetCategoryUI) => {
+    setIsOperationLoading(true)
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+        toast.error("No autenticado para actualizar presupuesto.")
+        setIsOperationLoading(false)
+        navigate("/")
+        return
+    }
+
+    try {
+        if (!currentCategory.originalCategoryId) {
+            throw new Error("ID de categoría original no disponible para la actualización.")
+        }
+
+        const updatedBudgetDto: PresupuestoRequestDto = {
+            nombre: currentCategory.name,
+            montoAsignado: budgetAmount,
+            idCategoriaPresupuesto: currentCategory.originalCategoryId,
+        }
+
+        if (currentCategory.associatedEntityType === 'cuenta' && currentCategory.associatedEntityId !== undefined) {
+            updatedBudgetDto.idCuenta = currentCategory.associatedEntityId
+        } else if (currentCategory.associatedEntityType === 'tarjeta' && currentCategory.associatedEntityId !== undefined) {
+            updatedBudgetDto.idTarjeta = currentCategory.associatedEntityId
+        } else if (currentCategory.associatedEntityType === 'inversion' && currentCategory.associatedEntityId !== undefined) {
+            updatedBudgetDto.idInversion = currentCategory.associatedEntityId
+        }
+
+        const response = await fetch(`http://localhost:8080/finzen/presupuesto/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify(updatedBudgetDto),
+        })
+
+        if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || "Fallo al actualizar presupuesto.")
+        }
+
+        toast.success("Presupuesto actualizado exitosamente.")
+        await fetchBudgets()
+    } catch (err: any) {
+        console.error("Error al actualizar presupuesto:", err)
+        toast.error(`Error al actualizar presupuesto: ${err.message}`)
+    } finally {
+        setIsOperationLoading(false)
+    }
+  }
+
+  const handleNavigateToRegisterExpense = () => {
+      navigate(`/AddTransaction`)
   }
 
   const renderTabContent = () => {
@@ -79,10 +247,10 @@ export default function BudgetDashboard() {
       return (
         <CategoriesSection
           categories={categories}
-          onAddCategory={handleAddCategory}
+          onAddCategory={() => {}}
           onDeleteCategory={handleDeleteCategory}
           onUpdateBudget={handleUpdateBudget}
-          onRegisterExpense={handleRegisterExpense}
+          onRegisterExpense={handleNavigateToRegisterExpense}
         />
       )
     if (activeTab === "distribucion") return <DistributionSection categories={categories} />
@@ -103,17 +271,31 @@ export default function BudgetDashboard() {
     </div>
   )
 
+  if (isLoading && !error) {
+    return (
+      <div className="flex min-h-screen bg-[#020817] text-white justify-center items-center">
+        <p>Cargando presupuestos...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen bg-[#020817] text-red-500 justify-center items-center">
+        <p>Error: {error}</p>
+        <button onClick={fetchBudgets} className="ml-4 bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded">Reintentar</button>
+      </div>
+    )
+  }
+
   return (
     <div className="flex min-h-screen bg-[#020817] text-white">
-      {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-      {/* Contenido principal */}
       <div className={`flex-1 p-6 transition-all duration-300 ease-in-out ${
         isSidebarOpen ? "ml-64" : "ml-20"
       }`}>
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
           <div className="flex justify-between items-start mb-8">
             <div className="flex items-center gap-4">
               <button
@@ -135,22 +317,23 @@ export default function BudgetDashboard() {
             </button>
           </div>
 
-          {/* Navegación por mes */}
           <DateNavigation
             currentDate={currentDate}
             onNavigate={navigateMonth}
             onNewBudget={() => setIsAddBudgetOpen(true)}
           />
 
-          {/* Resumen y Tabs */}
+          {isOperationLoading && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <p className="text-white text-lg">Realizando operación...</p>
+            </div>
+          )}
+
           {categories.length > 0 && <SummaryCards categories={categories} />}
           {categories.length > 0 && <TabNavigation activeTab={activeTab} onTabChange={setActiveTab} />}
 
-          {/* Contenido principal */}
           {categories.length === 0 ? renderEmptyState : renderTabContent()}
 
-          {/* Diálogo para nuevo presupuesto */}
-          {/* Si luego necesitas cuentas, pásalas aquí */}
           <AddBudgetDialog
             isOpen={isAddBudgetOpen}
             onClose={() => setIsAddBudgetOpen(false)}

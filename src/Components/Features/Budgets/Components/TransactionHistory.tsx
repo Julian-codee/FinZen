@@ -42,7 +42,6 @@ export default function TransactionHistory({ transactions, categories }: Transac
         </div>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4 mb-6">
         <div className="relative flex-grow">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -71,7 +70,6 @@ export default function TransactionHistory({ transactions, categories }: Transac
         </div>
       </div>
 
-      {/* Transactions List */}
       {filteredTransactions.length > 0 ? (
         <div className="space-y-4">
           {filteredTransactions.map((transaction) => {

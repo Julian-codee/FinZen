@@ -108,7 +108,7 @@ export default function RegisterExpenseDialog({
                     <div className="text-left">
                       <div className="text-white font-medium">{category.name}</div>
                       <div className="text-gray-400 text-sm">
-                        Disponible: {formatCurrency(category.budget - category.spent)}
+                        Disponible: {formatCurrency((category.budget ?? 0) - (category.spent ?? 0))}
                       </div>
                     </div>
                   </div>

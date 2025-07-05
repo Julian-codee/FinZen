@@ -65,7 +65,7 @@ export const Hero3 = ({
     },
     {
       value3: "Nunca",
-      label3: "Nunca - No suelo hacer presupuestoss",
+      label3: "Nunca - No suelo hacer presupuestos",
     },
   ];
 
@@ -85,10 +85,10 @@ export const Hero3 = ({
   ];
 
   return (
-    <>
-      {/*Primera pregunta del form*/}
-      <div className="mt-6 space-y-4">
-        <p className="text-white text-xl font-semibold">
+    <div className="space-y-8 mt-4">
+      {/* Pregunta 1 */}
+      <div className="space-y-4">
+        <p className="text-white text-lg sm:text-xl font-semibold">
           ¿Cómo evaluarías tu conocimiento sobre finanzas personales?
         </p>
         {knowledgeOptions.map((option) => (
@@ -99,38 +99,40 @@ export const Hero3 = ({
               value={option.value}
               checked={knowledgeLevel === option.value}
               onChange={() => onKnowledgeChange(option.value)}
-              className="mt-1 cursor-pointer appearance-none bg-transparent h-6 w-6 border border-gray-300 rounded-full checked:border-blue-500 checked:ring-2 checked:ring-blue-500 checked:ring-offset-2 checked:ring-offset-transparent focus:outline-none"
+              className="mt-1 cursor-pointer appearance-none bg-transparent h-4 w-6.5 md:w-5 md:h-5 border border-gray-300 rounded-full checked:border-blue-500 checked:ring-2 checked:ring-blue-500 checked:ring-offset-2 checked:ring-offset-transparent focus:outline-none"
             />
-            <span className="text-white text-lg">{option.label}</span>
+            <span className="text-white text-base sm:text-lg">
+              {option.label}
+            </span>
           </label>
         ))}
       </div>
 
-      {/*Segunda pregunta del form*/}
-
-      <div className="mt-6 space-y-4">
-        <p className="text-white text-xl font-semibold">
+      {/* Pregunta 2 */}
+      <div className="space-y-4">
+        <p className="text-white text-lg sm:text-xl font-semibold">
           ¿Cuál es tu experiencia con inversiones?
         </p>
         {knowledgeOptions2.map((option) => (
-          <label key={option.value2} className="flex items-start space-x-3 ">
+          <label key={option.value2} className="flex items-start space-x-3">
             <input
               type="radio"
               name="knowledge2"
               value={option.value2}
               checked={knowledgeLevel2 === option.value2}
               onChange={() => onKnowledgeChange2(option.value2)}
-              className="mt-1 cursor-pointer appearance-none bg-transparent h-6 w-6 border border-gray-300 rounded-full checked:border-blue-500 checked:ring-2 checked:ring-blue-500 checked:ring-offset-2 checked:ring-offset-transparent focus:outline-none"
+              className="mt-1 cursor-pointer appearance-none bg-transparent h-4 w-6.5 md:w-5 md:h-5 border border-gray-300 rounded-full checked:border-blue-500 checked:ring-2 checked:ring-blue-500 checked:ring-offset-2 checked:ring-offset-transparent focus:outline-none"
             />
-            <span className="text-white text-lg">{option.label2}</span>
+            <span className="text-white text-base sm:text-lg">
+              {option.label2}
+            </span>
           </label>
         ))}
       </div>
 
-      {/*Tercera pregunta del form*/}
-
-      <div className="mt-6 space-y-4">
-        <p className="text-white text-xl font-semibold">
+      {/* Pregunta 3 */}
+      <div className="space-y-4">
+        <p className="text-white text-lg sm:text-xl font-semibold">
           ¿Con qué frecuencia haces presupuestos?
         </p>
         {knowledgeOptions3.map((option) => (
@@ -141,33 +143,36 @@ export const Hero3 = ({
               value={option.value3}
               checked={knowledgeLevel3 === option.value3}
               onChange={() => onKnowledgeChange3(option.value3)}
-              className="mt-1 cursor-pointer appearance-none bg-transparent h-6 w-6 border border-gray-300 rounded-full checked:border-blue-500 checked:ring-2 checked:ring-blue-500 checked:ring-offset-2 checked:ring-offset-transparent focus:outline-none"
+              className="mt-1 cursor-pointer appearance-none bg-transparent h-4 w-5.5 md:w-5 md:h-5 border border-gray-300 rounded-full checked:border-blue-500 checked:ring-2 checked:ring-blue-500 checked:ring-offset-2 checked:ring-offset-transparent focus:outline-none"
             />
-            <span className="text-white text-lg">{option.label3}</span>
+            <span className="text-white text-base sm:text-lg">
+              {option.label3}
+            </span>
           </label>
         ))}
       </div>
 
-      {/*Cuarta pregunta del form*/}
-
-      <div className="mt-6 space-y-4">
-        <p className="text-white text-xl font-semibold">
+      {/* Pregunta 4 */}
+      <div className="space-y-4">
+        <p className="text-white text-lg sm:text-xl font-semibold">
           ¿Cómo prefieres registrar tus transacciones financieras?
         </p>
         {knowledgeOptions4.map((option) => (
-          <label key={option.value4} className="flex items-start space-x-3 ">
+          <label key={option.value4} className="flex items-start space-x-3">
             <input
               type="radio"
               name="knowledge4"
               value={option.value4}
               checked={knowledgeLevel4 === option.value4}
               onChange={() => onKnowledgeChange4(option.value4)}
-              className="mt-1 cursor-pointer appearance-none bg-transparent h-6 w-6 border border-gray-300 rounded-full checked:border-blue-500 checked:ring-2 checked:ring-blue-500 checked:ring-offset-2 checked:ring-offset-transparent focus:outline-none"
+              className="mt-1 cursor-pointer appearance-none bg-transparent h-4 w-6 md:w-5 md:h-5 border border-gray-300 rounded-full checked:border-blue-500 checked:ring-2 checked:ring-blue-500 checked:ring-offset-2 checked:ring-offset-transparent focus:outline-none"
             />
-            <span className="text-white text-lg">{option.label4}</span>
+            <span className="text-white text-base sm:text-lg">
+              {option.label4}
+            </span>
           </label>
         ))}
       </div>
-    </>
+    </div>
   );
 };

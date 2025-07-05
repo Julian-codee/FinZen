@@ -14,7 +14,7 @@ interface Props {
 
 export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas", initialData = null }: Props) {
   const [title, setTitle] = useState(initialData?.title || "");
-  const [itemType, setItemType] = useState<string | null>(initialData?.type || null);
+  const [itemType, setItemType] = useState<string | null>(initialData?.type || "corriente");
   const [bank, setBank] = useState(initialData?.bank || "");
   const [number, setNumber] = useState(initialData?.number || "");
   const [amount, setAmount] = useState<number | "">(initialData?.amount || "");
@@ -81,7 +81,7 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
   useEffect(() => {
     if (open) {
       setTitle(initialData?.title || "");
-      setItemType(initialData?.type || null);
+      setItemType(initialData?.type || "corriente");
       setBank(initialData?.bank || "");
       setNumber(initialData?.number || "");
       setAmount(initialData?.amount || "");
@@ -104,11 +104,11 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
     const newErrors = {
       title: title.trim() === "",
       type: itemType === null,
-      bank: ((type === "Cuentas" && itemType !== "efectivo") || type === "Tarjetas") 
-            ? bank.trim() === "" 
+      bank: ((type === "Cuentas" && itemType !== "efectivo") || type === "Tarjetas")
+            ? bank.trim() === ""
             : false,
       number: ((type === "Cuentas" && itemType !== "efectivo") || type === "Tarjetas")
-              ? number.trim().length !== 4 || !/^\d{4}$/.test(number) 
+              ? number.trim().length !== 4 || !/^\d{4}$/.test(number)
               : false,
       amount: amount === "" || typeof amount !== "number" || amount < 0,
       creditLimit:
@@ -141,13 +141,12 @@ export default function AddAccountModal({ open, onClose, onAdd, type = "Cuentas"
         platform: type === "Inversiones" ? platform : undefined,
         investmentType: type === "Inversiones" ? itemType ?? undefined : undefined,
         movements: initialData?.movements || [],
-        // Preservar campos adicionales si existen
         freeAmount: initialData?.freeAmount,
         occupiedAmount: initialData?.occupiedAmount,
         currentValue: initialData?.currentValue,
         startDate: initialData?.startDate,
         originalType: initialData?.originalType || (
-          type === "Tarjetas" ? 'tarjeta' : 
+          type === "Tarjetas" ? 'tarjeta' :
           type === "Inversiones" ? 'inversion' : 'cuenta'
         ),
       };
