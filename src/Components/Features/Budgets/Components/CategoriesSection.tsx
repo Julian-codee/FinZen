@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Plus } from "lucide-react"
 import type { BudgetCategoryUI } from "../types/budget-types"
+import RegisterExpenseDialog from "./RegisterExpenseDialog"
 import CategoryCard from "./CategoryCard"
 
 interface CategoriesSectionProps {
@@ -10,7 +10,7 @@ interface CategoriesSectionProps {
   budgetName?: string;
   onDeleteCategory: (id: string) => Promise<void>;
   onUpdateBudget: (id: string, budgetAmount: number, currentCategory: BudgetCategoryUI) => Promise<void>;
-  onRegisterExpense: () => void;
+  onRegisterExpense: (budgetId: string, amount: number, description?: string) => Promise<void>;
 }
 
 export default function CategoriesSection({
@@ -21,6 +21,7 @@ export default function CategoriesSection({
   onRegisterExpense,
 }: CategoriesSectionProps) {
   const [searchFilter, setSearchFilter] = useState("")
+  const [isRegisterExpenseOpen, setIsRegisterExpenseOpen] = useState(false)
 
   const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(searchFilter.toLowerCase()),
@@ -38,13 +39,7 @@ export default function CategoriesSection({
             </div>
           )}
         </div>
-        <button
-          onClick={onRegisterExpense}
-          className="bg-[#F59E0B] hover:bg-[#D97706] px-4 py-2 rounded-lg transition-colors flex items-center"
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Registrar Gasto
-        </button>
+      
       </div>
 
       <div className="mb-6">
@@ -68,6 +63,13 @@ export default function CategoriesSection({
           />
         ))}
       </div>
+
+      <RegisterExpenseDialog
+        isOpen={isRegisterExpenseOpen}
+        onClose={() => setIsRegisterExpenseOpen(false)}
+        categories={categories}
+        onRegisterExpense={onRegisterExpense}
+      />
     </div>
-  ) 
+  )
 }
