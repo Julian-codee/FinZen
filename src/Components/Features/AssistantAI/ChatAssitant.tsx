@@ -75,7 +75,7 @@ export default function FinanceAssistantChat() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8080/finzen/gpt/user", {
+      const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/gpt/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
