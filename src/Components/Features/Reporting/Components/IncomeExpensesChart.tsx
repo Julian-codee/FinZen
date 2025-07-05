@@ -126,7 +126,7 @@ const IncomeExpensesChart = () => {
         };
 
         const response = await axios.get(
-          "http://localhost:8080/finzen/gasto/user/finances",
+          "https://finzenbackend-production.up.railway.app/finzen/gasto/user/finances",
           config
         );
 
