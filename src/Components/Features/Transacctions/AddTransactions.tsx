@@ -105,9 +105,9 @@ export const AddTransaction: React.FC = () => {
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
         const [cuentasResponse, inversionesResponse, tarjetasResponse] = await Promise.all([
-          axios.get<Account[]>("http://localhost:8080/finzen/cuentas", config),
-          axios.get<Investment[]>("http://localhost:8080/finzen/inversiones", config),
-          axios.get<Card[]>("http://localhost:8080/finzen/tarjetas", config),
+          axios.get<Account[]>("https://finzenbackend-production.up.railway.app/finzen/cuentas", config),
+          axios.get<Investment[]>("https://finzenbackend-production.up.railway.app/finzen/inversiones", config),
+          axios.get<Card[]>("https://finzenbackend-production.up.railway.app/finzen/tarjetas", config),
         ]);
 
         // Mapear los IDs para asegurar que sean números y consistentes
@@ -165,11 +165,11 @@ export const AddTransaction: React.FC = () => {
 
         // Assuming your backend has these specific endpoints for budgets by entity type
         if (tipoEntidad === "cuenta") {
-          endpoint = `http://localhost:8080/finzen/presupuesto/getCuenta/${parsedEntidadId}`;
+          endpoint = `https://finzenbackend-production.up.railway.app/finzen/presupuesto/getCuenta/${parsedEntidadId}`;
         } else if (tipoEntidad === "inversion") {
-          endpoint = `http://localhost:8080/finzen/presupuesto/getInversiones/${parsedEntidadId}`;
+          endpoint = `https://finzenbackend-production.up.railway.app/finzen/presupuesto/getInversiones/${parsedEntidadId}`;
         } else if (tipoEntidad === "tarjeta") {
-          endpoint = `http://localhost:8080/finzen/presupuesto/getTajeta/${parsedEntidadId}`;
+          endpoint = `https://finzenbackend-production.up.railway.app/finzen/presupuesto/getTarjeta/${parsedEntidadId}`;
         } else {
           setErrorMessage("Tipo de entidad no reconocido para obtener presupuestos.");
           setIsLoading(false);
@@ -363,7 +363,7 @@ export const AddTransaction: React.FC = () => {
         monto: parsedMonto,
         idPresupuesto: parsedPresupuestoId,
       };
-      endpoint = "http://localhost:8080/finzen/gasto";
+      endpoint = "https://finzenbackend-production.up.railway.app/finzen/gasto";
 
     } else { // tipoTransaccion === "ingreso"
       transactionData = {
@@ -373,7 +373,7 @@ export const AddTransaction: React.FC = () => {
         monto: parsedMonto,
         // No idPresupuesto for incomes as per backend DTO
       };
-      endpoint = "http://localhost:8080/finzen/ingreso";
+      endpoint = "https://finzenbackend-production.up.railway.app/finzen/ingreso";
     }
 
     // Add the selected entity ID to the transaction data for both types
