@@ -44,18 +44,6 @@ export const Header: React.FC = () => {
             <option value="2021">2021</option>
           </select>
         </div>
-
-        {/*Boton Para Imprimir*/}
-        <button className="p-2 rounded-md hover:bg-gray-700 border border-white/50 bg-[#111827] cursor-pointer">
-          <Printer className="w-4 h-4 text-gray-400" />
-        </button>
-        {/* Botón para descargar */}
-        <button className="p-2 rounded-md hover:bg-gray-700 border border-white/50 bg-[#111827] cursor-pointer">
-          <Download className="w-4 h-4 text-gray-400" />
-        </button>
-        <button className="p-2 rounded-md hover:bg-gray-700 border border-white/50 bg-[#111827] cursor-pointer">
-          <Share2 className="w-4 h-4 text-gray-400" />
-        </button>
       </div>
     </div>
   );

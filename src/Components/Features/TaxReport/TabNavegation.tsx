@@ -31,7 +31,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
     // This will be handled in the parent component
     setActiveViewTab("Vista Previa");
   };
-
+   
   return (
     <>
       {/* Sección para los botones de "Tipo de Vista" */}
@@ -58,6 +58,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
       </div>
 
       {/* Sección para los botones de "Tipo de deducción" */}
+     {activeViewTab !== "Vista Previa" && (
       <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6 w-fit">
         {tabs.map((tab) => (
           <button
@@ -73,6 +74,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
           </button>
         ))}
       </div>
+    )}
     </>
   );
 };

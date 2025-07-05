@@ -9,7 +9,7 @@ import BalanceToggle from "./Components/BalanceToggle";
 import AccountCategoryCard from "./Components/AccountCategoryCard";
 import AccountList from "./Components/AccountList";
 import AddAccountModal from "./Components/AddAccountModal";
-import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
+import { Sidebar } from "../../Ui/UiDashBoard/SideBar"; 
 
 interface Movement {
   id: number;
