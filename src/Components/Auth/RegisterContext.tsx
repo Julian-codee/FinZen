@@ -103,7 +103,7 @@ export const RegisterProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const payload = { ...currentDataForSubmission };
       console.log("Enviando datos al servidor:", payload);
 
-      const response = await fetch("http://localhost:8080/finzen/auth/signup", {
+      const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/auth/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

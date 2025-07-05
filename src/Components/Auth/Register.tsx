@@ -22,7 +22,7 @@ import { useRegister } from "./RegisterContext";
 
 export const Register = () => {
   const navigate = useNavigate();
-  const { registerData, updateRegisterData } = useRegister();
+  const { registerData, updateRegisterData, submitRegister } = useRegister();
 
   const [step, setStep] = useState(1);
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -105,6 +105,7 @@ export const Register = () => {
 
       setIsLoading(true);
       try {
+        await submitRegister();
         navigate("/custom-profile");
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
