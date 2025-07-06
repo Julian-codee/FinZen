@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Download, X, CheckCircle, AlertCircle, XCircle, Info } from "lucide-react";
 import { AddNewGoal } from "./AddNewGoal";
 import axios from "axios";
-import toast, { Toaster } from 'react-hot-toast'; // Import toast and Toaster
 
 // Interfaces para tipado
 interface Meta {
@@ -38,6 +37,88 @@ interface CardProps {
   value: string;
   subtitle: string;
   progress?: boolean;
+}
+
+// Interfaces para el sistema de alertas
+interface Alert {
+  id: string;
+  type: 'success' | 'error' | 'warning' | 'info';
+  title: string;
+  message: string;
+  duration?: number;
+}
+
+// Componente de Alerta
+function AlertComponent({ alert, onClose }: { alert: Alert; onClose: (id: string) => void }) {
+  const getAlertStyles = () => {
+    switch (alert.type) {
+      case 'success':
+        return {
+          bg: 'bg-green-900/20 border-green-500/30',
+          icon: CheckCircle,
+          iconColor: 'text-green-400',
+          titleColor: 'text-green-300',
+          messageColor: 'text-green-200'
+        };
+      case 'error':
+        return {
+          bg: 'bg-red-900/20 border-red-500/30',
+          icon: XCircle,
+          iconColor: 'text-red-400',
+          titleColor: 'text-red-300',
+          messageColor: 'text-red-200'
+        };
+      case 'warning':
+        return {
+          bg: 'bg-yellow-900/20 border-yellow-500/30',
+          icon: AlertCircle,
+          iconColor: 'text-yellow-400',
+          titleColor: 'text-yellow-300',
+          messageColor: 'text-yellow-200'
+        };
+      case 'info':
+        return {
+          bg: 'bg-blue-900/20 border-blue-500/30',
+          icon: Info,
+          iconColor: 'text-blue-400',
+          titleColor: 'text-blue-300',
+          messageColor: 'text-blue-200'
+        };
+      default:
+        return {
+          bg: 'bg-gray-900/20 border-gray-500/30',
+          icon: Info,
+          iconColor: 'text-gray-400',
+          titleColor: 'text-gray-300',
+          messageColor: 'text-gray-200'
+        };
+    }
+  };
+
+  const styles = getAlertStyles();
+  const Icon = styles.icon;
+
+  return (
+    <div className={`${styles.bg} border rounded-lg p-4 shadow-lg backdrop-blur-sm animate-in slide-in-from-top-2 duration-300`}>
+      <div className="flex items-start gap-3">
+        <Icon className={`w-5 h-5 ${styles.iconColor} mt-0.5 flex-shrink-0`} />
+        <div className="flex-1 min-w-0">
+          <h4 className={`font-semibold ${styles.titleColor} text-sm`}>
+            {alert.title}
+          </h4>
+          <p className={`${styles.messageColor} text-sm mt-1`}>
+            {alert.message}
+          </p>
+        </div>
+        <button
+          onClick={() => onClose(alert.id)}
+          className="text-gray-400 hover:text-white transition-colors p-1"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
 }
 
 // Componente de Modal de Confirmación
@@ -77,7 +158,7 @@ function ConfirmDialog({
             <h3 className="text-lg font-semibold text-white">{title}</h3>
           </div>
           
-          <p className="text-gray-300 mb-6">{message}</p>
+          <p className="text-gray-300 mb-6">{ }</p>
           
           <div className="flex gap-3 justify-end">
             <button
@@ -194,11 +275,13 @@ export default function FinancialGoals() {
   const [view, setView] = useState<"active" | "completed" | "upcoming">("active");
   const [showModal, setShowModal] = useState<boolean>(false);
   const [goals, setGoals] = useState<GoalsState>({ active: [], completed: [], upcoming: [] });
-  const [idUsuario, setIdUsuario] = useState<number>(0); 
+  const [idUsuario, setIdUsuario] = useState<number>(0); // Obtener dinámicamente
   const [estadisticas, setEstadisticas] = useState<Estadisticas | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Estado para el sistema de alertas
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     title: string;
@@ -215,6 +298,7 @@ export default function FinancialGoals() {
     onConfirm: (value: string) => void;
   }>({ isOpen: false, title: '', message: '', placeholder: '', onConfirm: () => {} });
 
+  // Base URL para APIs
   const API_BASE_URL = "http://localhost:8080/finzen/metas";
 
   // Obtener el ID del usuario autenticado
@@ -230,12 +314,29 @@ export default function FinancialGoals() {
     fetchUserId();
   }, []);
 
+  // Función para mostrar alertas
+  const showAlert = (type: Alert['type'], title: string, message: string, duration = 5000) => {
+    const id = Date.now().toString();
+    const newAlert: Alert = { id, type, title, message, duration };
+    
+    setAlerts(prev => [...prev, newAlert]);
+    
+    if (duration > 0) {
+      setTimeout(() => {
+        removeAlert(id);
+      }, duration);
+    }
+  };
+
+  // Función para remover alertas
+  const removeAlert = (id: string) => {
+    setAlerts(prev => prev.filter(alert => alert.id !== id));
+  };
+
   // Función para obtener headers con token
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      // It's better to redirect to login or handle this globally
-      toast.error("Token de autenticación no encontrado. Por favor, inicia sesión.");
       throw new Error("Token de autenticación no encontrado");
     }
     return {
@@ -246,7 +347,7 @@ export default function FinancialGoals() {
     };
   };
 
-  // Función mejorada para manejar errores con react-hot-toast
+  // Función mejorada para manejar errores
   const handleApiError = (error: any, defaultMessage: string) => {
     console.error(defaultMessage, error);
     let errorMessage = defaultMessage;
@@ -263,8 +364,8 @@ export default function FinancialGoals() {
       }
     }
     
-    setError(errorMessage); // Keep local error state for more persistent messages if needed
-    toast.error(errorMessage); // Show toast alert for error
+    setError(errorMessage);
+    showAlert('error', 'Error', errorMessage);
     return errorMessage;
   };
 
@@ -312,6 +413,7 @@ export default function FinancialGoals() {
       
       const metas = response.data || [];
       
+      // Obtener metas próximas a vencer
       const upcomingMetas = await fetchUpcomingGoals();
       
       console.log("Metas obtenidas:", metas);
@@ -353,19 +455,21 @@ export default function FinancialGoals() {
             getAuthHeaders()
           );
           
+          // Actualizar el estado local inmediatamente
           setGoals((prev) => ({
             active: prev.active.filter((g) => g.idMeta !== idMeta),
             completed: prev.completed.filter((g) => g.idMeta !== idMeta),
             upcoming: prev.upcoming.filter((g) => g.idMeta !== idMeta),
           }));
           
+          // Refrescar datos del servidor
           await Promise.all([fetchGoals(), fetchEstadisticas()]);
           
-          toast.success(`La meta "${titulo}" ha sido eliminada exitosamente.`);
+          showAlert('success', 'Meta eliminada', `La meta "${titulo}" ha sido eliminada exitosamente.`);
           setError(null);
         } catch (error) {
           const errorMessage = handleApiError(error, "Error al eliminar meta");
-          toast.error(`Error al eliminar: ${errorMessage}`);
+          showAlert('error', 'Error al eliminar', errorMessage);
         }
       }
     });
@@ -376,18 +480,18 @@ export default function FinancialGoals() {
     try {
       await axios.put(
         `${API_BASE_URL}/${idMeta}/estado`,
-        JSON.stringify(nuevoEstado), // Send as raw body
+        nuevoEstado,
         getAuthHeaders()
       );
 
       await Promise.all([fetchGoals(), fetchEstadisticas()]);
       
       const estadoTexto = nuevoEstado === 'creado' ? 'Creado' : 
-                          nuevoEstado === 'iniciado' ? 'Iniciado' : 'Terminado';
-      toast.success(`El estado de la meta ha sido cambiado a "${estadoTexto}".`);
+                         nuevoEstado === 'iniciado' ? 'Iniciado' : 'Terminado';
+      showAlert('success', 'Estado actualizado', `El estado de la meta ha sido cambiado a "${estadoTexto}".`);
     } catch (error) {
       const errorMessage = handleApiError(error, "Error al actualizar estado");
-      toast.error(`Error al actualizar estado: ${errorMessage}`);
+      showAlert('error', 'Error al actualizar', errorMessage);
     }
   };
 
@@ -402,7 +506,7 @@ export default function FinancialGoals() {
         try {
           const aporte = parseFloat(montoAporte.replace(/[,$]/g, ''));
           if (isNaN(aporte) || aporte <= 0) {
-            toast.error('Por favor ingresa un monto válido mayor a 0.');
+            showAlert('warning', 'Monto inválido', 'Por favor ingresa un monto válido mayor a 0.');
             return;
           }
 
@@ -413,10 +517,10 @@ export default function FinancialGoals() {
           );
 
           await Promise.all([fetchGoals(), fetchEstadisticas()]);
-          toast.success(`Se ha agregado $${aporte.toLocaleString()} a tu meta "${titulo}".`);
+          showAlert('success', 'Aporte realizado', `Se ha agregado $${aporte.toLocaleString()} a tu meta "${titulo}".`);
         } catch (error) {
           const mensaje = handleApiError(error, "Error al realizar el aporte");
-          toast.error(`Error en el aporte: ${mensaje}`);
+          showAlert('error', 'Error en el aporte', mensaje);
         }
       }
     });
@@ -426,7 +530,7 @@ export default function FinancialGoals() {
   const handleGoalAdded = async () => {
     await Promise.all([fetchGoals(), fetchEstadisticas()]);
     setShowModal(false);
-    toast.success('Tu nueva meta ha sido creada exitosamente.');
+    showAlert('success', 'Meta creada', 'Tu nueva meta ha sido creada exitosamente.');
   };
 
   // Renderizar metas según la vista seleccionada
@@ -453,28 +557,16 @@ export default function FinancialGoals() {
 
   return (
     <>
-      <Toaster 
-        position="top-right"
-        toastOptions={{
-          style: {
-            background: '#1a202c',
-            color: '#fff',
-            border: '1px solid #4a5568',
-          },
-          success: {
-            iconTheme: {
-              primary: '#34d399', // green-400
-              secondary: '#1a202c',
-            },
-          },
-          error: {
-            iconTheme: {
-              primary: '#ef4444', // red-500
-              secondary: '#1a202c',
-            },
-          },
-        }}
-      />
+      {/* Sistema de Alertas */}
+      <div className="fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full">
+        {alerts.map((alert) => (
+          <AlertComponent
+            key={alert.id}
+            alert={alert}
+            onClose={removeAlert}
+          />
+        ))}
+      </div>
 
       {/* Modal de Confirmación */}
       <ConfirmDialog
@@ -501,7 +593,7 @@ export default function FinancialGoals() {
         cancelText="Cancelar"
       />
 
-      {/* Mostrar errores persistentes si existen (optional, toasts are primary) */}
+      {/* Mostrar errores si existen */}
       {error && (
         <div className="bg-red-900/20 border border-red-500/30 text-red-200 p-4 rounded-lg mb-4">
           <div className="flex items-center gap-2">
@@ -533,9 +625,7 @@ export default function FinancialGoals() {
           >
             + Nueva Meta
           </button>
-          <button className="border border-gray-500 px-3 py-2 rounded hover:bg-gray-700 transition-colors">
-            <Download className="w-5 h-5" />
-          </button>
+          
         </div>
       </div>
 
@@ -687,7 +777,7 @@ export default function FinancialGoals() {
             {view === "completed" && "No tienes metas completadas."}
             {view === "upcoming" && "No tienes metas próximas a vencer."}
           </div>
-        )} 
+        )}  
       </div>
     </>
   );
