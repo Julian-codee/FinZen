@@ -199,11 +199,7 @@ export default function AddBudgetDialog({ isOpen, onClose, onAddBudget }: AddBud
 
       // El endpoint para crear un presupuesto es único: /finzen/presupuesto
       // El backend determinará a qué entidad asociarlo por la presencia de idCuenta, idInversion o idTarjeta en el payload.
-      await axios.post("https://finzenbackend-production.up.railway.app/finzen/presupuesto", payload, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  
 
       // Llamada a onAddBudget para actualizar el estado local de la lista de presupuestos
       onAddBudget({
