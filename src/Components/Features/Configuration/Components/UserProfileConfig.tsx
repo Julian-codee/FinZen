@@ -59,7 +59,7 @@ export const UserProfileConfig = () => {
         }
 
         const response = await axios.get<BackendUserDto>(
-          "http://localhost:8080/finzen/usuarios",
+          "https://finzenbackend-production.up.railway.app/finzen/usuarios",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -148,12 +148,16 @@ export const UserProfileConfig = () => {
         urlImg: newImageBase64 || currentProfileImageUrl || undefined,
       };
 
-      await axios.put("https://finzenbackend-production.up.railway.app/finzen/usuarios", dataToSend, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      await axios.put(
+        "https://finzenbackend-production.up.railway.app/finzen/usuarios",
+        dataToSend,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       setSuccessMessage("¡Perfil actualizado exitosamente!");
       setNewImageBase64(null);
     } catch (err) {
