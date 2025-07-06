@@ -86,7 +86,7 @@ export default function FinanceAssistantChat() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem("token");
+          localStorage.removeItem("jwtToken");
           setJwtToken(null);
           const errorMessage = "Tu sesión ha expirado o es inválida. Por favor, vuelve a iniciar sesión para continuar.";
           setApiError("Sesión inválida o expirada.");
