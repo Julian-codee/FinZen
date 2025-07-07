@@ -41,17 +41,10 @@ export const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // --- CAMBIO CLAVE AQUÍ ---
-        // Guarda el token con la clave "jwtToken" para que coincida con FinanceAssistantChat.
-        localStorage.setItem("jwtToken", data.token);
-        // --- FIN DEL CAMBIO ---
-
+        localStorage.setItem("token", data.token);
         showSuccessAlert("Has iniciado sesión exitosamente", "Bienvenido");
 
         setTimeout(() => {
-          // Nota: encadenar múltiples `Maps` en un `setTimeout` puede llevar a comportamientos inesperados.
-          // Normalmente se navega a una sola ruta principal después del login.
-          // Por ejemplo, `Maps("/BudgetDashboard");` sería suficiente si esa es tu ruta principal.
           navigate("/Transactions");
           navigate("/BudgetDashboard");
           navigate("/Reporting");
