@@ -3,24 +3,18 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // Cambiado a useNavigate
 
-interface Income {
-  id: number;
-  valor: number;
-  descripcion: string;
-  fecha: string;
-}
-
 export const TaxSummary: React.FC = () => {
   const [totalIncomes, setTotalIncomes] = useState<number>(0);
   const [totalDeductions, setTotalDeductions] = useState<number>(0);
   const [netIncome, setNetIncome] = useState<number>(0);
   const [calculatedTax, setCalculatedTax] = useState<number>(0);
-  const [taxesPaid, setTaxesPaid] = useState<number>(9200000); // Valor fijo de ejemplo
   const [balanceInFavor, setBalanceInFavor] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const navigate = useNavigate(); // Hook para redirigir
+  const taxesPaid = 9200000; // Constante, no cambia
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchIncomeData = async () => {
@@ -30,8 +24,10 @@ export const TaxSummary: React.FC = () => {
 
         const token = localStorage.getItem("token");
         if (!token) {
-          setError("No se encontró token de autenticación. Por favor, inicia sesión.");
-          navigate("/"); 
+          setError(
+            "No se encontró token de autenticación. Por favor, inicia sesión."
+          );
+          navigate("/");
           setLoading(false);
           return;
         }
@@ -66,11 +62,16 @@ export const TaxSummary: React.FC = () => {
         const finalBalance = taxesPaid - tax;
         setBalanceInFavor(finalBalance);
       } catch (err) {
-        console.error("Fallo al obtener datos de ingresos o calcular impuestos:", err);
+        console.error(
+          "Fallo al obtener datos de ingresos o calcular impuestos:",
+          err
+        );
         if (axios.isAxiosError(err) && err.response) {
           setError(err.response.data || "Error al obtener datos de ingresos.");
         } else {
-          setError("Error al calcular el resumen de impuestos. Inténtalo de nuevo.");
+          setError(
+            "Error al calcular el resumen de impuestos. Inténtalo de nuevo."
+          );
         }
       } finally {
         setLoading(false);
@@ -99,9 +100,12 @@ export const TaxSummary: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-[#111827] border border-white/60 p-6 rounded-lg mt-8 text-white text-center text-red-500">
+      <div className="bg-[#111827] border border-white/60 p-6 rounded-lg mt-8 text-white text-center">
         <p>Error: {error}</p>
-        <p>Por favor, asegúrate de que estás autenticado y de que el backend está funcionando correctamente.</p>
+        <p>
+          Por favor, asegúrate de que estás autenticado y de que el backend está
+          funcionando correctamente.
+        </p>
       </div>
     );
   }
@@ -124,11 +128,15 @@ export const TaxSummary: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <div>
           <p className="text-gray-400 text-sm">Ingresos Totales</p>
-          <p className="text-2xl font-bold mt-1">{formatCurrency(totalIncomes)}</p>
+          <p className="text-2xl font-bold mt-1">
+            {formatCurrency(totalIncomes)}
+          </p>
         </div>
         <div>
           <p className="text-gray-400 text-sm">Deducciones Totales</p>
-          <p className="text-2xl font-bold mt-1">{formatCurrency(totalDeductions)}</p>
+          <p className="text-2xl font-bold mt-1">
+            {formatCurrency(totalDeductions)}
+          </p>
         </div>
         <div>
           <p className="text-gray-400 text-sm">Renta Líquida</p>
@@ -136,7 +144,9 @@ export const TaxSummary: React.FC = () => {
         </div>
         <div>
           <p className="text-gray-400 text-sm">Impuesto Calculado</p>
-          <p className="text-2xl font-bold mt-1">{formatCurrency(calculatedTax)}</p>
+          <p className="text-2xl font-bold mt-1">
+            {formatCurrency(calculatedTax)}
+          </p>
         </div>
         <div>
           <p className="text-gray-400 text-sm">Impuestos Pagados</p>

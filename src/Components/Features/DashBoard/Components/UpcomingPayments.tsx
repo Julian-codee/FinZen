@@ -1,3 +1,4 @@
+
 // components/dashboard/UpcomingPayments.tsx
 import React from 'react';
 import { CalendarDays } from 'lucide-react'; // Ejemplo de icono
