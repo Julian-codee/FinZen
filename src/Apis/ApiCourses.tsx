@@ -12,7 +12,7 @@ export interface VideoItem {
   };
 }
 
-const API_KEY = 'AIzaSyCMh5EZ7Yfg1FZ19BvhptRlSt9GvB2qAeQ';//Aqui estara el APIKEY que nos trae los cursos
+const API_KEY = 'AIzaSyAZBbzSTsF9NJVRfypzQtvdX26mCqrr-oE';//Aqui estara el APIKEY que nos trae los cursos
 
 
 //Aqui se exporta la funcion que nos permite visualizar la informacion de la api 
