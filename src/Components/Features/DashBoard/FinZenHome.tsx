@@ -141,7 +141,7 @@ const FinZenHome: React.FC = () => {
           <RecentTransactions transactions={transactionsForRecentTable} />
           <div className="flex flex-col gap-6 lg:w-2/5">
             <MonthlyBudget />
-            <UpcomingPayments  />
+            
              <DailyAdvice />
           </div>
         </div>
