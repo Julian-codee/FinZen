@@ -75,19 +75,20 @@ export default function FinanceAssistantChat() {
     setIsLoading(true);
 
     try {
+    const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:8080/finzen/gpt/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${jwtToken}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ prompt: messageToSend }),
       });
 
       if (!response.ok) {
         if (response.status === 401) {
-          localStorage.removeItem("jwtToken");
-          setJwtToken(null);
+          // localStorage.removeItem("jwtToken");
+          // setJwtToken(null);
           const errorMessage = "Tu sesión ha expirado o es inválida. Por favor, vuelve a iniciar sesión para continuar.";
           setApiError("Sesión inválida o expirada.");
           setMessages((prev) => [...prev, { from: "bot", text: errorMessage }]);
