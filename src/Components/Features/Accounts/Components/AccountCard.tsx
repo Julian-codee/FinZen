@@ -76,20 +76,7 @@ const AccountCard = ({
                 Límite: ${account.creditLimit.toLocaleString("es-CO")}
               </p>
             )}
-            <div
-              className="mt-4 text-center border-t border-gray-700 pt-2 text-sm text-blue-400 cursor-pointer hover:underline"
-              onClick={() => onViewMovements(account)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  onViewMovements(account);
-                }
-              }}
-            >
-              Ver Movimientos
-            </div>
+           
           </div>
 
           <div className="relative">
