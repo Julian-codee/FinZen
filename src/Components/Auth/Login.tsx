@@ -27,21 +27,31 @@ export const Login = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/auth/signin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ correo, contrasena }),
-      });
+      const response = await fetch(
+        "https://finzenbackend-production.up.railway.app/finzen/auth/signin",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ correo, contrasena }),
+        }
+      );
 
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.token);
+        // --- CAMBIO CLAVE AQUÍ ---
+        // Guarda el token con la clave "jwtToken" para que coincida con FinanceAssistantChat.
+        localStorage.setItem("jwtToken", data.token);
+        // --- FIN DEL CAMBIO ---
+
         showSuccessAlert("Has iniciado sesión exitosamente", "Bienvenido");
 
         setTimeout(() => {
+          // Nota: encadenar múltiples `Maps` en un `setTimeout` puede llevar a comportamientos inesperados.
+          // Normalmente se navega a una sola ruta principal después del login.
+          // Por ejemplo, `Maps("/BudgetDashboard");` sería suficiente si esa es tu ruta principal.
           navigate("/Transactions");
           navigate("/BudgetDashboard");
           navigate("/Reporting");
