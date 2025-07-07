@@ -1,4 +1,3 @@
-// src/components/AddTransaction.tsx
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import {
@@ -21,31 +20,66 @@ import {
   GraduationCap,
   PartyPopper,
   Car,
-  CheckCircle, // Added for success toast
-  XCircle, // Added for error toast
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import toast, { Toaster } from 'react-hot-toast'; // Import toast and Toaster
+import React, { useState, useEffect, useRef } from "react"; // Added useRef for outside click
+import toast, { Toaster } from 'react-hot-toast';
 import { DayPicker } from "react-day-picker";
 import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
 import axios from "axios";
 import "react-day-picker/dist/style.css";
 
-// Componentes Toast personalizados (Copied from TransactionTable.tsx)
+// Componentes Toast personalizados
 const CustomSuccessToast: React.FC<{ t: any; message: string }> = ({ t, message }) => (
   <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-neutral-800 shadow-xl rounded-xl pointer-events-auto flex`}>
-    <div className="flex-1 w-0 p-4"><div className="flex items-start"><div className="flex-shrink-0 pt-0.5"><CheckCircle className="h-6 w-6 text-green-500" /></div><div className="ml-3 flex-1"><p className="text-sm font-semibold text-white">¡Éxito!</p><p className="mt-1 text-sm text-gray-300">{message}</p></div></div></div>
-    <div className="flex border-l border-green-600/30"><button onClick={() => toast.dismiss(t.id)} className="w-full border border-transparent rounded-none rounded-r-xl p-4 flex items-center justify-center text-sm font-medium text-green-400 hover:text-green-200 focus:outline-none focus:ring-2 focus:ring-green-500">Cerrar</button></div>
+    <div className="flex-1 w-0 p-4">
+      <div className="flex items-start">
+        <div className="flex-shrink-0 pt-0.5">
+          <CheckCircle className="h-6 w-6 text-green-500" />
+        </div>
+        <div className="ml-3 flex-1">
+          <p className="text-sm font-semibold text-white">¡Éxito!</p>
+          <p className="mt-1 text-sm text-gray-300">{message}</p>
+        </div>
+      </div>
+    </div>
+    <div className="flex border-l border-green-600/30">
+      <button
+        onClick={() => toast.dismiss(t.id)}
+        className="w-full border border-transparent rounded-none rounded-r-xl p-4 flex items-center justify-center text-sm font-medium text-green-400 hover:text-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
+        aria-label="Cerrar mensaje de éxito"
+      >
+        Cerrar
+      </button>
+    </div>
   </div>
 );
 
 const CustomErrorToast: React.FC<{ t: any; message: string }> = ({ t, message }) => (
   <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-neutral-800 shadow-xl rounded-xl pointer-events-auto flex`}>
-    <div className="flex-1 w-0 p-4"><div className="flex items-start"><div className="flex-shrink-0 pt-0.5"><XCircle className="h-6 w-6 text-red-500" /></div><div className="ml-3 flex-1"><p className="text-sm font-semibold text-white">Error</p><p className="mt-1 text-sm text-gray-300">{message}</p></div></div></div>
-    <div className="flex border-l border-red-600/30"><button onClick={() => toast.dismiss(t.id)} className="w-full border border-transparent rounded-none rounded-r-xl p-4 flex items-center justify-center text-sm font-medium text-red-400 hover:text-red-200 focus:outline-none focus:ring-2 focus:ring-red-500">Cerrar</button></div>
+    <div className="flex-1 w-0 p-4">
+      <div className="flex items-start">
+        <div className="flex-shrink-0 pt-0.5">
+          <XCircle className="h-6 w-6 text-red-500" />
+        </div>
+        <div className="ml-3 flex-1">
+          <p className="text-sm font-semibold text-white">Error</p>
+          <p className="mt-1 text-sm text-gray-300">{message}</p>
+        </div>
+      </div>
+    </div>
+    <div className="flex border-l border-red-600/30">
+      <button
+        onClick={() => toast.dismiss(t.id)}
+        className="w-full border border-transparent rounded-none rounded-r-xl p-4 flex items-center justify-center text-sm font-medium text-red-400 hover:text-red-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+        aria-label="Cerrar mensaje de error"
+      >
+        Cerrar
+      </button>
+    </div>
   </div>
 );
-
 
 // Interfaces para los datos del backend
 interface Budget {
@@ -90,7 +124,9 @@ export const AddTransaction: React.FC = () => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [errorMessage, setErrorMessage] = useState<string>(""); // Replaced by toast
+
+  // Ref para el calendario para cerrar al hacer clic fuera
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   // Definición de categorías
   const categories = [
@@ -111,11 +147,27 @@ export const AddTransaction: React.FC = () => {
     { id: 15, ide: "otros", name: "Otros", icon: <Plus className="w-4 h-4" />, bgColor: "bg-[#F3F4F6]", textColor: "text-[#6B7280]" },
   ];
 
+  // Cerrar calendario al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target as Node)) {
+        setShowCalendar(false);
+      }
+    };
+    if (showCalendar) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showCalendar]);
+
   // Obtener cuentas, inversiones y tarjetas al cargar el componente
   useEffect(() => {
     const fetchEntidades = async () => {
       setIsLoading(true);
-      // setErrorMessage(""); // Replaced by toast
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -131,15 +183,13 @@ export const AddTransaction: React.FC = () => {
         ]);
 
         // Mapear los IDs para asegurar que sean números y consistentes
-        const mappedCuentas = cuentasResponse.data.map(item => ({ ...item, id: Number(item.idCuenta) }));
+        // Added null/undefined checks for idCuenta, idInversion, idTarjeta
+        const mappedCuentas = cuentasResponse.data.map(item => ({ ...item, id: item.idCuenta != null ? Number(item.idCuenta) : undefined }));
         setCuentas(mappedCuentas);
-
-        const mappedInversiones = inversionesResponse.data.map(item => ({ ...item, id: Number(item.idInversion) }));
+        const mappedInversiones = inversionesResponse.data.map(item => ({ ...item, id: item.idInversion != null ? Number(item.idInversion) : undefined }));
         setInversiones(mappedInversiones);
-
-        const mappedTarjetas = tarjetasResponse.data.map(item => ({ ...item, id: Number(item.idTarjeta) }));
+        const mappedTarjetas = tarjetasResponse.data.map(item => ({ ...item, id: item.idTarjeta != null ? Number(item.idTarjeta) : undefined }));
         setTarjetas(mappedTarjetas);
-
       } catch (error) {
         console.error("Error al obtener entidades:", error);
         setCuentas([]);
@@ -166,6 +216,7 @@ export const AddTransaction: React.FC = () => {
 
       const parsedEntidadId = Number(entidadId);
       if (isNaN(parsedEntidadId) || parsedEntidadId <= 0) {
+        // This case should ideally not happen if the dropdown is populated correctly, but good for robustness.
         toast.custom((t) => <CustomErrorToast t={t} message="ID de entidad seleccionado no es válido. Por favor, selecciona uno válido." />);
         setPresupuestos([]);
         setPresupuestoSeleccionado("");
@@ -173,7 +224,6 @@ export const AddTransaction: React.FC = () => {
       }
 
       setIsLoading(true);
-      // setErrorMessage(""); // Replaced by toast
       try {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -204,8 +254,13 @@ export const AddTransaction: React.FC = () => {
           nombre: p.nombre,
           montoAsignado: p.montoAsignado
         }));
-
         setPresupuestos(mappedPresupuestos);
+        // If there's only one budget, pre-select it
+        if (mappedPresupuestos.length === 1) {
+          setPresupuestoSeleccionado(String(mappedPresupuestos[0].idPresupuesto));
+        } else {
+          setPresupuestoSeleccionado(""); // Reset if multiple or none
+        }
       } catch (error) {
         console.error("Error al obtener presupuestos:", error);
         setPresupuestos([]);
@@ -221,6 +276,9 @@ export const AddTransaction: React.FC = () => {
 
     if (tipoTransaccion === "gasto") { // Only fetch budgets if transaction is a 'gasto'
       fetchPresupuestos();
+    } else {
+      setPresupuestos([]); // Clear budgets if switching to income
+      setPresupuestoSeleccionado("");
     }
   }, [tipoEntidad, entidadId, tipoTransaccion]); // Add tipoTransaccion to dependency array
 
@@ -241,6 +299,7 @@ export const AddTransaction: React.FC = () => {
     return "Selecciona una fecha";
   };
 
+  // Improved monto formatting and input handling
   useEffect(() => {
     const cleanMonto = monto.replace(/\./g, "").replace(/,/g, "");
     const formatter = new Intl.NumberFormat("es-CO", {
@@ -259,26 +318,17 @@ export const AddTransaction: React.FC = () => {
 
     if (monto === "0,") {
       setDisplayMonto("0,");
-    } else if (
-      monto.startsWith("0") &&
-      monto.length > 1 &&
-      !monto.startsWith("0,")
-    ) {
-      setDisplayMonto(
-        formatter.format(parseFloat(cleanMonto.substring(1).replace(",", ".")))
-      );
+    } else if (monto.startsWith("0") && monto.length > 1 && !monto.startsWith("0,")) {
+      // Handles cases like "05" becoming "5"
+      setDisplayMonto(formatter.format(parseFloat(cleanMonto.substring(1).replace(",", "."))));
     } else if (monto.includes(",")) {
       const parts = monto.split(",");
       if (parts[1] && parts[1].length >= 2) {
-        // No cambia si ya tiene 2 decimales
+        // No change if already 2 decimals
       } else {
+        // Formats integer part with thousands separator
         let formattedInt = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-        let displayedDecPart = parts[1];
-        if (parts[1] === undefined || parts[1] === "") {
-          displayedDecPart = "";
-        } else if (parts[1].length === 1) {
-          displayedDecPart += ""; // Deja solo un decimal si se está escribiendo
-        }
+        let displayedDecPart = parts[1] === undefined ? "" : parts[1];
         setDisplayMonto(`${formattedInt},${displayedDecPart}`);
       }
     }
@@ -292,11 +342,8 @@ export const AddTransaction: React.FC = () => {
         if (currentInput.length === 1 || currentInput === "0") {
           return "0";
         }
-        if (
-          currentInput.endsWith(",") &&
-          currentInput.length === 2 &&
-          currentInput.startsWith("0")
-        ) {
+        // Handle "0," case when deleting
+        if (currentInput === "0,") {
           return "0";
         }
         return currentInput.slice(0, -1);
@@ -304,7 +351,7 @@ export const AddTransaction: React.FC = () => {
 
       if (valor === ",") {
         if (currentInput.includes(",")) {
-          return currentInput;
+          return currentInput; // Only one comma allowed
         }
         if (currentInput === "0") {
           return "0,";
@@ -312,14 +359,19 @@ export const AddTransaction: React.FC = () => {
         return currentInput + ",";
       }
 
-      if (currentInput === "0" && valor !== ",") {
+      // Prevent multiple leading zeros, unless it's "0,"
+      if (currentInput === "0" && valor !== "0") {
         return valor;
       }
+      if (currentInput === "0" && valor === "0") {
+        return "0"; // Keep it "0" if trying to add another 0
+      }
 
+      // Limit to 2 decimal places after comma
       if (currentInput.includes(",")) {
         const parts = currentInput.split(",");
         if (parts[1] && parts[1].length >= 2) {
-          return currentInput;
+          return currentInput; // Max 2 decimals
         }
       }
       return currentInput + valor;
@@ -327,8 +379,6 @@ export const AddTransaction: React.FC = () => {
   };
 
   const handleGuardarTransaccion = async () => {
-    // setErrorMessage(""); // Replaced by toast
-
     // 1. Validaciones de campos comunes
     if (!nombreTransaccion.trim()) {
       toast.custom((t) => <CustomErrorToast t={t} message="Por favor, ingresa el nombre de la transacción." />);
@@ -416,11 +466,11 @@ export const AddTransaction: React.FC = () => {
       const response = await axios.post(endpoint, transactionData, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       console.log("Transacción guardada exitosamente. Respuesta del backend:", response.data);
 
       // Reiniciar estados después de un éxito
       setMonto("0");
+      setDisplayMonto("0,00"); // Reset display monto as well
       setTipoTransaccion("gasto"); // Default back to gasto
       setCategoriaSeleccionada(null);
       setSelectedDate(new Date());
@@ -434,7 +484,6 @@ export const AddTransaction: React.FC = () => {
 
       // Despacha un evento personalizado para notificar a otros componentes
       window.dispatchEvent(new Event('transaction-added'));
-
     } catch (error) {
       console.error("Error al guardar la transacción:", error);
       if (axios.isAxiosError(error) && error.response) {
@@ -447,10 +496,9 @@ export const AddTransaction: React.FC = () => {
     }
   };
 
-
   return (
     <>
-      <Toaster position="bottom-right" /> {/* Added Toaster component here */}
+      <Toaster position="bottom-right" />
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <div className="min-h-screen bg-[#020817] text-white flex flex-col items-center justify-center py-4 px-2">
         <div className="w-[95%] sm:w-[80%] md:w-[60%] lg:w-[40%] bg-[#020817] rounded-lg shadow-lg p-4">
@@ -458,28 +506,26 @@ export const AddTransaction: React.FC = () => {
           <p className="text-gray-400 text-sm mb-4">
             Registra tus gastos e ingresos de manera rápida y sencilla.
           </p>
-          {/* Mensaje de error o éxito - REMOVED, now handled by toast */}
-          {/* {errorMessage && (
-            <div className={`mb-4 p-2 rounded-md ${errorMessage.includes("exitosa") ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
-              {errorMessage}
-            </div>
-          )} */}
-          {/* Indicador de carga */}
+
           {isLoading && (
-            <div className="mb-4 p-2 bg-blue-500/20 text-blue-400 rounded-md">
+            <div className="mb-4 p-2 bg-blue-500/20 text-blue-400 rounded-md animate-pulse"> {/* Added animate-pulse */}
               Cargando...
             </div>
           )}
-          <p className="text-left mb-2 pl-2.5">Nombre de la Transacción</p>
+
+          <label htmlFor="transaction-name" className="text-left mb-2 pl-2.5 block">Nombre de la Transacción</label>
           <input
             type="text"
+            id="transaction-name" // Added id for label association
             placeholder="Nombre de la Transacción"
             value={nombreTransaccion}
             onChange={(e) => setNombreTransaccion(e.target.value)}
             className="w-full p-2.5 rounded-md bg-[#020817] border border-white/40 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 pl-2.5 mb-4"
             aria-label="Nombre de la transacción"
             disabled={isLoading}
+            maxLength={100} // Added max length for input
           />
+
           <div className="flex rounded-md p-0.5 mb-4">
             <button
               className={`flex-1 py-5 text-base border m-2 border-white/40 rounded-md font-semibold transition-colors duration-200 ${
@@ -507,6 +553,7 @@ export const AddTransaction: React.FC = () => {
               <TrendingUp className="inline-block mr-1" size={18} /> Ingreso
             </button>
           </div>
+
           <div className="mb-4">
             <h2 className="text-lg font-semibold mb-2">Monto</h2>
             <div className="flex justify-end mb-3">
@@ -518,7 +565,7 @@ export const AddTransaction: React.FC = () => {
                 <button
                   key={val}
                   className="col-span-1 bg-neutral-800 hover:bg-neutral-700 text-gray-300 py-2.5 rounded-md text-base font-medium disabled:opacity-50"
-                  onClick={() => setMonto(val.replace(/,/g, ""))}
+                  onClick={() => setMonto(val.replace(/,/g, "").replace(/\./g, "") + ",00")} // Ensure 2 decimal places for preset
                   disabled={isLoading}
                   aria-label={`Agregar monto ${val}`}
                 >
@@ -571,18 +618,20 @@ export const AddTransaction: React.FC = () => {
             </div>
           )}
 
-          <div className="relative inline-block w-full mb-6">
+          <div className="relative inline-block w-full mb-6" ref={calendarRef}> {/* Added ref here */}
             <button
               onClick={toggleCalendar}
               className="inline-flex items-center gap-2 w-full h-12 bg-[#020817] border border-white/40 text-gray-300 text-sm rounded-md px-4 py-2 focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               disabled={isLoading}
+              aria-expanded={showCalendar} // Accessibility for toggle button
+              aria-controls="date-picker-calendar" // Accessibility
               aria-label="Seleccionar fecha"
             >
               <CalendarDays className="w-4 h-4 text-gray-400" />
               <span>{formatDate()}</span>
             </button>
             {showCalendar && (
-              <div className="absolute z-20 bottom-full mb-2 bg-[#0F1525] border border-gray-700 rounded-md shadow-lg p-4 w-full">
+              <div id="date-picker-calendar" className="absolute z-20 bottom-full mb-2 bg-[#0F1525] border border-gray-700 rounded-md shadow-lg p-4 w-full">
                 <DayPicker
                   mode="single"
                   selected={selectedDate}
@@ -593,6 +642,7 @@ export const AddTransaction: React.FC = () => {
                     selected: "bg-blue-600 text-white",
                     today: "border border-white",
                   }}
+                  disabled={isLoading} // Disable day picker when loading
                 />
               </div>
             )}
@@ -600,8 +650,9 @@ export const AddTransaction: React.FC = () => {
 
           {/* Selección de Tipo de Entidad */}
           <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-2">Tipo de Entidad</h2>
+            <label htmlFor="entity-type-select" className="text-lg font-semibold mb-2 block">Tipo de Entidad</label>
             <select
+              id="entity-type-select" // Added id for label association
               value={tipoEntidad}
               onChange={(e) => {
                 setTipoEntidad(e.target.value as "cuenta" | "inversion" | "tarjeta" | "");
@@ -624,10 +675,11 @@ export const AddTransaction: React.FC = () => {
 
           {/* Selección de Entidad Específica */}
           <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-2">
+            <label htmlFor="specific-entity-select" className="text-lg font-semibold mb-2 block">
               {tipoEntidad ? tipoEntidad.charAt(0).toUpperCase() + tipoEntidad.slice(1) : "Entidad"}
-            </h2>
+            </label>
             <select
+              id="specific-entity-select" // Added id for label association
               value={entidadId}
               onChange={(e) => {
                 setEntidadId(e.target.value);
@@ -689,12 +741,13 @@ export const AddTransaction: React.FC = () => {
           {/* Sección de Presupuesto - CONDICIONAL para gastos */}
           {tipoTransaccion === "gasto" && (
             <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-2">Presupuesto</h2>
+              <label htmlFor="budget-select" className="text-lg font-semibold mb-2 block">Presupuesto</label>
               <select
+                id="budget-select" // Added id for label association
                 value={presupuestoSeleccionado}
                 onChange={(e) => setPresupuestoSeleccionado(e.target.value)}
                 className="w-full p-2.5 rounded-md bg-[#020817] border border-white/40 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                disabled={!entidadId || isLoading || presupuestos.length === 0} // Disable if no entity selected or no budgets available
+                disabled={!entidadId || isLoading || presupuestos.length === 0}
                 aria-label="Seleccionar presupuesto"
               >
                 <option value="" disabled>
@@ -720,8 +773,9 @@ export const AddTransaction: React.FC = () => {
             </div>
           )}
           <div className="mb-6">
-            <h2 className="text-lg font-semibold mb-2">Nota (Opcional)</h2>
+            <label htmlFor="transaction-note" className="text-lg font-semibold mb-2 block">Nota (Opcional)</label>
             <textarea
+              id="transaction-note" // Added id for label association
               value={nota}
               onChange={(e) => setNota(e.target.value)}
               placeholder="Añadir una nota sobre esta transacción..."
@@ -729,6 +783,7 @@ export const AddTransaction: React.FC = () => {
               className="w-full p-2.5 rounded-md bg-[#020817] border border-white/40 text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
               disabled={isLoading}
               aria-label="Nota de la transacción"
+              maxLength={500} // Added max length for textarea
             ></textarea>
           </div>
           <button

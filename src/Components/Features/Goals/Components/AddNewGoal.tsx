@@ -57,20 +57,15 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
   const [opcionFecha, setOpcionFecha] = useState<OpcionFechaType>("");
   const [mostrarCalendario, setMostrarCalendario] = useState(false);
   const [icon, setIcon] = useState("💰");
-  
-  // Estados para el manejo de carga y errores
+
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Base URL para APIs
   const API_BASE_URL = "http://localhost:8080/finzen/metas";
 
-  // Función para obtener headers con token
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("Token de autenticación no encontrado");
-    }
+    if (!token) throw new Error("Token de autenticación no encontrado");
     return {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -79,23 +74,18 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
     };
   };
 
-  // Función mejorada para manejar errores
   const handleApiError = (error: any, defaultMessage: string) => {
     console.error(defaultMessage, error);
     let errorMessage = defaultMessage;
-    
     if (axios.isAxiosError(error)) {
       if (error.response?.status === 401) {
         errorMessage = "Sesión expirada. Por favor, inicia sesión nuevamente.";
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.response?.data) {
-        errorMessage = typeof error.response.data === 'string' 
-          ? error.response.data 
-          : defaultMessage;
+        errorMessage = typeof error.response.data === 'string' ? error.response.data : defaultMessage;
       }
     }
-    
     setError(errorMessage);
     return errorMessage;
   };
@@ -107,7 +97,6 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
     setOpcionFecha(value);
     setMostrarCalendario(false);
     const now = new Date();
-
     const fechas: Record<Exclude<OpcionFechaType, "" | "personalizada">, Date> = {
       "3m": addMonths(now, 3),
       "6m": addMonths(now, 6),
@@ -134,30 +123,12 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Limpiar errores previos
     setError(null);
 
-    // Validaciones
-    if (!nombreMeta.trim()) {
-      setError("El nombre de la meta es obligatorio.");
-      return;
-    }
-    
-    if (!montoObjetivo || parseFloat(montoObjetivo) <= 0) {
-      setError("Monto objetivo inválido.");
-      return;
-    }
-    
-    if (!montoAporte || parseFloat(montoAporte) < 0) {
-      setError("El aporte inicial es obligatorio y no puede ser menor a cero.");
-      return;
-    }
-    
-    if (!fechaObjetivo) {
-      setError("Debes seleccionar una fecha válida.");
-      return;
-    }
+    if (!nombreMeta.trim()) return setError("El nombre de la meta es obligatorio.");
+    if (!montoObjetivo || parseFloat(montoObjetivo) <= 0) return setError("Monto objetivo inválido.");
+    if (!montoAporte || parseFloat(montoAporte) < 0) return setError("El aporte inicial es obligatorio y no puede ser menor a cero.");
+    if (!fechaObjetivo) return setError("Debes seleccionar una fecha válida.");
 
     const metaDto: MetaDto = {
       titulo: nombreMeta,
@@ -174,38 +145,20 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
 
     try {
       setLoading(true);
-      
-      const response = await axios.post<Meta>(
-        API_BASE_URL, 
-        metaDto, 
-        getAuthHeaders()
-      );
+      const response = await axios.post<Meta>(API_BASE_URL, metaDto, getAuthHeaders());
 
-      // Solo hacer optimistic update si setGoals está disponible
       if (setGoals) {
         const newGoal: Meta = {
           ...metaDto,
           idMeta: response.data.idMeta,
           montoAporte: parseFloat(montoAporte),
         };
-        
-        setGoals((prev) => ({
-          ...prev,
-          active: [...prev.active, newGoal],
-        }));
+        setGoals((prev) => ({ ...prev, active: [...prev.active, newGoal] }));
       }
 
-      // Reuse the refresh logic from FinancialGoals.tsx
       await onGoalAdded();
+      setTimeout(() => onCancel(), 500);
 
-      // Mostrar mensaje de éxito
-      setError(null);
-      
-      // Cerrar modal después de un breve delay para mostrar el éxito
-      setTimeout(() => {
-        onCancel();
-      }, 500);
-      
     } catch (error) {
       handleApiError(error, "Error al crear meta");
     } finally {
@@ -216,52 +169,52 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-[#0f172a] text-white p-6 rounded-lg shadow-lg space-y-5 max-w-xl mx-auto"
+      className="bg-[#020817] border border-white/40 rounded-xl p-5 w-full max-w-lg max-h-[90vh] overflow-y-auto"
     >
-      <h2 className="text-2xl font-bold">Nueva Meta Financiera</h2>
-      <p className="text-gray-400 mb-4">Completa la información para planear tu objetivo de ahorro.</p>
+      <div className="space-y-1">
+        <h2 className="text-3xl font-extrabold">Crear nueva meta financiera</h2>
+        <p className="text-gray-400">Define tu objetivo de ahorro y planifica cómo alcanzarlo.</p>
+      </div>
 
-      {/* Mostrar errores si existen */}
       {error && (
-        <div className="bg-red-600 text-white p-3 rounded-md mb-4">
+        <div className="bg-red-700/80 text-white p-4 rounded-lg border border-red-500 relative">
           <p>{error}</p>
-          <button 
+          <button
             type="button"
             onClick={() => setError(null)}
-            className="text-sm underline mt-1"
+            className="absolute top-2 right-3 text-white text-sm underline hover:text-gray-200"
           >
             Cerrar
           </button>
         </div>
       )}
 
-      {/* Mostrar indicador de carga */}
       {loading && (
-        <div className="bg-blue-600 text-white p-3 rounded-md mb-4 flex items-center">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-          <p>Creando meta...</p>
+        <div className="bg-blue-700/70 text-white p-4 rounded-lg flex items-center gap-3">
+          <div className="h-4 w-4 border-2 border-white border-b-transparent rounded-full animate-spin"></div>
+          <span>Creando meta...</span>
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <label className="block mb-1 font-medium">Nombre de la meta</label>
+          <label className="block font-medium mb-1">Nombre de la meta</label>
           <input
             type="text"
             value={nombreMeta}
             onChange={(e) => setNombreMeta(e.target.value)}
-            className="w-full p-2 rounded-md bg-[#1e293b] border border-white/20"
-            disabled={loading}
+            className="input-field"
+            placeholder="Ej: Comprar un carro"
             required
+            disabled={loading}
           />
         </div>
-
         <div>
-          <label className="block mb-1 font-medium">Estado inicial</label>
+          <label className="block font-medium mb-1">Estado inicial</label>
           <select
             value={estado}
             onChange={(e) => setEstado(e.target.value as MetaDto["estado"])}
-            className="w-full p-2 rounded-md bg-[#1e293b] border border-white/20"
+            className="input-field"
             disabled={loading}
           >
             <option value="creado">Creado</option>
@@ -272,52 +225,51 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
       </div>
 
       <div>
-        <label className="block mb-1 font-medium">Descripción</label>
+        <label className="block font-medium mb-1">Descripción</label>
         <textarea
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
-          className="w-full p-2 rounded-md bg-[#1e293b] border border-white/20"
+          className="input-field resize-none"
           rows={3}
           placeholder="¿Cuál es el propósito de esta meta?"
           disabled={loading}
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <label className="block mb-1 font-medium">Monto objetivo</label>
+          <label className="block font-medium mb-1">Monto objetivo</label>
           <input
             type="number"
             value={montoObjetivo}
             onChange={(e) => setMontoObjetivo(e.target.value)}
-            className="w-full p-2 rounded-md bg-[#1e293b] border border-white/20"
+            className="input-field"
             placeholder="$ 0.00"
-            disabled={loading}
             required
+            disabled={loading}
           />
         </div>
-
         <div>
-          <label className="block mb-1 font-medium">Aporte inicial</label>
+          <label className="block font-medium mb-1">Aporte inicial</label>
           <input
             type="number"
             value={montoAporte}
             onChange={(e) => setMontoAporte(e.target.value)}
-            className="w-full p-2 rounded-md bg-[#1e293b] border border-white/20"
+            className="input-field"
             placeholder="$ 0.00"
-            disabled={loading}
             required
+            disabled={loading}
           />
         </div>
       </div>
 
       <div>
-        <label className="block mb-1 font-medium">Ícono</label>
+        <label className="block font-medium mb-1">Ícono</label>
         <input
           type="text"
           value={icon}
           onChange={(e) => setIcon(e.target.value)}
-          className="w-full p-2 rounded-md bg-[#1e293b] border border-white/20"
+          className="input-field"
           placeholder="💰"
           maxLength={10}
           disabled={loading}
@@ -325,11 +277,11 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
       </div>
 
       <div>
-        <label className="block mb-1 font-medium">Fecha objetivo</label>
+        <label className="block font-medium mb-1">Fecha objetivo</label>
         <select
           value={opcionFecha}
           onChange={(e) => handleFechaChange(e.target.value as OpcionFechaType)}
-          className="w-full p-2 rounded-md bg-[#1e293b] border border-white/20 mb-2"
+          className="input-field mb-3"
           disabled={loading}
         >
           <option value="">Selecciona una opción</option>
@@ -342,47 +294,47 @@ export const AddNewGoal = ({ onCancel, idUsuario, setGoals, onGoalAdded }: AddNe
           <option value="10a">10 años</option>
           <option value="personalizada">Fecha personalizada</option>
         </select>
+
+        {opcionFecha === "personalizada" && (
+          <div className=" p-4 rounded-md shadow-inner border border-white/10">
+            <DayPicker
+              mode="single"
+              selected={fechaObjetivo}
+              onSelect={(date) => {
+                if (date && !isBefore(date, new Date())) {
+                  setFechaObjetivo(date);
+                  setMostrarCalendario(false);
+                  setError(null);
+                } else {
+                  setError("No puedes seleccionar una fecha pasada.");
+                }
+              }}
+              locale={es}
+              className="text-white"
+              disabled={loading}
+            />
+          </div>
+        )}
+
+        {fechaObjetivo && (
+          <p className="text-sm mt-2 text-gray-300">
+            Fecha seleccionada: <span className="font-semibold text-white">{formatDate()}</span>
+          </p>
+        )}
       </div>
 
-      {opcionFecha === "personalizada" && (
-        <div className="bg-[#1e293b] p-4 rounded-md">
-          <DayPicker
-            mode="single"
-            selected={fechaObjetivo}
-            onSelect={(date) => {
-              if (date && !isBefore(date, new Date())) {
-                setFechaObjetivo(date);
-                setMostrarCalendario(false);
-                setError(null);
-              } else {
-                setError("No puedes seleccionar una fecha pasada.");
-              }
-            }}
-            locale={es}
-            className="text-white"
-            disabled={loading}
-          />
-        </div>
-      )}
-
-      {fechaObjetivo && (
-        <p className="text-sm text-gray-300">
-          Fecha seleccionada: <span className="text-white font-semibold">{formatDate()}</span>
-        </p>
-      )}
-
-      <div className="flex justify-end gap-4 mt-4">
+      <div className="flex justify-end gap-4 pt-4">
         <button
           type="button"
           onClick={onCancel}
-          className="bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-secondary"
           disabled={loading}
         >
           Cancelar
         </button>
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+          className="btn-primary flex items-center"
           disabled={loading}
         >
           {loading && (
