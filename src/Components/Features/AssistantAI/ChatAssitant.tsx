@@ -25,7 +25,7 @@ export default function FinanceAssistantChat() {
   const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("jwtToken");
     if (token) {
       setJwtToken(token);
     } else {
@@ -48,7 +48,7 @@ export default function FinanceAssistantChat() {
       if (window.location.pathname !== "/login" && window.location.pathname !== "/") {
         setTimeout(() => {
           window.location.href = "/";
-        }, 2000);
+        }, 2000000);
       }
     }
   }, [apiError]);
