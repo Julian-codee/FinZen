@@ -82,6 +82,6 @@ export const DeleteData = () => {
           Cerrar Sesión
         </button>
       </div>
-    </div>
+    </div>   
   );
 };

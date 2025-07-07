@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Sidebar } from "../../Ui/UiDashBoard/SideBar";
-import FinancialGoals from "./FinancialGoals";
+import FinancialGoals from "./components/FinancialGoals";
 
 export const Goals = () => {
   // Sidebar

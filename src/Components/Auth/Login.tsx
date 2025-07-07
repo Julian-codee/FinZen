@@ -43,9 +43,8 @@ export const Login = () => {
         // Redirigir al dashboard después de un pequeño delay para mostrar el mensaje
         setTimeout(() => {
 
-          navigate("/Transactions"); // <--- Cambia la ruta según tu aplicación
-          navigate("/BudgetDashboard"); // <--- Cambia la ruta según tu aplicación
-          navigate("/Reporting");
+          navigate("/FinZenHome"); // <--- Cambia la ruta según tu aplicación
+        
 
         }, 2000);
       } else {
