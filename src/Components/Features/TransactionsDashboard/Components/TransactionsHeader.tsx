@@ -7,13 +7,7 @@ const TransactionsHeader: React.FC = () => {
 
   return (
     <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-6 mb-8 px-4 sm:px-0">
-      {/* Título y descripción */}
-      <div className="flex-1">
-        <h1 className="text-3xl font-extrabold tracking-tight text-white">Transacciones</h1>
-        <p className="mt-2 text-gray-400 leading-relaxed text-sm sm:text-base max-w-md">
-          Visualiza y gestiona todas tus transacciones financieras.
-        </p>
-      </div>
+ 
 
       {/* Botones */}
       <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
