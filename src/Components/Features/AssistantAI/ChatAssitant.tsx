@@ -11,7 +11,9 @@ const quickOptions = [
 ];
 
 export default function FinanceAssistantChat() {
-  const [messages, setMessages] = useState<{ from: "user" | "bot"; text: string }[]>([
+  const [messages, setMessages] = useState<
+    { from: "user" | "bot"; text: string }[]
+  >([
     {
       from: "bot",
       text: "¡Hola! Soy tu asistente financiero IA. ¿En qué puedo ayudarte hoy?",
@@ -25,7 +27,11 @@ export default function FinanceAssistantChat() {
   const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
-  const token = localStorage.getItem("jwtToken");
+    // --- CAMBIO REALIZADO AQUÍ ---
+    // Ahora solo busca el token usando la clave "jwtToken" para consistencia.
+    const token = localStorage.getItem("jwtToken");
+    // --- FIN DEL CAMBIO ---
+
     if (token) {
       setJwtToken(token);
     } else {
@@ -45,10 +51,14 @@ export default function FinanceAssistantChat() {
 
   useEffect(() => {
     if (apiError === "Sesión inválida o expirada.") {
-      if (window.location.pathname !== "/login" && window.location.pathname !== "/") {
+      if (
+        window.location.pathname !== "/login" &&
+        window.location.pathname !== "/"
+      ) {
+        // Asegúrate de que este timeout sea el deseado. 2000000 ms es mucho (más de 30 minutos).
         setTimeout(() => {
           window.location.href = "/";
-        }, 2000000);
+        }, 2000000); // Considera reducir este tiempo o cambiar la lógica de redirección.
       }
     }
   }, [apiError]);
@@ -75,25 +85,34 @@ export default function FinanceAssistantChat() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://finzenbackend-production.up.railway.app/finzen/gpt/user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${jwtToken}`,
-        },
-        body: JSON.stringify({ prompt: messageToSend }),
-      });
+      const response = await fetch(
+        "https://finzenbackend-production.up.railway.app/finzen/gpt/user",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwtToken}`,
+          },
+          body: JSON.stringify({ prompt: messageToSend }),
+        }
+      );
 
       if (!response.ok) {
         if (response.status === 401) {
+          // La eliminación de "jwtToken" ya es consistente con la lectura si solo usas esa clave.
           localStorage.removeItem("jwtToken");
           setJwtToken(null);
-          const errorMessage = "Tu sesión ha expirado o es inválida. Por favor, vuelve a iniciar sesión para continuar.";
+          const errorMessage =
+            "Tu sesión ha expirado o es inválida. Por favor, vuelve a iniciar sesión para continuar.";
           setApiError("Sesión inválida o expirada.");
           setMessages((prev) => [...prev, { from: "bot", text: errorMessage }]);
         } else {
-          const errorData = await response.json().catch(() => ({ message: response.statusText }));
-          const errorMessage = `Error del servidor: ${errorData.message || response.statusText}`;
+          const errorData = await response
+            .json()
+            .catch(() => ({ message: response.statusText }));
+          const errorMessage = `Error del servidor: ${
+            errorData.message || response.statusText
+          }`;
           setApiError(errorMessage);
           setMessages((prev) => [...prev, { from: "bot", text: errorMessage }]);
           console.error(`Error ${response.status}:`, errorData);
@@ -102,7 +121,11 @@ export default function FinanceAssistantChat() {
         const data = await response.json();
         setMessages((prev) => [
           ...prev,
-          { from: "bot", text: data.response || "No se recibió una respuesta clara de la IA." },
+          {
+            from: "bot",
+            text:
+              data.response || "No se recibió una respuesta clara de la IA.",
+          },
         ]);
       }
     } catch (error) {
@@ -125,12 +148,19 @@ export default function FinanceAssistantChat() {
       <div className="p-4 border-b border-slate-700 flex items-center gap-2">
         <Sparkles className="text-blue-400" />
         <h1 className="text-lg font-semibold">Asistente Financiero IA</h1>
-        <span className="ml-auto text-xs bg-blue-600 px-2 py-0.5 rounded-full">Premium</span>
+        <span className="ml-auto text-xs bg-blue-600 px-2 py-0.5 rounded-full">
+          Premium
+        </span>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg, i) => (
-          <div key={i} className={`flex gap-3 ${msg.from === "user" ? "justify-end" : "justify-start"}`}>
+          <div
+            key={i}
+            className={`flex gap-3 ${
+              msg.from === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
             <div
               className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full ${
                 msg.from === "bot" ? "bg-gray-400" : "bg-blue-600"
@@ -144,7 +174,9 @@ export default function FinanceAssistantChat() {
             </div>
             <div
               className={`p-3 rounded-lg max-w-[85%] sm:max-w-xs break-words ${
-                msg.from === "bot" ? "bg-slate-700 text-white" : "bg-blue-600 text-white"
+                msg.from === "bot"
+                  ? "bg-slate-700 text-white"
+                  : "bg-blue-600 text-white"
               }`}
             >
               <p className="text-sm">{msg.text}</p>
@@ -199,7 +231,11 @@ export default function FinanceAssistantChat() {
           onClick={() => handleSend(input)}
           disabled={isLoading || !jwtToken}
         >
-          {isLoading ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Send className="w-5 h-5 text-white" />}
+          {isLoading ? (
+            <Loader2 className="w-5 h-5 text-white animate-spin" />
+          ) : (
+            <Send className="w-5 h-5 text-white" />
+          )}
         </button>
       </div>
     </div>
