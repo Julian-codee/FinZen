@@ -48,7 +48,7 @@ export default function FinanceAssistantChat() {
       if (window.location.pathname !== "/login" && window.location.pathname !== "/") {
         setTimeout(() => {
           window.location.href = "/";
-        }, 2000);
+        }, 20000000);
       }
     }
   }, [apiError]);

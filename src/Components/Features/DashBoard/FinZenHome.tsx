@@ -14,9 +14,7 @@ import { MonthlyBudget } from "./Components/MonthlyBudget";
 import { UpcomingPayments } from "./Components/UpcomingPayments";
 import { DailyAdvice } from "./Components/DailyAdvice";
 
-
 import { Transaction } from "./Types/home";
-
 
 interface UpcomingPayment {
   id: string;
@@ -30,11 +28,13 @@ const MOCK_UPCOMING_PAYMENTS: UpcomingPayment[] = [];
 const FinZenHome: React.FC = () => {
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   // const [cardData, setCardData] = useState<CardSummary[]>([]);
-  const [upcomingPayments, setUpcomingPayments] = useState<UpcomingPayment[]>([]);
+  const [upcomingPayments, setUpcomingPayments] = useState<UpcomingPayment[]>(
+    []
+  );
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = useCallback(() => {
-    setIsSidebarOpen(prev => !prev);
+    setIsSidebarOpen((prev) => !prev);
   }, []);
 
   const fetchAllTransactions = useCallback(async () => {
@@ -47,21 +47,26 @@ const FinZenHome: React.FC = () => {
     }
 
     try {
-      const { data } = await axios.get("https://finzenbackend-production.up.railway.app/finzen/gasto/user/finances", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const { data } = await axios.get(
+        "https://finzenbackend-production.up.railway.app/finzen/gasto/user/finances",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      const ingresos: Transaction[] = (data.ingresos ?? []).map((item: any) => ({
-        id: item.idIngreso?.toString() ?? crypto.randomUUID(),
-        amount: item.monto ?? 0,
-        date: item.fecha ?? new Date().toISOString().split("T")[0],
-        description: item.nombre || item.descripcion || "Sin descripción",
-        notes: item.descripcion || "",
-        category: "otros",
-        account: "Ingreso",
-        type: "income",
-        status: "Completada",
-      }));
+      const ingresos: Transaction[] = (data.ingresos ?? []).map(
+        (item: any) => ({
+          id: item.idIngreso?.toString() ?? crypto.randomUUID(),
+          amount: item.monto ?? 0,
+          date: item.fecha ?? new Date().toISOString().split("T")[0],
+          description: item.nombre || item.descripcion || "Sin descripción",
+          notes: item.descripcion || "",
+          category: "otros",
+          account: "Ingreso",
+          type: "income",
+          status: "Completada",
+        })
+      );
 
       const gastos: Transaction[] = (data.gastos ?? []).map((item: any) => ({
         id: item.idGasto?.toString() ?? crypto.randomUUID(),
@@ -108,26 +113,35 @@ const FinZenHome: React.FC = () => {
   }, [allTransactions]);
 
   return (
-    <div className="flex min-h-screen bg-[#020817] text-gray-100">
+    <>
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       <main
-        className={`flex-1 p-4 sm:p-6 lg:p-8 transition-all duration-300 ease-in-out ${
+        className={`min-h-screen flex flex-col p-5  lg:p-8 transition-all duration-300 ease-in-out bg-[#020817] text-white ${
           isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
-        } ml-0`}
+        }`}
       >
-        <div className="flex justify-between items-center mb-6 lg:hidden">
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-md border border-gray-600 hover:bg-gray-800"
-            aria-label="Abrir menú de navegación"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-          <h1 className="text-2xl font-bold text-center flex-grow">Dashboard</h1>
+        <div className="flex items-center gap-4 px-4 pt-8">
+          <div className="flex justify-between items-center mb-20 lg:hidden">
+            <button
+              onClick={toggleSidebar}
+              className="p-2 rounded-md border border-gray-600 hover:bg-gray-800"
+              aria-label="Abrir menú de navegación"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-4xl font-bold mb-2 text-white">
+              Dashboard
+            </h1>
+            <p className="text-white/70 mb-12 text-sm sm:text-lg">
+              Visualiza y gestiona todas tus transacciones financieras.
+            </p>
+          </div>
         </div>
 
-        <h1 className="hidden lg:block text-3xl font-bold text-white mb-6">Dashboard</h1>
+    
 
         <SummaryCards transactions={allTransactions} />
 
@@ -143,9 +157,8 @@ const FinZenHome: React.FC = () => {
             <DailyAdvice />
           </div>
         </div>
-
       </main>
-    </div>
+    </>
   );
 };
 
