@@ -1,5 +1,6 @@
 import React from "react";
 
+// Define las props que este componente recibirá del padre
 interface TabNavigationProps {
   activeViewTab: string;
   setActiveViewTab: (tab: string) => void;
@@ -13,6 +14,7 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
   activeDeductionTab,
   setActiveDeductionTab,
 }) => {
+  // Define las pestañas principales
   const tabs = [
     "Personal",
     "Ingresos",
@@ -20,39 +22,47 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
     "Patrimonio",
     "Impuestos",
   ];
+
+  // Define los tipos de vista
   const typeView = ["Formulario", "Vista Previa"];
 
+  const handlePreview = () => {
+    // Placeholder for validation and preview logic
+    // This will be handled in the parent component
+    setActiveViewTab("Vista Previa");
+  };
+
   return (
-    <div className="space-y-4 p-5 md:p-0">
-      {/* Tipo de Vista */}
-      <div className="flex flex-col md:flex-row w-full mb-5 md:mb-3  md:w-fit gap-y-2 md:gap-y-0 md:gap-x-2 bg-gray-800 p-2 rounded-lg md:overflow-x-auto md:scrollbar-hide">
+    <>
+      {/* Sección para los botones de "Tipo de Vista" */}
+      <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6 w-fit">
         {typeView.map((type) => (
           <button
             key={type}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ease-in-out w-full md:w-auto ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ease-in-out ${
               activeViewTab === type
                 ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white"
                 : "text-gray-400 hover:bg-gray-700"
             }`}
-            onClick={() => setActiveViewTab(type)}
+            onClick={() => {
+              if (type === "Vista Previa") {
+                handlePreview();
+              } else {
+                setActiveViewTab(type);
+              }
+            }}
           >
             {type}
           </button>
         ))}
       </div>
 
-      {/* Tabs de Deducciones */}
-      <div
-        className="grid grid-cols-2 gap-2
-    md:flex md:flex-row md:gap-x-2 
-    md:bg-gray-800 md:p-2 md:rounded-lg 
-    md:overflow-x-auto md:scrollbar-hide md:w-fit
-  "
-      >
+      {/* Sección para los botones de "Tipo de deducción" */}
+      <div className="flex space-x-2 bg-gray-800 p-1 rounded-lg mb-6 w-fit">
         {tabs.map((tab) => (
           <button
             key={tab}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ease-in-out w-full md:w-auto border border-white/30 md:border-none ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ease-in-out ${
               activeDeductionTab === tab
                 ? "bg-gradient-to-r from-indigo-500 to-blue-500 text-white"
                 : "text-gray-400 hover:bg-gray-700"
@@ -63,6 +73,6 @@ export const TabNavigation: React.FC<TabNavigationProps> = ({
           </button>
         ))}
       </div>
-    </div>
+    </>
   );
 };

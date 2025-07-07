@@ -105,7 +105,7 @@ export const UpcomingPayments: React.FC<UpcomingPaymentsProps> = ({
       
       {payments.length > 0 ? (
         <div className="space-y-2">
-          {payments.slice(0, 5).map((payment, index) => (
+          {payments.slice(0, 5).map((payment) => (
             <div 
               key={payment.id} 
               className="group relative bg-gray-800/50 hover:bg-gray-800/70 transition-all duration-200 rounded-md p-3 border border-gray-700/50 hover:border-gray-600"

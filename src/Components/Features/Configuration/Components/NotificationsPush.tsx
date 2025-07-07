@@ -1,13 +1,13 @@
-import { MailIcon } from "lucide-react";
+import { Smartphone } from "lucide-react";
 import { useState } from "react";
 
-export const Notifications = () => {
+export const NotificationsPush = () => {
   const [trasactionsNotifications, setTransactionsNotifications] =
     useState(true);
-  const [emailBudgets, setEmailBudgets] = useState(true);
+  const [emailBudgets, setEmailBudgets] = useState(false);
   const [reminders, setReminders] = useState(true);
-  const [reports, setReports] = useState(true);
-  const [updates, setUpdates] = useState(false);
+  const [reports, setReports] = useState(false);
+  const [updates, setUpdates] = useState(true);
 
   const renderSwitch = (value: boolean, setValue: (v: boolean) => void) => (
     <button
@@ -24,12 +24,10 @@ export const Notifications = () => {
     </button>
   );
   return (
-    <div className="text-white p-6 border border-white/10 rounded-lg">
-      <h2 className="text-2xl font-semibold flex items-center">
-       <MailIcon className="text-blue-500 mr-2"/> Notificaciones Por Correo Electronico
-      </h2>
+    <div className="text-white p-6 border border-white/10 rounded-lg mt-6">
+      <h2 className="text-2xl font-semibold flex items-center"><Smartphone className="mr-2 text-blue-500"/>Notificaciones Push</h2>
       <p className="text-gray-400 mb-6">
-        Configura qué notificaciones recibirás por correo electrónico.
+        Configura qué notificaciones recibirás en tu dispositivo.
       </p>
       {/*Switches*/}
       <div className="space-y-4">
@@ -43,17 +41,18 @@ export const Notifications = () => {
           {renderSwitch(trasactionsNotifications, setTransactionsNotifications)}
         </div>
 
-          <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <div>
             <p className="font-medium">Alertas de Presupuestos</p>
             <p className="text-sm text-gray-400">
-              Recibe notificaciones cuando te acerques al límite de un presupuesto
+              Recibe notificaciones cuando te acerques al límite de un
+              presupuesto
             </p>
           </div>
           {renderSwitch(emailBudgets, setEmailBudgets)}
         </div>
 
-          <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <div>
             <p className="font-medium">Recordatorios de Facturas</p>
             <p className="text-sm text-gray-400">
@@ -63,7 +62,7 @@ export const Notifications = () => {
           {renderSwitch(reminders, setReminders)}
         </div>
 
-          <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <div>
             <p className="font-medium">Informes Semanales</p>
             <p className="text-sm text-gray-400">
@@ -73,11 +72,11 @@ export const Notifications = () => {
           {renderSwitch(reports, setReports)}
         </div>
 
-          <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <div>
             <p className="font-medium">Actualización del Mercado</p>
             <p className="text-sm text-gray-400">
-            Recibe actualizaciones sobre el mercado financiero
+              Recibe actualizaciones sobre el mercado financiero
             </p>
           </div>
           {renderSwitch(updates, setUpdates)}

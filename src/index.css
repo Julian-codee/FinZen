@@ -61,3 +61,98 @@ body {
 .rdp-head_cell {
   color: #94A3B8 !important;
 }
+
+/* react-day-picker-custom.css o en tu archivo global.css */
+
+/* Fondo general del calendario */
+.custom-day-picker {
+  background-color: #1e293b; /* Color de fondo similar a tus inputs */
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+/* Color del texto del calendario */
+.custom-day-picker .rdp-caption_label,
+.custom-day-picker .rdp-head_cell {
+  color: #fff; /* Texto blanco para meses y días de la semana */
+}
+
+/* Días del mes */
+.custom-day-picker .rdp-day {
+  color: #e2e8f0; /* Color de los días normales */
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+}
+
+/* Días hoy */
+.custom-day-picker .rdp-day_today {
+  color: #3b82f6; /* Azul para el día actual */
+  font-weight: bold;
+}
+
+/* Días seleccionados */
+.custom-day-picker .rdp-day_selected:not(.rdp-day_disabled) {
+  background-color: #3b82f6 !important; /* Azul para el día seleccionado */
+  color: white !important;
+  border-radius: 0.25rem;
+}
+
+/* Hover en días */
+.custom-day-picker .rdp-day:not(.rdp-day_selected):not(.rdp-day_disabled):hover {
+  background-color: #334155; /* Gris oscuro en hover */
+  color: white;
+  border-radius: 0.25rem;
+}
+
+/* Días deshabilitados (pasados) */
+.custom-day-picker .rdp-day_disabled {
+  color: #64748b; /* Gris claro para días deshabilitados */
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Navegación (flechas) */
+.custom-day-picker .rdp-nav_button {
+  color: #94a3b8; /* Gris para las flechas de navegación */
+  background-color: #334155;
+  border-radius: 50%;
+  padding: 0.5rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.custom-day-picker .rdp-nav_button:hover {
+  background-color: #475569; /* Gris más oscuro en hover */
+}
+
+/* Animaciones */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.animate-pulse {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@layer components {
+  .input-field {
+    @apply w-full p-2 rounded-lg  border border-white/20 focus:outline-none focus:ring-2 focus:ring-blue-500 transition;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+}

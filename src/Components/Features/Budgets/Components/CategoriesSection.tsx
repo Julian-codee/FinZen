@@ -40,14 +40,7 @@ export default function CategoriesSection({
             </div>
           )}
         </div>
-        <button
-          onClick={() => setIsRegisterExpenseOpen(true)}
-          className="bg-[#F59E0B] hover:bg-[#D97706] px-4 py-2 rounded-lg transition-colors flex items-center"
-          disabled={categories.length === 0}
-        >
-          <Plus className="w-4 h-4 mr-2" />
-          Registrar Gasto
-        </button>
+      
       </div>
 
       <div className="mb-6">

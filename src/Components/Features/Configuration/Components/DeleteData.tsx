@@ -1,11 +1,11 @@
 "use client";
 
-import { BadgeX } from "lucide-react";
-import { useNavigate } from "react-router-dom"; // Cambiado a useNavigate
+import { BadgeX, LogOut } from "lucide-react"; // Importar LogOut para el icono
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 export const DeleteData = () => {
-  const navigate = useNavigate(); // Hook para redirigir
+  const navigate = useNavigate();
 
   const handleDeleteAllData = async () => {
     const token = localStorage.getItem("token");
@@ -30,7 +30,8 @@ export const DeleteData = () => {
 
       if (response.ok) {
         toast.success("Todos tus datos han sido eliminados exitosamente.");
-        navigate("/register"); // Redirige al usuario a la página de registro
+        localStorage.removeItem("token"); // Eliminar el token al borrar los datos
+        navigate("/"); // Redirige al usuario a la página de registro
       } else {
         const errorData = await response.json();
         toast.error(`Error al eliminar datos: ${errorData.error || "Algo salió mal."}`);
@@ -39,6 +40,12 @@ export const DeleteData = () => {
       console.error("Error al conectar con el servidor para eliminar datos:", error);
       toast.error("Error de red o del servidor al intentar eliminar tus datos.");
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Eliminar el token de autenticación
+    toast.info("Sesión cerrada correctamente.");
+    navigate("/"); // Redirigir a la página de inicio de sesión o a la principal
   };
 
   return (
@@ -58,12 +65,21 @@ export const DeleteData = () => {
         </p>
       </div>
 
-      <div className="space-y-4 flex w-full">
+      <div className="space-y-4 flex flex-col sm:flex-row w-full sm:space-x-4 sm:space-y-0"> {/* Flexbox para alinear botones */}
         <button
           onClick={handleDeleteAllData}
-          className="w-fit bg-red-600/60 hover:bg-red-600/80 px-4 py-2 rounded text-sm h-10 mt-4 flex items-center"
+          className="w-fit bg-red-600/60 hover:bg-red-600/80 px-4 py-2 rounded text-sm h-10 mt-4 flex items-center justify-center"
         >
           Eliminar todos los Datos
+        </button>
+
+        {/* Botón de Cerrar Sesión */}
+        <button
+          onClick={handleLogout}
+          className="w-fit bg-yellow-500/60 hover:bg-yellow-500/80 px-4 py-2 rounded text-sm h-10 mt-4 flex items-center justify-center"
+        >
+          <LogOut className="w-4 h-4 mr-2" /> {/* Icono de cerrar sesión */}
+          Cerrar Sesión
         </button>
       </div>
     </div>

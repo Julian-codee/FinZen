@@ -131,6 +131,11 @@ export const UserProfileConfig = () => {
         nombreUsuario: userData.nombreUsuario,
         tipoPersona: userData.tipoPersona,
         urlImg: newImageBase64 || currentProfileImageUrl || undefined,
+        numeroDocumento: backendUserData?.numeroDocumento ?? null,
+        paisResidencia: backendUserData?.paisResidencia ?? "",
+        ingresoMensual: backendUserData?.ingresoMensual ?? null,
+        tipoDocumento: backendUserData?.tipoDocumento ?? "",
+        tipoUsuario: backendUserData?.tipoUsuario ?? "",
       };
 
       await axios.put("http://localhost:8080/finzen/usuarios", dataToSend, {

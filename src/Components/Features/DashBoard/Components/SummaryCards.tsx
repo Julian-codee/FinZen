@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TrendingUp, TrendingDown, CreditCard, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { Transaction, CardSummary } from '../Types/home';
+import { Transaction } from '../Types/home';
 
 interface SummaryCardsProps {
   transactions: Transaction[];
